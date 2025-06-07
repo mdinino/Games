@@ -10,12 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris
 import games.composeapp.generated.resources.game_tictactoe
 import games.composeapp.generated.resources.select_game
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun SelectGameScreenRoot(vm: SelectGamesViewModel = viewModel()) {
+    SelectGameScreen()
+}
 
 @Composable
 @Preview
