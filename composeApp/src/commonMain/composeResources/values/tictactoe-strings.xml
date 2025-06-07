@@ -1,0 +1,4 @@
+<resources>
+    <string name="game-tictactoe">Tic Tac Toe</string>
+    <string name="game-tictactoe-not-available">Tic Tac Toe is not available at this time.</string>
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="game-tetris">Tetris</string>
+    <string name="game-tetris-not-available">Tetris is not available at this time.</string>
+</resources>

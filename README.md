@@ -1,6 +1,5 @@
 A sample app demonstrating Kotlin Multiplatform functionality.  
-Targeting Android, iOS, Web, Desktop.  
-Each game is maintained in a self-contained library module.
+Targeting Android, iOS, Web, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
