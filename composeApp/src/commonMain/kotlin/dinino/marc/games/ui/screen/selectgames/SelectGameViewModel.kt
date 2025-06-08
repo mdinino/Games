@@ -6,51 +6,47 @@ import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris_not_available
 import games.composeapp.generated.resources.game_tictactoe_not_available
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
-import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
 class SelectGameViewModel(
-    private val actionChannel: Channel<Action> = Channel(capacity = CONFLATED),
-    private val sideEffectChannel: Channel<SideEffect> = Channel(capacity = UNLIMITED)
+    private val navigateChannel: Channel<Action.Navigate> = Channel(),
+    private val _errors: Channel<SideEffect.Error> = Channel()
 ) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            actionChannel
+            navigateChannel
                 .receiveAsFlow()
                 .collect { it.process() }
         }
     }
 
-    val sideEffectFlow: Flow<SideEffect>
-        get() = sideEffectChannel.receiveAsFlow()
+    val errors = _errors.receiveAsFlow()
 
     fun navigate(to: Action.Navigate) {
         viewModelScope.launch {
-            actionChannel.send(to)
+            navigateChannel.send(to)
         }
     }
 
     private suspend fun Action.process() =
         when(this) {
             Action.Navigate.NavigateToTetris ->
-                queueToast(Res.string.game_tetris_not_available)
+                notifyError(Res.string.game_tetris_not_available)
 
             Action.Navigate.NavigateToTicTacToe ->
-                queueToast(Res.string.game_tictactoe_not_available)
+                notifyError(Res.string.game_tictactoe_not_available)
         }
 
-    private suspend fun queueToast(stringResource: StringResource) =
-        queueToast(getString(stringResource))
+    private suspend fun notifyError(stringResource: StringResource) =
+        notifyError(getString(stringResource))
 
-    private fun queueToast(localizedMessage: String) {
+    private fun notifyError(localizedMessage: String) {
         viewModelScope.launch {
-            sideEffectChannel.send(SideEffect.ShowSnackbar(localizedMessage))
+            _errors.send(SideEffect.Error(localizedMessage))
         }
     }
 

@@ -6,26 +6,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dinino.marc.games.ui.screen.ComposableExtensions.SingleEventEffect
+import dinino.marc.games.ui.screen.ObserveEffect
+import dinino.marc.games.ui.screen.SnackbarController
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris
 import games.composeapp.generated.resources.game_tictactoe
 import games.composeapp.generated.resources.select_game
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -34,7 +27,7 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = viewModel()) {
     SelectGameScreen(
         onTetrisSelected = { vm.navigate(SelectGameViewModel.Action.Navigate.NavigateToTetris) },
         onTicTacToeSelected = { vm.navigate(SelectGameViewModel.Action.Navigate.NavigateToTicTacToe) },
-        sideEffectFlow = vm.sideEffectFlow
+        errors = vm.errors
     )
 }
 
@@ -43,32 +36,22 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = viewModel()) {
 fun SelectGameScreen(
     onTicTacToeSelected: ()->Unit = {},
     onTetrisSelected: ()->Unit = {},
-    sideEffectFlow: Flow<SideEffect> = emptyFlow()
+    errors: Flow<SideEffect.Error> = emptyFlow()
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val snackbarCoroutineScope = rememberCoroutineScope()
-
-    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) {
-        Column(
-            modifier = Modifier
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(stringResource(Res.string.select_game))
-            GameButtons(onTicTacToeSelected, onTetrisSelected)
-        }
+    ObserveEffect(errors) {
+        SnackbarController
+            .instance
+            .sendEvent(SnackbarController.SnackbarEvent(it.localizedMessage))
     }
 
-    SingleEventEffect(sideEffectFlow) {
-        when (it) {
-            is SideEffect.ShowSnackbar ->
-                showSnackbar(
-                    localizedMessage = it.localizedMessage,
-                    snackbarHostState = snackbarHostState,
-                    snackbarCoroutineScope = snackbarCoroutineScope
-                )
-        }
+    Column(
+        modifier = Modifier
+            .safeContentPadding()
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(Res.string.select_game))
+        GameButtons(onTicTacToeSelected, onTetrisSelected)
     }
 }
 
@@ -92,18 +75,5 @@ private fun GameButtons(
             modifier = Modifier.fillMaxWidth(),
             onClick = onTetrisSelected
         ) { Text(stringResource(Res.string.game_tetris)) }
-    }
-}
-
-fun showSnackbar(
-    localizedMessage: String,
-    snackbarHostState: SnackbarHostState,
-    snackbarCoroutineScope: CoroutineScope
-) {
-    snackbarCoroutineScope.launch {
-        snackbarHostState.showSnackbar(
-            message = localizedMessage,
-            duration = SnackbarDuration.Short
-        )
     }
 }
