@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,9 +22,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SelectGameScreenRoot(vm: SelectGameViewModel = viewModel()) {
+fun SelectGameScreenRoot(vm: SelectGameViewModel = koinViewModel()) {
     SelectGameScreen(
         onTetrisSelected = { vm.navigate(SelectGameViewModel.Action.Navigate.NavigateToTetris) },
         onTicTacToeSelected = { vm.navigate(SelectGameViewModel.Action.Navigate.NavigateToTicTacToe) },

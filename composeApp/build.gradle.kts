@@ -72,6 +72,7 @@ kotlin {
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            api(libs.diamondedge.logging)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
