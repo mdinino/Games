@@ -1,11 +1,13 @@
 package dinino.marc.games.ui.screen.selectgames
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris_not_available
 import games.composeapp.generated.resources.game_tictactoe_not_available
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
@@ -24,7 +26,9 @@ class SelectGameViewModel(
         }
     }
 
-    val errors = _errors.receiveAsFlow()
+    @get:Composable
+    val errors: ReceiveChannel<SideEffect.Error>
+        get() = _errors
 
     fun navigate(to: Action.Navigate) {
         viewModelScope.launch {

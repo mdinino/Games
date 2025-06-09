@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dinino.marc.games.ui.screen.ObserveEffect
-import dinino.marc.games.ui.screen.SnackbarController
+import dinino.marc.games.ui.screen.ObserveOneTimeEffect
+import dinino.marc.games.ui.screen.GamesSnackbarController
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris
 import games.composeapp.generated.resources.game_tictactoe
 import games.composeapp.generated.resources.select_game
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -36,12 +36,12 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = viewModel()) {
 fun SelectGameScreen(
     onTicTacToeSelected: ()->Unit = {},
     onTetrisSelected: ()->Unit = {},
-    errors: Flow<SideEffect.Error> = emptyFlow()
+    errors: ReceiveChannel<SideEffect.Error> = Channel()
 ) {
-    ObserveEffect(errors) {
-        SnackbarController
+    ObserveOneTimeEffect(errors) {
+        GamesSnackbarController
             .instance
-            .sendEvent(SnackbarController.SnackbarEvent(it.localizedMessage))
+            .SendSnackbarEvent(GamesSnackbarController.SnackbarEvent(it.localizedMessage))
     }
 
     Column(

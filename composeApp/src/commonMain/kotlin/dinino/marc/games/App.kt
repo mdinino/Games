@@ -8,50 +8,51 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import dinino.marc.games.di.Koin
-import dinino.marc.games.ui.screen.ObserveEffect
-import dinino.marc.games.ui.screen.SnackbarController
+import dinino.marc.games.ui.screen.ObserveOneTimeEffect
+import dinino.marc.games.ui.screen.GamesSnackbarController
 import dinino.marc.games.ui.screen.selectgames.SelectGameScreenRoot
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinContext
 
 @Composable
 fun App() {
-    Koin.init()
-    App(snackbarEvents = SnackbarController.instance.events)
+    App(snackbarEvents = GamesSnackbarController.instance.events)
 }
 
 @Composable
 @Preview
 private fun App(
-    snackbarEvents: Flow<SnackbarController.SnackbarEvent> = emptyFlow()
+    snackbarEvents: ReceiveChannel<GamesSnackbarController.SnackbarEvent> = Channel()
 ) {
     MaterialTheme {
-        val snackbarHostState = remember { SnackbarHostState() }
-        val scope = rememberCoroutineScope()
+        KoinContext {
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
 
-        ObserveEffect(flow = snackbarEvents) { snackbarEvent ->
-            scope.launch {
-                snackbarHostState.currentSnackbarData?.dismiss()
-                val snackbarResult = snackbarHostState.showSnackbar(
-                    message = snackbarEvent.message,
-                    actionLabel = snackbarEvent.action?.name,
-                    withDismissAction = true
-                )
-                if (snackbarResult == SnackbarResult.ActionPerformed) {
-                    snackbarEvent.action?.action()
+            ObserveOneTimeEffect(oneTimeEffects = snackbarEvents) { snackbarEvent ->
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    val snackbarResult = snackbarHostState.showSnackbar(
+                        message = snackbarEvent.message,
+                        actionLabel = snackbarEvent.action?.name,
+                        withDismissAction = true
+                    )
+                    if (snackbarResult == SnackbarResult.ActionPerformed) {
+                        snackbarEvent.action?.action()
+                    }
                 }
             }
-        }
 
-        Scaffold(
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
+            Scaffold(
+                snackbarHost = {
+                    SnackbarHost(hostState = snackbarHostState)
+                }
+            ) {
+                SelectGameScreenRoot()
             }
-        ) {
-            SelectGameScreenRoot()
         }
     }
 }
