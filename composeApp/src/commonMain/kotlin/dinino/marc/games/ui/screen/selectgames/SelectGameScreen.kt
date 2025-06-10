@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dinino.marc.games.ui.screen.ObserveOneTimeEffect
 import dinino.marc.games.ui.screen.GamesSnackbarController
+import dinino.marc.games.ui.screen.ObserveOneTimeEventEffects.ObserveOneTimeEventsOrNullEffect
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_tetris
 import games.composeapp.generated.resources.game_tictactoe
@@ -40,10 +38,16 @@ fun SelectGameScreen(
     onTetrisSelected: ()->Unit = {},
     errors: ReceiveChannel<SideEffect.Error> = Channel()
 ) {
-    ObserveOneTimeEffect(errors) {
-        GamesSnackbarController
-            .instance
-            .SendSnackbarEvent(GamesSnackbarController.SnackbarEvent(it.localizedMessage))
+    ObserveOneTimeEventsOrNullEffect(errors) { error ->
+        if (error != null) {
+            GamesSnackbarController
+                .instance
+                .SendSnackbarEvent(
+                    GamesSnackbarController
+                        .SnackbarEvent(error.localizedMessage)
+                )
+        }
+
     }
 
     Column(
