@@ -1,61 +1,29 @@
 package dinino.marc.games
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import dinino.marc.games.ui.screen.GamesSnackbarController
-import dinino.marc.games.ui.screen.ObserveOneTimeEventEffects.ObserveOneTimeEventsOrNullEffect
-import dinino.marc.games.ui.screen.selectgames.SelectGameScreenRoot
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
+import androidx.compose.ui.Modifier
+import dinino.marc.games.userflow.selectgame.ui.SelectGameScreenRoot
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 
-@Composable
-fun App() {
-    App(snackbarEvents = GamesSnackbarController.instance.events)
-}
 
 @Composable
 @Preview
-private fun App(
-    snackbarEvents: ReceiveChannel<GamesSnackbarController.SnackbarEvent> = Channel()
-) {
+private fun App() {
     MaterialTheme {
         KoinContext {
-            val snackbarHostState = remember { SnackbarHostState() }
-            val scope = rememberCoroutineScope()
-
-            ObserveOneTimeEventsOrNullEffect(snackbarEvents) {
-                snackbarEvent: GamesSnackbarController.SnackbarEvent? ->
-                if (snackbarEvent != null) {
-                    scope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        val snackbarResult = snackbarHostState.showSnackbar(
-                            message = snackbarEvent.message,
-                            actionLabel = snackbarEvent.action?.name,
-                            withDismissAction = true
-                        )
-                        if (snackbarResult == SnackbarResult.ActionPerformed) {
-                            snackbarEvent.action?.action()
-                        }
-                    }
-                }
-            }
-
             Scaffold(
-                snackbarHost = {
-                    SnackbarHost(hostState = snackbarHostState)
-                }
+                modifier = Modifier
+                    .fillMaxSize()
+                    .safeContentPadding()
             ) {
                 SelectGameScreenRoot()
             }
+
         }
     }
 }

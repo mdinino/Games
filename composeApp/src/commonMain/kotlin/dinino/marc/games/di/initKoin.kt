@@ -1,16 +1,10 @@
 package dinino.marc.games.di
 
-import dinino.marc.games.ui.screen.selectgames.SelectGameViewModel
+import dinino.marc.games.userflow.selectgame.di.selectGameUserFlowModule
 import org.koin.core.context.startKoin
-import org.koin.core.module.dsl.viewModel
-import org.koin.dsl.module
 
 fun initKoin() {
     startKoin {
-        modules(sharedModules)
+        modules(selectGameUserFlowModule)
     }
-}
-
-private val sharedModules = module {
-    viewModel { SelectGameViewModel() }
 }

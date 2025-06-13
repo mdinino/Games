@@ -1,0 +1,4 @@
+<resources>
+    <string name="userflow-tictactoe">Tic Tac Toe</string>
+    <string name="userflow-tictactoe-not-available">Tic Tac Toe is not available at this time.</string>
+</resources>
