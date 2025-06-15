@@ -1,4 +1,4 @@
-package dinino.marc.games
+package dinino.marc.games.app.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
@@ -13,7 +13,7 @@ import org.koin.compose.KoinContext
 
 @Composable
 @Preview
-private fun App() {
+fun App() {
     MaterialTheme {
         KoinContext {
             Scaffold(

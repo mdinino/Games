@@ -11,16 +11,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import dinino.marc.games.ObserveOneTimeEffectEffect
+import dinino.marc.games.app.ui.ObserveOneTimeEventEffect
+import dinino.marc.games.app.ui.SnackbarController
+import dinino.marc.games.app.ui.SnackbarController.Companion.ObserveEffect
+import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowModule.snackbarControllerQualifier
 import games.composeapp.generated.resources.Res
-import games.composeapp.generated.resources.game_tetris
-import games.composeapp.generated.resources.game_tictactoe
-import games.composeapp.generated.resources.select_game
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
+import games.composeapp.generated.resources.userflow_select_game
+import games.composeapp.generated.resources.userflow_tetris
+import games.composeapp.generated.resources.userflow_tictactoe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.jetbrains.compose.resources.stringResource
@@ -41,22 +41,16 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = koinViewModel()) {
 @Preview
 fun SelectGameScreen(
     modifier: Modifier = Modifier.fillMaxSize(),
-    onTicTacToeSelected: ()->Unit = {},
+    onTicTacToeSelected: ()->Unit ={},
     onTetrisSelected: ()->Unit = {},
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
+    selectGameUserFlowSnackbarController: SnackbarController =
+        koinInject<SnackbarController>(snackbarControllerQualifier)
 ) {
-    val snackbarController = koinInject<SelectGameFlowSnackbarController>()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
-    ObserveOneTimeEffectEffect(oneTimeEvents) { event ->
-        when(event) {
-            is SelectGameViewModel.OneTimeEvent.Error ->
-                snackbarController.sendSnackbarEvent(Ev)
-            SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow -> TODO()
-            SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow -> TODO()
-        }
-    }
+    selectGameUserFlowSnackbarController.events.ObserveEffect(snackbarHostState)
+    oneTimeEvents.ObserveEffect(selectGameUserFlowSnackbarController)
 
     Scaffold(
         snackbarHost = { SnackbarHost( snackbarHostState) },
@@ -65,7 +59,7 @@ fun SelectGameScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
                 textAlign = TextAlign.Center,
-                text = stringResource(Res.string.select_game)
+                text = stringResource(Res.string.userflow_select_game)
             )
             GameButtonsColumn(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,13 +86,30 @@ private fun GameButtonsColumn(
             modifier = Modifier.fillMaxWidth(),
             onClick = onTicTacToeSelected
         ) {
-            Text(stringResource(Res.string.game_tictactoe))
+            Text(stringResource(Res.string.userflow_tictactoe))
         }
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = onTetrisSelected
         ) {
-            Text(stringResource(Res.string.game_tetris))
+            Text(stringResource(Res.string.userflow_tetris))
         }
     }
 }
+
+@Composable
+private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
+    selectGameUserFlowSnackbarController: SnackbarController
+) = ObserveOneTimeEventEffect(this) { event ->
+        when(event) {
+            is SelectGameViewModel.OneTimeEvent.Error ->
+                selectGameUserFlowSnackbarController.sendSnackbarEvent(event.asSnackbarEvent())
+
+            SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow -> TODO()
+
+            SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow -> TODO()
+        }
+}
+
+private fun SelectGameViewModel.OneTimeEvent.Error.asSnackbarEvent() =
+    SnackbarController.SnackbarEvent(localizedMessage = localizedMessage)
