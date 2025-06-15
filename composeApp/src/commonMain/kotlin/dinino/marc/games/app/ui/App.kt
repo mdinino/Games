@@ -16,11 +16,7 @@ import org.koin.compose.KoinContext
 fun App() {
     MaterialTheme {
         KoinContext {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .safeContentPadding()
-            ) {
+            Scaffold(modifier = Modifier.fillMaxSize()) {
                 SelectGameScreenRoot()
             }
 

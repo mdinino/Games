@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -40,7 +41,9 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = koinViewModel()) {
 @Composable
 @Preview
 fun SelectGameScreen(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier
+        .fillMaxSize()
+        .safeContentPadding(),
     onTicTacToeSelected: ()->Unit ={},
     onTetrisSelected: ()->Unit = {},
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
@@ -55,14 +58,15 @@ fun SelectGameScreen(
     Scaffold(
         snackbarHost = { SnackbarHost( snackbarHostState) },
         modifier = modifier
-    ) { innerPadding ->
+    ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 text = stringResource(Res.string.userflow_select_game)
             )
             GameButtonsColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 onTicTacToeSelected = onTicTacToeSelected,
                 onTetrisSelected = onTetrisSelected)
