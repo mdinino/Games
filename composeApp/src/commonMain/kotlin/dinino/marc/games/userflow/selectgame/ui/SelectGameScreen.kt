@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import dinino.marc.games.app.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.app.ui.SnackbarController
 import dinino.marc.games.app.ui.SnackbarController.Companion.ObserveEffect
-import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowModule.snackbarControllerQualifier
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_select_game
 import games.composeapp.generated.resources.userflow_tetris
@@ -30,8 +29,12 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SelectGameScreenRoot(vm: SelectGameViewModel = koinViewModel()) {
+fun SelectGameScreenRoot(
+    modifier: Modifier = Modifier,
+    vm: SelectGameViewModel = koinViewModel()
+) {
     SelectGameScreen(
+        modifier = modifier,
         onTetrisSelected = { vm.navigateToTetrisFLow() },
         onTicTacToeSelected = { vm.navigateToTicTacToeFlow() },
         oneTimeEvents = vm.oneTimeEvents
@@ -41,19 +44,16 @@ fun SelectGameScreenRoot(vm: SelectGameViewModel = koinViewModel()) {
 @Composable
 @Preview
 fun SelectGameScreen(
-    modifier: Modifier = Modifier
-        .fillMaxSize()
-        .safeContentPadding(),
+    modifier: Modifier = Modifier.fillMaxSize(),
     onTicTacToeSelected: ()->Unit ={},
     onTetrisSelected: ()->Unit = {},
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
-    selectGameUserFlowSnackbarController: SnackbarController =
-        koinInject<SnackbarController>(snackbarControllerQualifier)
+    selectGameFlowSnackbarController: SelectGameFlowSnackbarController = koinInject()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    selectGameUserFlowSnackbarController.events.ObserveEffect(snackbarHostState)
-    oneTimeEvents.ObserveEffect(selectGameUserFlowSnackbarController)
+    selectGameFlowSnackbarController.events.ObserveEffect(snackbarHostState)
+    oneTimeEvents.ObserveEffect(selectGameFlowSnackbarController)
 
     Scaffold(
         snackbarHost = { SnackbarHost( snackbarHostState) },
@@ -103,7 +103,7 @@ private fun GameButtonsColumn(
 
 @Composable
 private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
-    selectGameUserFlowSnackbarController: SnackbarController
+    selectGameUserFlowSnackbarController: SelectGameFlowSnackbarController
 ) = ObserveOneTimeEventEffect(this) { event ->
         when(event) {
             is SelectGameViewModel.OneTimeEvent.Error ->

@@ -1,6 +1,7 @@
 package dinino.marc.games.app.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,10 +17,12 @@ import org.koin.compose.KoinContext
 fun App() {
     MaterialTheme {
         KoinContext {
-            Scaffold(modifier = Modifier.fillMaxSize()) {
-                SelectGameScreenRoot()
+            Scaffold(modifier = Modifier
+                .fillMaxSize()
+                .safeContentPadding()
+            ) { innerPadding ->
+                SelectGameScreenRoot(modifier = Modifier.padding(innerPadding))
             }
-
         }
     }
 }

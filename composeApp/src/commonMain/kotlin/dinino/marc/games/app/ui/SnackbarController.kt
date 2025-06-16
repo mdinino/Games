@@ -4,18 +4,11 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import dinino.marc.games.userflow.selectgame.ui.SelectGameViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
 
-class SnackbarController(private val _events: Channel<SnackbarEvent> = Channel()) {
+interface SnackbarController {
     val events: Flow<SnackbarEvent>
-        get() = _events.receiveAsFlow()
-
-   suspend fun sendSnackbarEvent(event: SnackbarEvent) {
-       _events.send(event)
-    }
+    suspend fun sendSnackbarEvent(event: SnackbarEvent)
 
     data class SnackbarEvent(
         val localizedMessage: String,
