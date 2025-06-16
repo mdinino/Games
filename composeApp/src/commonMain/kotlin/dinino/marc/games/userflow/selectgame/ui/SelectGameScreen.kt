@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import dinino.marc.games.app.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.app.ui.SnackbarController
 import dinino.marc.games.app.ui.SnackbarController.Companion.ObserveEffect
+import dinino.marc.games.userflow.selectgame.di.selectGameSnackbarControllerQualifier
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_select_game
 import games.composeapp.generated.resources.userflow_tetris
@@ -48,12 +49,13 @@ fun SelectGameScreen(
     onTicTacToeSelected: ()->Unit ={},
     onTetrisSelected: ()->Unit = {},
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
-    selectGameFlowSnackbarController: SelectGameFlowSnackbarController = koinInject()
+    userFlowSnackbarController: SnackbarController =
+        koinInject(selectGameSnackbarControllerQualifier)
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    selectGameFlowSnackbarController.events.ObserveEffect(snackbarHostState)
-    oneTimeEvents.ObserveEffect(selectGameFlowSnackbarController)
+    userFlowSnackbarController.events.ObserveEffect(snackbarHostState)
+    oneTimeEvents.ObserveEffect(userFlowSnackbarController)
 
     Scaffold(
         snackbarHost = { SnackbarHost( snackbarHostState) },
@@ -103,11 +105,12 @@ private fun GameButtonsColumn(
 
 @Composable
 private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
-    selectGameUserFlowSnackbarController: SelectGameFlowSnackbarController
+    userFlowSnackbarController: SnackbarController =
+        koinInject(selectGameSnackbarControllerQualifier)
 ) = ObserveOneTimeEventEffect(this) { event ->
         when(event) {
             is SelectGameViewModel.OneTimeEvent.Error ->
-                selectGameUserFlowSnackbarController.sendSnackbarEvent(event.asSnackbarEvent())
+                userFlowSnackbarController.sendSnackbarEvent(event.asSnackbarEvent())
 
             SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow -> TODO()
 
