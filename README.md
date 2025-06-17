@@ -1,6 +1,7 @@
 A sample app demonstrating Kotlin Multiplatform functionality.  
 Targeting Android, iOS, Web, Desktop.
 Uses Koin as a DI framework.
+Supports light and dar mode.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
