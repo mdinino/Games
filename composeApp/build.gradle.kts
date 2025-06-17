@@ -75,6 +75,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.diamondedge.logging)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.androidx.navigation.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

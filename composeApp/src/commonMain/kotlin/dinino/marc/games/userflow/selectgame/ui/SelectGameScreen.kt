@@ -13,9 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import dinino.marc.games.app.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.app.ui.SnackbarController
-import dinino.marc.games.app.ui.SnackbarController.Companion.ObserveEffect
+import dinino.marc.games.common.ui.ObserveOneTimeEventEffect
+import dinino.marc.games.common.ui.SnackbarController
+import dinino.marc.games.common.ui.SnackbarController.Companion.ObserveEffect
 import dinino.marc.games.userflow.selectgame.di.selectGameSnackbarControllerQualifier
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_select_game
