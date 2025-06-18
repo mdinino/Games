@@ -1,7 +1,7 @@
 package dinino.marc.games.userflow.selectgame
 
 import androidx.compose.runtime.Composable
-import dinino.marc.games.common.ui.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.UserFlow
 import dinino.marc.games.userflow.selectgame.di.selectGameSnackbarControllerQualifier
 import dinino.marc.games.userflow.selectgame.di.selectGameUserFLowModule
