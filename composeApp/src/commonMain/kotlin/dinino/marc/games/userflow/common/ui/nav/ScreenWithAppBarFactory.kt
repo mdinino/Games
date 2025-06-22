@@ -7,8 +7,8 @@ import androidx.navigation.NavController
 import dinino.marc.games.userflow.common.ui.ActionBar
 import dinino.marc.games.userflow.common.ui.SnackbarController
 
-class UserFlowWithAppBarScreenFactory(
-    private val userFlowTitle: @Composable ()->String,
+class ScreenWithAppBarFactory(
+    private val localizedTitle: @Composable ()->String,
     private val screenContentsCreator: (
                 navController: NavController,
                 snackbarController: SnackbarController
@@ -31,12 +31,11 @@ class UserFlowWithAppBarScreenFactory(
         Scaffold(
             topBar = {
                 ActionBar(
-                    localizedTitle = userFlowTitle(), navController = navController
+                    localizedTitle = localizedTitle(), navController = navController
                 )
             }
         ) {
             screenContentsCreator(navController, snackbarController)
         }
     }
-
 }

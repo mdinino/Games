@@ -12,11 +12,13 @@ typealias ComposableFun = @Composable ()->Unit
  */
 sealed interface SerializableUserFlowRoute {
 
+    val composableCreator: @Composable (NavController, SnackbarController) -> ComposableFun
+
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
         /**
          * Generates the composable version of this UserFlowScreenRoute
          */
-        val screenCreator: @Composable (NavController, SnackbarController) -> ComposableFun
+        override val composableCreator: @Composable (NavController, SnackbarController) -> ComposableFun
 
         /**
          * A marker interface that denotes:
@@ -26,7 +28,19 @@ sealed interface SerializableUserFlowRoute {
     }
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
+        /**
+         * Generates the composable version of this NavGraph
+         */
+        override val composableCreator: @Composable (NavController, SnackbarController) -> ComposableFun
+
+        /**
+         * The first route screen of the NavGraph
+         */
         val landingScreenRoute: UserFlowScreenRoute
+
+        /**
+         * Other routes (either screen or NavGraphs) in the NavGraph
+         */
         val otherRoutes: List<SerializableUserFlowRoute>
     }
 }
