@@ -16,12 +16,7 @@ object SelectGameUserFlow: UserFlow, KoinComponent {
         by inject<SnackbarController>(selectGameSnackbarControllerQualifier)
 
     override val navGraph = object : UserFlowNavGraphRoute {
-        override val landingRoute: UserFlowScreenRoute = SelectGameScreenRoute
+        override val landingScreenRoute = SelectGameScreenRoute
         override val otherRoutes: List<UserFlowScreenRoute> = emptyList()
     }
-
-
-
-
-
 }

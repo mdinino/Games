@@ -8,25 +8,35 @@ import dinino.marc.games.userflow.common.ui.ActionBar
 import dinino.marc.games.userflow.common.ui.SnackbarController
 
 class UserFlowWithAppBarScreenFactory(
-    private val localizedUserFlowTitle: String,
+    private val userFlowTitle: @Composable ()->String,
     private val screenContentsCreator: (
                 navController: NavController,
                 snackbarController: SnackbarController
             )->ComposableFun
 ): @Composable (NavController, SnackbarController) -> ComposableFun {
+
     @Composable
     override fun invoke(
         navController: NavController,
         snackbarController: SnackbarController
     ): ComposableFun = {
+        ScreenContentsWithAppBar(navController, snackbarController)
+    }
+
+    @Composable
+    private fun ScreenContentsWithAppBar(
+        navController: NavController,
+        snackbarController: SnackbarController
+    ) {
         Scaffold(
             topBar = {
                 ActionBar(
-                    localizedTitle = localizedUserFlowTitle, navController = navController
+                    localizedTitle = userFlowTitle(), navController = navController
                 )
             }
         ) {
             screenContentsCreator(navController, snackbarController)
         }
     }
+
 }

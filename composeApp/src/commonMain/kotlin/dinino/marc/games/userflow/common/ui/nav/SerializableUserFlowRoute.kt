@@ -11,7 +11,6 @@ typealias ComposableFun = @Composable ()->Unit
  * ALl implementing classes should be marked with @Serializable
  */
 sealed interface SerializableUserFlowRoute {
-    val userFlowTitle: String
 
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
         /**
@@ -27,7 +26,7 @@ sealed interface SerializableUserFlowRoute {
     }
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
-        val landingRoute: UserFlowScreenRoute
+        val landingScreenRoute: UserFlowScreenRoute
         val otherRoutes: List<SerializableUserFlowRoute>
     }
 }

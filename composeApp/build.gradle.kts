@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             api(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.koin.compose.viewmodel)
             api(libs.diamondedge.logging)
             implementation(libs.kotlinx.serialization.json)

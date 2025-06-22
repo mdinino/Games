@@ -1,6 +1,5 @@
 package dinino.marc.games.userflow.common.ui.nav
 
-import androidx.navigation.NavController
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import org.koin.core.module.Module
