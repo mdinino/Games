@@ -24,10 +24,4 @@ interface UserFlow {
      * Nav graph of this user-flow
      */
     val navGraph: UserFlowNavGraphRoute
-
-    /**
-     * Converts the navGraph into a composable
-     * @see navGraph
-     */
-    val navGraphComposableBuilder: (NavController, UserFlowNavGraphRoute)->ComposableFun
 }
