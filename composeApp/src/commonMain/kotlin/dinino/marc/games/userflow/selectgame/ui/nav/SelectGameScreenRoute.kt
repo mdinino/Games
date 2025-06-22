@@ -9,7 +9,8 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 
 @Serializable
-data object SelectGameScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute {
+data object SelectGameScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
+    SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStack {
     override val screenCreator = UserFlowWithAppBarScreenFactory(
             userFlowTitle = { stringResource(Res.string.userflow_select_game) },
             screenContentsCreator = { navController, snackbarController ->
