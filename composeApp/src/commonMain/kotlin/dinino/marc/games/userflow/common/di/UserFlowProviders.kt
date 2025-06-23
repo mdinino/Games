@@ -1,0 +1,17 @@
+package dinino.marc.games.userflow.common.di
+
+import androidx.compose.runtime.Composable
+import dinino.marc.games.userflow.common.ui.SnackbarController
+
+interface UserFlowProviders {
+    /**
+     * Every user-flow has a name associated with it that can be displayed to the user.
+     */
+    val localizedNameProvider: @Composable ()->String
+
+    /**
+     * Every user-flow has a dedicated snackbar controller to show messages, errors, etc.
+     * Each flow's snackbar controller controller is active in any screen that is part of that flow.
+     */
+    val snackbarControllerProvider: ()->SnackbarController
+}

@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui.nav
+package dinino.marc.games.userflow.common.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
 
 class NavGraphFactory: @Composable (NavController, SnackbarController) -> ComposableFun {
@@ -32,8 +30,8 @@ class NavGraphFactory: @Composable (NavController, SnackbarController) -> Compos
 
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            modifier = Modifier.fillMaxSize()
-        ) {  innerPadding ->
+            modifier = Modifier.Companion.fillMaxSize()
+        ) { innerPadding ->
             NavHost(
                 navController = navController,
                 startDestination = ScreenA,
@@ -46,7 +44,7 @@ class NavGraphFactory: @Composable (NavController, SnackbarController) -> Compos
                 }
                 composable<ScreenB> {
                     Box(
-                        modifier = Modifier
+                        modifier = Modifier.Companion
                             .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {

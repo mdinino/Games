@@ -9,27 +9,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dinino.marc.games.app.ui.theme.GamesTheme
-import dinino.marc.games.userflow.selectgame.ui.SelectGameScreenRoot
+import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowNavGraphRoute
+import dinino.marc.games.userflow.selectgame.ui.SelectGameNavGraphRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.KoinContext
 
 
 @Composable
 @Preview
-fun App() {
+fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
     GamesTheme {
-        KoinContext {
-            Scaffold(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .safeContentPadding()
-                    .fillMaxSize()
+        Scaffold(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .safeContentPadding()
+                .fillMaxSize()
 
-            ){ innerPadding ->
-                SelectGameScreenRoot(
-                    modifier = Modifier
-                        .padding(innerPadding))
-            }
+        ){ innerPadding ->
+            landingUserFlow(Modifier.padding(innerPadding))
         }
     }
 }
