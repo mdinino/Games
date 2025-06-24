@@ -18,8 +18,6 @@ import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowSc
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
 import org.koin.mp.KoinPlatform.getKoin
-import kotlin.reflect.KClass
-import kotlin.reflect.cast
 
 class UserFlowNavGraphRouteImpl(
     override val landingScreenRoute: UserFlowScreenRoute,
@@ -32,7 +30,13 @@ class UserFlowNavGraphRouteImpl(
     @Suppress("ComposableNaming")
     @Composable
     override fun invoke(modifier: Modifier) {
-        TODO("Not yet implemented")
+        NavGraphWithSnackbarController(
+            modifier = modifier,
+            landingScreenRoute = landingScreenRoute,
+            otherRoutes = otherRoutes,
+            snackbarController = snackbarController(),
+            navHostController = navHostController()
+        )
     }
 
     companion object {
@@ -59,44 +63,64 @@ class UserFlowNavGraphRouteImpl(
                 ) {
                     (otherRoutes + landingScreenRoute)
                         .forEach { route: SerializableUserFlowRoute ->
-                            composable {  }
+                            serializableUserFlowRouteComposable<SerializableUserFlowRoute>(
+                                navHostController = navHostController,
+                                route = route
+                            )
                         }
                 }
             }
         }
 
-        @Composable
         private inline fun <reified T: SerializableUserFlowRoute> NavGraphBuilder.
-            SerializableUserFlowRouteComposable(
+            serializableUserFlowRouteComposable(
                 navHostController: NavHostController,
-                routeClass: KClass<T>
+                route: T
         ) {
-                val x = T::class.
+            when(route) {
+                is UserFlowScreenRoute ->
+                    userFlowScreenRouteComposable<UserFlowScreenRoute>(
+                        navHostController = navHostController,
+                        route = route
+                    )
+                is UserFlowNavGraphRoute ->
+                    userFlowNavGraphRouteComposable<UserFlowNavGraphRoute>(
+                        navHostController = navHostController,
+                        route = route)
 
-            when(T::class) {
-                is UserFlowNavGraphRoute::class -> ()
-                else
             }
         }
 
-        @Composable
         private inline fun <reified T: UserFlowNavGraphRoute> NavGraphBuilder.
-            UserFlowNavGraphRouteComposable(
+            userFlowNavGraphRouteComposable(
                 navHostController: NavHostController,
-                routeClass: KClass<T>
+                route: T
         ) {
-
+            val routeClass = route::class
+            navigation(
+                route = routeClass,
+                startDestination = route.landingScreenRoute::class
+            ) {
+                route
+                    .otherRoutes
+                    .forEach {
+                        serializableUserFlowRouteComposable(
+                            navHostController = navHostController,
+                            route = it
+                        )
+                    }
+            }
         }
 
-        @Composable
         private inline fun <reified T: UserFlowScreenRoute> NavGraphBuilder.
-            UserFlowScreenRouteComposable(
+            userFlowScreenRouteComposable(
                 navHostController: NavHostController,
-                routeClass: KClass<T>
+                route: T
         ) {
+            val routeClass = route::class
             composable(route = routeClass) { backStackEntry ->
-                val route: T = backStackEntry.toRoute<T>()
-                route(Modifier)
+                val backStackRoute: T = backStackEntry.toRoute<T>()
+                backStackRoute(Modifier)
                 if (route is UserFlowScreenRoute.ClearBackStack) {
                     navHostController.popBackStack(route = routeClass, inclusive = false)
                 }

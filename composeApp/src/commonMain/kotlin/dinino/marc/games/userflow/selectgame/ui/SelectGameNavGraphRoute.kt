@@ -1,18 +1,16 @@
 package dinino.marc.games.userflow.selectgame.ui
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowNavGraphRoute
+import dinino.marc.games.userflow.common.ui.UserFlowNavGraphRouteImpl
+import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
 import kotlinx.serialization.Serializable
+import org.koin.mp.KoinPlatform.getKoin
 
 @Serializable
-data object SelectGameNavGraphRoute : UserFlowNavGraphRoute {
-    override val landingScreenRoute = SelectGameScreenRoute
-    override val otherRoutes = emptyList<SerializableUserFlowRoute>()
-
-    @Composable
-    override fun invoke(modifier: Modifier) {
-        TODO("Not yet implemented")
-    }
-}
+data object SelectGameNavGraphRoute :
+    UserFlowNavGraphRoute by UserFlowNavGraphRouteImpl(
+        landingScreenRoute = SelectGameScreenRoute,
+        snackbarController = getKoin()
+            .get<SelectGameUserFlowProviders>()
+            .snackbarControllerProvider
+    )
