@@ -25,6 +25,7 @@ class SnackbarController(private val _events: Channel<SnackbarEvent> = Channel()
     }
 
     companion object {
+
         @Composable
         fun Flow<SnackbarEvent>.ObserveEffect(
             snackbarHostState: SnackbarHostState,

@@ -7,7 +7,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.SnackbarController
@@ -39,14 +39,14 @@ fun SelectGameScreen(
 @Composable
 private fun SelectGameScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = defaultNavController,
+    navHostController: NavHostController = defaultNavHostController,
     snackbarController: SnackbarController = defaultSnackbarController,
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
     onTicTacToeSelected: ()->Unit = {},
     onTetrisSelected: ()->Unit = {},
 ) {
     oneTimeEvents.ObserveEffect(
-        navController = navController,
+        navHostController = navHostController,
         snackbarController = snackbarController
     )
 
@@ -71,7 +71,7 @@ private fun SelectGameScreen(
 
 @Composable
 private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
-    navController: NavController = defaultNavController,
+    navHostController: NavHostController = defaultNavHostController,
     snackbarController: SnackbarController = defaultSnackbarController
 ) = ObserveOneTimeEventEffect(this) { event ->
         when(event) {
@@ -88,8 +88,8 @@ private fun SelectGameViewModel.OneTimeEvent.Error.asSnackbarEvent() =
     SnackbarController.SnackbarEvent(localizedMessage = localizedMessage)
 
 @get:Composable
-private val defaultNavController: NavController
-    get() = koinInject<AppProviders>().navControllerProvider()
+private val defaultNavHostController: NavHostController
+    get() = koinInject<AppProviders>().navHostControllerProvider()
 
 @get:Composable
 private val defaultSnackbarController: SnackbarController

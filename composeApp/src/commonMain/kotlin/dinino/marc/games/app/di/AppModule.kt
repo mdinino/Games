@@ -5,6 +5,6 @@ import org.koin.dsl.module
 
 val appModule = module {
     single {
-        AppProviders(navControllerProvider = { rememberNavController() })
+        AppProviders(navHostControllerProvider = { rememberNavController() })
     }
 }
