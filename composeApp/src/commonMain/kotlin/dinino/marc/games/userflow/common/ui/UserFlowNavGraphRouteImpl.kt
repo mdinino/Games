@@ -72,11 +72,8 @@ class UserFlowNavGraphRouteImpl(
             }
         }
 
-        private inline fun <reified T: SerializableUserFlowRoute> NavGraphBuilder.
-            serializableUserFlowRouteComposable(
-                navHostController: NavHostController,
-                route: T
-        ) {
+        private fun <T: SerializableUserFlowRoute> NavGraphBuilder.
+            serializableUserFlowRouteComposable(navHostController: NavHostController, route: T) {
             when(route) {
                 is UserFlowScreenRoute ->
                     userFlowScreenRouteComposable<UserFlowScreenRoute>(
@@ -86,19 +83,16 @@ class UserFlowNavGraphRouteImpl(
                 is UserFlowNavGraphRoute ->
                     userFlowNavGraphRouteComposable<UserFlowNavGraphRoute>(
                         navHostController = navHostController,
-                        route = route)
+                        route = route
+                    )
 
             }
         }
 
-        private inline fun <reified T: UserFlowNavGraphRoute> NavGraphBuilder.
-            userFlowNavGraphRouteComposable(
-                navHostController: NavHostController,
-                route: T
-        ) {
-            val routeClass = route::class
+        private fun <T: UserFlowNavGraphRoute> NavGraphBuilder.
+            userFlowNavGraphRouteComposable(navHostController: NavHostController, route: T) {
             navigation(
-                route = routeClass,
+                route = route::class,
                 startDestination = route.landingScreenRoute::class
             ) {
                 route
@@ -112,17 +106,12 @@ class UserFlowNavGraphRouteImpl(
             }
         }
 
-        private inline fun <reified T: UserFlowScreenRoute> NavGraphBuilder.
-            userFlowScreenRouteComposable(
-                navHostController: NavHostController,
-                route: T
-        ) {
-            val routeClass = route::class
-            composable(route = routeClass) { backStackEntry ->
-                val backStackRoute: T = backStackEntry.toRoute<T>()
-                backStackRoute(Modifier)
+        private fun <T: UserFlowScreenRoute> NavGraphBuilder.
+            userFlowScreenRouteComposable(navHostController: NavHostController, route: T) {
+            composable(route = route::class) { backStackEntry ->
+                backStackEntry.toRoute<T>(route::class)(Modifier)
                 if (route is UserFlowScreenRoute.ClearBackStack) {
-                    navHostController.popBackStack(route = routeClass, inclusive = false)
+                    navHostController.popBackStack(route = route::class, inclusive = false)
                 }
             }
         }
