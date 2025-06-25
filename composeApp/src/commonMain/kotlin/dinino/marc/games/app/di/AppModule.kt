@@ -8,10 +8,7 @@ import org.koin.dsl.module
 val appModule = module {
     single {
         AppProviders(navHostControllerProvider = object : AppProviders.NavHostControllerProvider {
-            @Composable
-            override fun provide(): NavHostController {
-                TODO("Not yet implemented")
-            }
+            @Composable override fun provide() = rememberNavController()
         })
     }
 }

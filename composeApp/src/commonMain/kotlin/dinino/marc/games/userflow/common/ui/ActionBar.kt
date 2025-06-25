@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import dinino.marc.games.app.di.AppProviders
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.arrow_back_24dp
 import games.composeapp.generated.resources.back_button
@@ -20,12 +21,13 @@ import games.composeapp.generated.resources.menu_24dp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 @Composable
 fun ActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String?,
-    navHostController: NavHostController,
+    navHostController: NavHostController = koinInject<AppProviders>().navHostControllerProvider.provide(),
     menuAction: (@Composable () -> Unit)? = null
 ) = ActionBar(
     modifier = modifier,

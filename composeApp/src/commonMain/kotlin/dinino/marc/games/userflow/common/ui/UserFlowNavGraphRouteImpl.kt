@@ -14,29 +14,28 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import dinino.marc.games.app.di.AppProviders
+import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowScreenRoute
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
-import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders.SnackbarControllerProvider
 import org.koin.mp.KoinPlatform.getKoin
 
 class UserFlowNavGraphRouteImpl(
     override val landingScreenRoute: UserFlowScreenRoute,
     override val otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
-    private val snackbarController: SnackbarControllerProvider,
-    private val navHostController: @Composable ()->NavHostController = appNavHostController(),
+    private val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider,
+    private val navHostControllerProvider: AppProviders.NavHostControllerProvider =
+        getKoin().get<AppProviders>().navHostControllerProvider
 ): UserFlowNavGraphRoute {
 
-
-    @Suppress("ComposableNaming")
     @Composable
-    override fun invoke(modifier: Modifier) {
+    override fun Navigation(modifier: Modifier) {
         NavGraphWithSnackbarController(
             modifier = modifier,
             landingScreenRoute = landingScreenRoute,
             otherRoutes = otherRoutes,
-            snackbarController = snackbarController(),
-            navHostController = navHostController()
+            snackbarController = snackbarControllerProvider.provide(),
+            navHostController = navHostControllerProvider.provide()
         )
     }
 
@@ -110,14 +109,11 @@ class UserFlowNavGraphRouteImpl(
         private fun <T: UserFlowScreenRoute> NavGraphBuilder.
             userFlowScreenRouteComposable(navHostController: NavHostController, route: T) {
             composable(route = route::class) { backStackEntry ->
-                backStackEntry.toRoute<T>(route::class)(Modifier)
+                backStackEntry.toRoute<T>(route::class).Screen(Modifier)
                 if (route is UserFlowScreenRoute.ClearBackStack) {
                     navHostController.popBackStack(route = route::class, inclusive = false)
                 }
             }
         }
-
-        private fun appNavHostController() =
-            getKoin().get<AppProviders>().navHostControllerProvider
     }
 }

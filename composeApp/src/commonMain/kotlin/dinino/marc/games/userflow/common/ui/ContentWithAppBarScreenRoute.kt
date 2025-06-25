@@ -7,22 +7,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
+import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowScreenRoute
 import org.koin.mp.KoinPlatform.getKoin
 
 class ContentWithAppBarScreenRoute(
-    private val localizedTitle: @Composable ()->String,
-    private val navHostController: @Composable ()-> NavHostController = appNavHostController(),
+    private val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider,
+    private val navHostControllerProvider: AppProviders.NavHostControllerProvider =
+        getKoin().get<AppProviders>().navHostControllerProvider,
     private val content: @Composable (Modifier)->Unit
 ) : UserFlowScreenRoute {
 
-    @Suppress("ComposableNaming")
     @Composable
-    override fun invoke(modifier: Modifier) {
+    override fun Screen(modifier: Modifier) {
         ContentWithAppBar(
             modifier = modifier,
-            localizedTitle = localizedTitle(),
-            navHostController = navHostController()
+            localizedTitle = localizedTitleProvider.provide(),
+            navHostController = navHostControllerProvider.provide()
         ) { innerPadding ->
             content(Modifier.padding(innerPadding))
         }
@@ -47,8 +48,5 @@ class ContentWithAppBarScreenRoute(
                 content = content
             )
         }
-
-        private fun appNavHostController() =
-            getKoin().get<AppProviders>().navHostControllerProvider
     }
 }

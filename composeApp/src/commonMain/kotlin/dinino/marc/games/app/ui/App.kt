@@ -25,7 +25,7 @@ fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
                 .fillMaxSize()
 
         ){ innerPadding ->
-            landingUserFlow(Modifier.padding(innerPadding))
+            landingUserFlow.Navigation(Modifier.padding(innerPadding))
         }
     }
 }

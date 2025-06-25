@@ -21,7 +21,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
 fun SelectGameScreen(
@@ -89,8 +88,9 @@ private fun SelectGameViewModel.OneTimeEvent.Error.asSnackbarEvent() =
     SnackbarController.SnackbarEvent(localizedMessage = localizedMessage)
 
 @get:Composable
-private val defaultNavHostController: NavHostController
-    get() = koinInject<AppProviders>().navHostControllerProvider()
+private val defaultNavHostController
+    get() = koinInject<AppProviders>().navHostControllerProvider.provide()
 
-private val defaultSnackbarController: SnackbarController
-    get() = getKoin().get<SelectGameUserFlowProviders>() .snackbarControllerProvider()
+@get:Composable
+private val defaultSnackbarController
+    get() = koinInject<SelectGameUserFlowProviders>().snackbarControllerProvider.provide()

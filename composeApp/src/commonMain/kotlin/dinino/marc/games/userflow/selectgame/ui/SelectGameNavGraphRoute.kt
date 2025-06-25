@@ -10,7 +10,7 @@ import org.koin.mp.KoinPlatform.getKoin
 data object SelectGameNavGraphRoute :
     UserFlowNavGraphRoute by UserFlowNavGraphRouteImpl(
         landingScreenRoute = SelectGameScreenRoute,
-        snackbarController = getKoin()
+        snackbarControllerProvider = getKoin()
             .get<SelectGameUserFlowProviders>()
             .snackbarControllerProvider
     )

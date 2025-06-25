@@ -10,7 +10,7 @@ import org.koin.mp.KoinPlatform.getKoin
 @Serializable
 data object SelectGameScreenRoute :
     UserFlowScreenRoute by ContentWithAppBarScreenRoute(
-        localizedTitle = getKoin().get<SelectGameUserFlowProviders>().localizedNameProvider,
+        localizedTitleProvider = getKoin().get<SelectGameUserFlowProviders>().localizedNameProvider,
         content = { modifier ->
             SelectGameScreen(modifier = modifier)
         }

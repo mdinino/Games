@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 sealed interface SerializableUserFlowRoute{
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
 
-        @Composable fun Screen()
+        @Composable fun Screen(modifier: Modifier)
 
         /**
          * A marker interface that denotes:
@@ -20,7 +20,7 @@ sealed interface SerializableUserFlowRoute{
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
 
-        @Composable fun Navigation()
+        @Composable fun Navigation(modifier: Modifier)
 
         /**
          * The first route screen of the NavGraph
