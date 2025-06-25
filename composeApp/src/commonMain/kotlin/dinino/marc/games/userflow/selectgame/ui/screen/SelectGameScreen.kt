@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.selectgame.ui
+package dinino.marc.games.userflow.selectgame.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
-import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.SnackbarController
+import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
+import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
+import dinino.marc.games.userflow.selectgame.ui.vm.SelectGameViewModel
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import games.composeapp.generated.resources.userflow_tictactoe

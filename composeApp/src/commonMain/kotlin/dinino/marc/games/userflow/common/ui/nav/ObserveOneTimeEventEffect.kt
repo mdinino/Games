@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui
+package dinino.marc.games.userflow.common.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

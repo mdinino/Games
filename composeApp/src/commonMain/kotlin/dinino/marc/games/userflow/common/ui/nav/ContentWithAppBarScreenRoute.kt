@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui
+package dinino.marc.games.userflow.common.ui.nav
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,15 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowScreenRoute
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.mp.KoinPlatform
 
 class ContentWithAppBarScreenRoute(
     private val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider,
     private val navHostControllerProvider: AppProviders.NavHostControllerProvider =
-        getKoin().get<AppProviders>().navHostControllerProvider,
+        KoinPlatform.getKoin().get<AppProviders>().navHostControllerProvider,
     private val content: @Composable (Modifier)->Unit
-) : UserFlowScreenRoute {
+) : SerializableUserFlowRoute.UserFlowScreenRoute {
 
     @Composable
     override fun Screen(modifier: Modifier) {
@@ -25,14 +24,14 @@ class ContentWithAppBarScreenRoute(
             localizedTitle = localizedTitleProvider.provide(),
             navHostController = navHostControllerProvider.provide()
         ) { innerPadding ->
-            content(Modifier.padding(innerPadding).fillMaxSize())
+            content(Modifier.Companion.padding(innerPadding).fillMaxSize())
         }
     }
 
     companion object {
         @Composable
         private fun ContentWithAppBar(
-            modifier: Modifier = Modifier,
+            modifier: Modifier = Modifier.Companion,
             localizedTitle: String,
             navHostController: NavHostController,
             content: @Composable (PaddingValues) -> Unit

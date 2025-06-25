@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.selectgame.ui
+package dinino.marc.games.userflow.selectgame.ui.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

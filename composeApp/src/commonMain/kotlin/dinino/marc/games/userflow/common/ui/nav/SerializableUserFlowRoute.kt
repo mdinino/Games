@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui
+package dinino.marc.games.userflow.common.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,7 +9,8 @@ import androidx.compose.ui.Modifier
 sealed interface SerializableUserFlowRoute{
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
 
-        @Composable fun Screen(modifier: Modifier)
+        @Composable
+        fun Screen(modifier: Modifier)
 
         /**
          * A marker interface that denotes:
@@ -20,7 +21,8 @@ sealed interface SerializableUserFlowRoute{
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
 
-        @Composable fun Navigation(modifier: Modifier)
+        @Composable
+        fun Navigation(modifier: Modifier)
 
         /**
          * The first route screen of the NavGraph
