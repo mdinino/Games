@@ -1,6 +1,9 @@
 package dinino.marc.games.userflow.common.ui
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,12 +17,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
 import games.composeapp.generated.resources.Res
-import games.composeapp.generated.resources.arrow_back_24dp
 import games.composeapp.generated.resources.back_button
 import games.composeapp.generated.resources.menu
-import games.composeapp.generated.resources.menu_24dp
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -27,7 +27,8 @@ import org.koin.compose.koinInject
 fun ActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String?,
-    navHostController: NavHostController = koinInject<AppProviders>().navHostControllerProvider.provide(),
+    navHostController: NavHostController =
+        koinInject<AppProviders>().navHostControllerProvider.provide(),
     menuAction: (@Composable () -> Unit)? = null
 ) = ActionBar(
     modifier = modifier,
@@ -91,7 +92,7 @@ private fun (@Composable ()->Unit)?.asNavigateIcon(): @Composable ()-> Unit {
     return {
         IconButton(onClick = { this } ) {
             Icon(
-                imageVector = vectorResource(Res.drawable.arrow_back_24dp),
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.back_button)
             )
         }
@@ -104,7 +105,7 @@ private fun (@Composable ()->Unit)?.asActions(): @Composable RowScope.()-> Unit 
     return {
         IconButton(onClick = { this@asActions }) {
             Icon(
-                imageVector = vectorResource(Res.drawable.menu_24dp),
+                imageVector = Icons.Filled.Menu,
                 contentDescription = stringResource(Res.string.menu)
             )
         }

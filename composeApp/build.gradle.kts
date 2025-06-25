@@ -77,6 +77,7 @@ kotlin {
             api(libs.diamondedge.logging)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.navigation.compose)
+            implementation(libs.androidx.compose.icons)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

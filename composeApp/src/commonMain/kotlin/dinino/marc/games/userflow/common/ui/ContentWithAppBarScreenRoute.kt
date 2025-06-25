@@ -22,7 +22,6 @@ class ContentWithAppBarScreenRoute(
     @Composable
     override fun Screen(modifier: Modifier) {
         ContentWithAppBar(
-            modifier = modifier,
             localizedTitle = localizedTitleProvider.provide(),
             navHostController = navHostControllerProvider.provide()
         ) { innerPadding ->
