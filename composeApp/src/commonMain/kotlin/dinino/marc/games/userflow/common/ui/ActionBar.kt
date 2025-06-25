@@ -1,12 +1,12 @@
 package dinino.marc.games.userflow.common.ui
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -62,10 +62,10 @@ private fun ActionBar(
     navigateBackAction: (@Composable () -> Unit)?,
     menuAction: (@Composable () -> Unit)?
 ) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         modifier = modifier,
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.background
         ),
         title = localizedTitle.asTitle(),
         navigationIcon = navigateBackAction.asNavigateIcon(),
@@ -83,7 +83,7 @@ private fun NavController.canGoBack(): Boolean =
 
 private fun String?.asTitle(): @Composable ()->Unit {
     if (this == null) return {}
-    return { Text(this) }
+    return { Text(text = this) }
 }
 
 private fun (@Composable ()->Unit)?.asNavigateIcon(): @Composable ()-> Unit {

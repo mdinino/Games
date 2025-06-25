@@ -1,6 +1,7 @@
 package dinino.marc.games.userflow.common.ui
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ class ContentWithAppBarScreenRoute(
             localizedTitle = localizedTitleProvider.provide(),
             navHostController = navHostControllerProvider.provide()
         ) { innerPadding ->
-            content(Modifier.padding(innerPadding))
+            content(Modifier.padding(innerPadding).fillMaxSize())
         }
     }
 
@@ -41,6 +42,7 @@ class ContentWithAppBarScreenRoute(
                 modifier = modifier,
                 topBar = {
                     ActionBar(
+                        modifier = modifier,
                         localizedTitle = localizedTitle,
                         navHostController = navHostController
                     )
