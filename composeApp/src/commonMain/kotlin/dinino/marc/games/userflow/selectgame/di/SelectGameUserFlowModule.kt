@@ -1,5 +1,7 @@
 package dinino.marc.games.userflow.selectgame.di
 
+import androidx.compose.runtime.Composable
+import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.selectgame.ui.SelectGameViewModel
 import games.composeapp.generated.resources.Res
@@ -12,8 +14,12 @@ val selectGameUserFLowModule = module {
     viewModel { SelectGameViewModel() }
     single {
         SelectGameUserFlowProviders(
-            localizedNameProvider = { stringResource(Res.string.userflow_select_game) },
-            snackbarControllerProvider = { snackbarController }
+            localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {
+                @Composable override fun provide() = stringResource(Res.string.userflow_select_game)
+            },
+            snackbarControllerProvider = object : UserFlowProviders.SnackbarControllerProvider {
+                @Composable override fun provide() = snackbarController
+            }
         )
     }
 }

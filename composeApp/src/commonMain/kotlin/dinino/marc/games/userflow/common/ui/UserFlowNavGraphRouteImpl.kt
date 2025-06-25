@@ -17,12 +17,13 @@ import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowScreenRoute
 import dinino.marc.games.userflow.common.ui.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
+import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders.SnackbarControllerProvider
 import org.koin.mp.KoinPlatform.getKoin
 
 class UserFlowNavGraphRouteImpl(
     override val landingScreenRoute: UserFlowScreenRoute,
     override val otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
-    private val snackbarController: @Composable ()->SnackbarController,
+    private val snackbarController: SnackbarControllerProvider,
     private val navHostController: @Composable ()->NavHostController = appNavHostController(),
 ): UserFlowNavGraphRoute {
 
