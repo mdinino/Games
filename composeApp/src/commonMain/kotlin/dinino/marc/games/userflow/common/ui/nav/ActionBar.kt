@@ -71,12 +71,13 @@ private fun ActionBar(
     )
 }
 
+@Composable
 private fun NavHostController.asNavigateBackAction(): (@Composable () -> Unit)? {
-    if (!canGoBack()) return null
-    return { navigateUp() }
+    if(canGoBack()) return { popBackStack() }
+    return null
 }
 
-private fun NavController.canGoBack(): Boolean =
+private fun NavController.canGoBack() =
     previousBackStackEntry != null
 
 private fun String?.asTitle(): @Composable ()->Unit {

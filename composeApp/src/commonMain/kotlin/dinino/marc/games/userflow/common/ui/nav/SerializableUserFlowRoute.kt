@@ -14,11 +14,7 @@ sealed interface SerializableUserFlowRoute{
         @Composable
         fun Screen(modifier: Modifier, navHostController: NavHostController)
 
-        /**
-         * A marker interface that denotes:
-         * When navigating to here clear the backstack, the user cannot move back.
-         */
-        interface ClearBackStack
+        interface ClearBackStackUpToHere
     }
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
@@ -46,7 +42,7 @@ sealed interface SerializableUserFlowRoute{
 
         private fun NavController.navigateToUserFlowScreenRoute(route: UserFlowScreenRoute) =
             navigate(route) {
-                if (route is UserFlowScreenRoute.ClearBackStack) {
+                if (route is UserFlowScreenRoute.ClearBackStackUpToHere) {
                     popUpTo(route) { inclusive = false }
                 }
             }
@@ -54,7 +50,7 @@ sealed interface SerializableUserFlowRoute{
         private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) =
             route.landingScreenRoute.let { finalDestination ->
                 navigate(finalDestination) {
-                    if (finalDestination is UserFlowScreenRoute.ClearBackStack) {
+                    if (finalDestination is UserFlowScreenRoute.ClearBackStackUpToHere) {
                         popUpTo(finalDestination) { inclusive = false }
                     }
                 }

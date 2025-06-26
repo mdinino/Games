@@ -66,7 +66,7 @@ private fun Placeable.PlacementScope.placeContents(
 
 @Composable
 private fun spacingPx(): Int {
-    val spacingDp = 8
+    val spacingDp = 4
     val density = LocalDensity.current
     return with(density) {spacingDp.dp.toPx().roundToInt()}
 }
