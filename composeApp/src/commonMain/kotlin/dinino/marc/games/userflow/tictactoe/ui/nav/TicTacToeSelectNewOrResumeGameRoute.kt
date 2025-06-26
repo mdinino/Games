@@ -4,6 +4,7 @@ import dinino.marc.games.userflow.common.ui.nav.ContentWithAppBarScreenRoute
 import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowScreenRoute
 import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStack
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
+import dinino.marc.games.userflow.tictactoe.ui.screen.TicTacToeSelectNewOrResumeGameScreen
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
