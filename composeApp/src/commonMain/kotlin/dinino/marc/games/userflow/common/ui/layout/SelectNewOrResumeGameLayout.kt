@@ -1,7 +1,5 @@
 package dinino.marc.games.userflow.common.ui.layout
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -18,23 +16,26 @@ fun SelectNewOrResumeGameLayout(
     onNewGameOrNullIfDisabled : (()->Unit)? = {},
     onResumeGameOrNullIfDisabled : (()->Unit)? = null,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = onNewGameOrNullIfDisabled != null,
-            onClick = onNewGameOrNullIfDisabled ?: {}
-        ) {
-            Text(stringResource(Res.string.new_game))
-        }
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = onResumeGameOrNullIfDisabled != null,
-            onClick = onResumeGameOrNullIfDisabled ?: {}
-        ) {
-            Text(stringResource(Res.string.resume_game))
-        }
+    AlignWidthsColumnLayout(modifier = modifier) {
+        listOf(
+            @Composable {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onNewGameOrNullIfDisabled != null,
+                    onClick = onNewGameOrNullIfDisabled ?: {}
+                ) {
+                    Text(stringResource(Res.string.new_game))
+                }
+            },
+            @Composable {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onResumeGameOrNullIfDisabled != null,
+                    onClick = onResumeGameOrNullIfDisabled ?: {}
+                ) {
+                    Text(stringResource(Res.string.resume_game))
+                }
+            }
+        )
     }
 }

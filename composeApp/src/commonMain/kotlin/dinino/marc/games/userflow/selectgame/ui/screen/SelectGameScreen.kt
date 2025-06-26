@@ -1,7 +1,5 @@
 package dinino.marc.games.userflow.selectgame.ui.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -9,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.di.AppProviders
+import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
-import dinino.marc.games.userflow.selectgame.ui.screen.SelectGameViewModel
 import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeNavGraphRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
@@ -52,22 +50,25 @@ private fun SelectGameScreen(
         snackbarController = snackbarController
     )
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onTicTacToeSelected
-        ) {
-            Text(stringResource(Res.string.userflow_tictactoe))
-        }
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onTetrisSelected
-        ) {
-            Text(stringResource(Res.string.userflow_tetris))
-        }
+    AlignWidthsColumnLayout(modifier = modifier) {
+        listOf(
+            @Composable {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onTicTacToeSelected
+                ) {
+                    Text(stringResource(Res.string.userflow_tictactoe))
+                }
+            },
+            @Composable {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onTetrisSelected
+                ) {
+                    Text(stringResource(Res.string.userflow_tetris))
+                }
+            }
+        )
     }
 }
 
