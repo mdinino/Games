@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import dinino.marc.games.app.ui.theme.GamesTheme
 import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.selectgame.ui.nav.SelectGameNavGraphRoute
@@ -18,6 +19,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
     GamesTheme {
+        val navHostController = rememberNavController()
         Scaffold(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -25,7 +27,10 @@ fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
                 .fillMaxSize()
 
         ){ innerPadding ->
-            landingUserFlow.Navigation(Modifier.padding(innerPadding))
+            landingUserFlow.Navigation(
+                modifier = Modifier.padding(innerPadding),
+                navHostController = navHostController
+            )
         }
     }
 }

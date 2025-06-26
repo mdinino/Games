@@ -3,7 +3,6 @@ package dinino.marc.games.userflow.tictactoe.ui.screen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.ui.layout.SelectNewOrResumeGameLayout
 import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
@@ -15,7 +14,7 @@ import org.koin.compose.koinInject
 @Composable
 fun TicTacToeSelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController = defaultNavHostController,
+    navHostController: NavHostController,
     snackbarController: SnackbarController = defaultSnackbarController,
     oneTimeEvents: Flow<Any> = emptyFlow(),
     onNewGameOrNullIfDisabled : (()->Unit)? = {},
@@ -28,6 +27,7 @@ fun TicTacToeSelectNewOrResumeGameScreen(
 
     SelectNewOrResumeGameLayout(
         modifier = modifier,
+        navHostController = navHostController,
         onNewGameOrNullIfDisabled = onNewGameOrNullIfDisabled,
         onResumeGameOrNullIfDisabled = onResumeGameOrNullIfDisabled
     )
@@ -35,15 +35,11 @@ fun TicTacToeSelectNewOrResumeGameScreen(
 
 @Composable
 private fun Flow<Any>.ObserveEffect(
-    navHostController: NavHostController = defaultNavHostController,
+    navHostController: NavHostController,
     snackbarController: SnackbarController = defaultSnackbarController
 ) = ObserveOneTimeEventEffect(this) { event ->
 
 }
-
-@get:Composable
-private val defaultNavHostController
-    get() = koinInject<AppProviders>().navHostControllerProvider.provide()
 
 @get:Composable
 private val defaultSnackbarController

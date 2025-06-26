@@ -13,8 +13,11 @@ data object SelectGameScreenRoute :
     UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
             .get<SelectGameUserFlowProviders>().localizedNameProvider,
-        content = { modifier ->
-            SelectGameScreen(modifier = modifier)
+        content = { modifier, navHostController ->
+            SelectGameScreen(
+                modifier = modifier,
+                navHostController = navHostController
+            )
         }
     ),
     ClearBackStack

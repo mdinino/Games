@@ -5,6 +5,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.new_game
 import games.composeapp.generated.resources.resume_game
@@ -13,6 +14,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SelectNewOrResumeGameLayout(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
     onNewGameOrNullIfDisabled : (()->Unit)? = {},
     onResumeGameOrNullIfDisabled : (()->Unit)? = null,
 ) {

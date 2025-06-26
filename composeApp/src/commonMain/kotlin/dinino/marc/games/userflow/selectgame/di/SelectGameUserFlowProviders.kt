@@ -12,7 +12,6 @@ class SelectGameUserFlowProviders(
         _localizedNameProvider,
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider =
         _snackbarControllerProvider
-
 ): UserFlowProviders {
     companion object {
         private val _localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {

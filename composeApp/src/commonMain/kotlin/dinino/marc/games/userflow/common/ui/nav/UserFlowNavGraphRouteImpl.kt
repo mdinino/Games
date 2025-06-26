@@ -13,27 +13,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController.Companion.ObserveEffect
-import org.koin.mp.KoinPlatform
 
 class UserFlowNavGraphRouteImpl(
     override val landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
     override val otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
     private val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider,
-    private val navHostControllerProvider: AppProviders.NavHostControllerProvider =
-        KoinPlatform.getKoin().get<AppProviders>().navHostControllerProvider
 ): SerializableUserFlowRoute.UserFlowNavGraphRoute {
 
     @Composable
-    override fun Navigation(modifier: Modifier) {
+    override fun Navigation(modifier: Modifier, navHostController: NavHostController) {
         NavGraphWithSnackbarController(
             modifier = modifier,
             landingScreenRoute = landingScreenRoute,
             otherRoutes = otherRoutes,
             snackbarController = snackbarControllerProvider.provide(),
-            navHostController = navHostControllerProvider.provide()
+            navHostController = navHostController
         )
     }
 
@@ -74,8 +70,12 @@ class UserFlowNavGraphRouteImpl(
             }
         }
 
+
         private fun <T: SerializableUserFlowRoute> NavGraphBuilder.
-            serializableUserFlowRouteComposable(navHostController: NavHostController, route: T) {
+            serializableUserFlowRouteComposable(
+                navHostController: NavHostController,
+                route: T
+        ) {
             when(route) {
                 is SerializableUserFlowRoute.UserFlowScreenRoute ->
                     userFlowScreenRouteComposable<SerializableUserFlowRoute.UserFlowScreenRoute>(
@@ -92,7 +92,10 @@ class UserFlowNavGraphRouteImpl(
         }
 
         private fun <T: SerializableUserFlowRoute.UserFlowNavGraphRoute> NavGraphBuilder.
-            userFlowNavGraphRouteComposable(navHostController: NavHostController, route: T) {
+            userFlowNavGraphRouteComposable(
+                navHostController: NavHostController,
+                route: T
+        ) {
             navigation(
                 route = route::class,
                 startDestination = route.landingScreenRoute::class
@@ -113,12 +116,12 @@ class UserFlowNavGraphRouteImpl(
         }
 
         private fun <T: SerializableUserFlowRoute.UserFlowScreenRoute> NavGraphBuilder.
-            userFlowScreenRouteComposable(navHostController: NavHostController, route: T) {
+            userFlowScreenRouteComposable(
+                navHostController: NavHostController,
+                route: T
+        ) {
             composable(route = route::class) { backStackEntry ->
-                backStackEntry.toRoute<T>(route::class).Screen(Modifier.Companion)
-                if (route is SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStack) {
-                    navHostController.popBackStack(route = route::class, inclusive = false)
-                }
+                backStackEntry.toRoute<T>(route::class).Screen(Modifier, navHostController)
             }
         }
     }

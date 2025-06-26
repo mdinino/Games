@@ -13,8 +13,11 @@ data object TicTacToeSelectNewOrResumeGameRoute :
     UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider,
-        content = { modifier ->
-            TicTacToeSelectNewOrResumeGameScreen(modifier = modifier)
+        content = { modifier, navHostController ->
+            TicTacToeSelectNewOrResumeGameScreen(
+                modifier = modifier,
+                navHostController = navHostController
+            )
         }
     ),
     ClearBackStack

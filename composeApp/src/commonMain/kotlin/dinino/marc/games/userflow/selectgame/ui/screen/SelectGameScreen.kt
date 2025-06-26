@@ -6,12 +6,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
+import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.Companion.navigateToRoute
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
 import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeNavGraphRoute
+import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeSelectNewOrResumeGameRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import games.composeapp.generated.resources.userflow_tictactoe
@@ -25,10 +26,12 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SelectGameScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
     viewModel: SelectGameViewModel = koinViewModel()
 ) {
     SelectGameScreen(
         modifier = modifier,
+        navHostController = navHostController,
         oneTimeEvents = viewModel.oneTimeEvents,
         onTetrisSelected = {  viewModel.navigateToTetrisFLow() },
         onTicTacToeSelected = {  viewModel.navigateToTicTacToeFlow() }
@@ -39,7 +42,7 @@ fun SelectGameScreen(
 @Composable
 private fun SelectGameScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController = defaultNavHostController,
+    navHostController: NavHostController,
     snackbarController: SnackbarController = defaultSnackbarController,
     oneTimeEvents: Flow<SelectGameViewModel.OneTimeEvent> = emptyFlow(),
     onTicTacToeSelected: ()->Unit = {},
@@ -74,14 +77,14 @@ private fun SelectGameScreen(
 
 @Composable
 private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
-    navHostController: NavHostController = defaultNavHostController,
+    navHostController: NavHostController,
     snackbarController: SnackbarController = defaultSnackbarController
 ) = ObserveOneTimeEventEffect(this) { event ->
         when(event) {
             is SelectGameViewModel.OneTimeEvent.Error ->
                 snackbarController.sendSnackbarEvent(event.asSnackbarEvent())
             is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
-                navHostController.navigate(TicTacToeNavGraphRoute)
+                navHostController.navigateToRoute(TicTacToeNavGraphRoute)
             is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
                 TODO()
         }
@@ -89,10 +92,6 @@ private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
 
 private fun SelectGameViewModel.OneTimeEvent.Error.asSnackbarEvent() =
     SnackbarController.SnackbarEvent(localizedMessage = localizedMessage)
-
-@get:Composable
-private val defaultNavHostController
-    get() = koinInject<AppProviders>().navHostControllerProvider.provide()
 
 @get:Composable
 private val defaultSnackbarController
