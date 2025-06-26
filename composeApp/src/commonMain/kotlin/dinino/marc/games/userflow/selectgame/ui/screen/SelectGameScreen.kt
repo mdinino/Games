@@ -12,7 +12,8 @@ import dinino.marc.games.app.di.AppProviders
 import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
-import dinino.marc.games.userflow.selectgame.ui.vm.SelectGameViewModel
+import dinino.marc.games.userflow.selectgame.ui.screen.SelectGameViewModel
+import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeNavGraphRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import games.composeapp.generated.resources.userflow_tictactoe
@@ -78,10 +79,10 @@ private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
         when(event) {
             is SelectGameViewModel.OneTimeEvent.Error ->
                 snackbarController.sendSnackbarEvent(event.asSnackbarEvent())
+            is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
+                navHostController.navigate(TicTacToeNavGraphRoute)
             is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
                 TODO()
-            is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
-               TODO()
         }
 }
 

@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.selectgame.ui.vm
+package dinino.marc.games.userflow.selectgame.ui.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +19,7 @@ class SelectGameViewModel(private val _oneTimeEvents: Channel<OneTimeEvent> = Ch
         get() = _oneTimeEvents.receiveAsFlow()
 
     fun navigateToTicTacToeFlow() =
-        sendErrorEvent(Res.string.userflow_tictactoe_not_available)
+        sendNavigationEvent(OneTimeEvent.Navigate.NavigateToTicTacToeFlow)
 
     fun navigateToTetrisFLow() =
         sendErrorEvent(Res.string.userflow_tetris_not_available)
