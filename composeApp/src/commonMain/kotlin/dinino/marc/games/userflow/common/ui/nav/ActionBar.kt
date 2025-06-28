@@ -125,5 +125,4 @@ fun ActionBar(
        showMenuIcon = onMenuClicked != null,
        onMenuClicked = onMenuClicked ?: {}
    )
-
 }

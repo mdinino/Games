@@ -12,7 +12,6 @@ import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.Compan
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
 import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeNavGraphRoute
-import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeSelectNewOrResumeGameRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import games.composeapp.generated.resources.userflow_tictactoe
