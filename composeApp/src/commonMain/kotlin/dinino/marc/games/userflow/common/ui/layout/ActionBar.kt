@@ -1,8 +1,9 @@
-package dinino.marc.games.userflow.common.ui.nav
+package dinino.marc.games.userflow.common.ui.layout
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,11 +15,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.platform.PlatformManager
+import dinino.marc.games.platform.PlatformType
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.back_button
 import games.composeapp.generated.resources.menu
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 /**
  * A top bar inspired by the traditional Android action bar, with a back button, title, and menu button.
@@ -39,20 +43,13 @@ fun ActionBar(
     showMenuIcon: Boolean = true,
     onMenuClicked: ()->Unit = {}
 ) {
-    val title: @Composable ()->Unit = {
-        when(localizedTitle) {
-            null -> {}
-            else -> Text(text = localizedTitle)
-        }
-    }
-
     val navigationIcon: @Composable ()->Unit = {
         when(showBackIcon) {
             false -> {}
             true -> {
                 IconButton(onClick = onBackClicked) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = platformSpecificNavigationVector(),
                         contentDescription = stringResource(Res.string.back_button)
                     )
                 }
@@ -79,11 +76,28 @@ fun ActionBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
         ),
-        title = title,
+        title = localizedTitle.toLocalizedTitleComposable(),
         navigationIcon = navigationIcon,
         actions = menuIcon
     )
 }
+
+@Composable
+private fun String?.toLocalizedTitleComposable(): @Composable ()->Unit = {
+    when(this) {
+        null -> {}
+        else -> Text(text = this)
+    }
+}
+
+@Composable
+private fun platformSpecificNavigationVector(
+    platformType: PlatformType = koinInject<PlatformManager>().platformType
+) = when(platformType) {
+    is PlatformType.IOS -> Icons.AutoMirrored.Filled.ArrowBackIos
+    else -> Icons.AutoMirrored.Filled.ArrowBack
+}
+
 
 @Composable
 fun ActionBar(
