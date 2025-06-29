@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
+import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventLayout
 import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.Companion.navigateToRoute
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
@@ -47,46 +47,49 @@ private fun SelectGameScreen(
     onTicTacToeSelected: ()->Unit = {},
     onTetrisSelected: ()->Unit = {},
 ) {
-    oneTimeEvents.ObserveEffect(
-        navHostController = navHostController,
-        snackbarController = snackbarController
-    )
-
-    AlignWidthsColumnLayout(modifier = modifier) {
-        listOf(
-            @Composable {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onTicTacToeSelected
-                ) {
-                    Text(stringResource(Res.string.userflow_tictactoe))
+    ObserveOneTimeEventLayout(
+        modifier = modifier,
+        oneTimeEvents = oneTimeEvents,
+        onOneTimeEvent = { event->
+            handleOneTimeEvent(
+                navHostController = navHostController,
+                snackbarController = snackbarController,
+                event = event
+            )
+        }
+    ) {
+        AlignWidthsColumnLayout(modifier = modifier) {
+            listOf(
+                @Composable {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onTicTacToeSelected
+                    ) { Text(stringResource(Res.string.userflow_tictactoe)) }
+                },
+                @Composable {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onTetrisSelected
+                    ) { Text(stringResource(Res.string.userflow_tetris)) }
                 }
-            },
-            @Composable {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onTetrisSelected
-                ) {
-                    Text(stringResource(Res.string.userflow_tetris))
-                }
-            }
-        )
+            )
+        }
     }
 }
 
-@Composable
-private fun Flow<SelectGameViewModel.OneTimeEvent>.ObserveEffect(
+private suspend fun <T> handleOneTimeEvent(
     navHostController: NavHostController,
-    snackbarController: SnackbarController = defaultSnackbarController
-) = ObserveOneTimeEventEffect(this) { event ->
-        when(event) {
-            is SelectGameViewModel.OneTimeEvent.Error ->
-                snackbarController.sendSnackbarEvent(event.asSnackbarEvent())
-            is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
-                navHostController.navigateToRoute(TicTacToeNavGraphRoute)
-            is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
-                TODO()
-        }
+    snackbarController: SnackbarController,
+    event: T
+) {
+    when(event) {
+        is SelectGameViewModel.OneTimeEvent.Error ->
+            snackbarController.sendSnackbarEvent(event.asSnackbarEvent())
+        is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
+            navHostController.navigateToRoute(TicTacToeNavGraphRoute)
+        is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
+            TODO()
+    }
 }
 
 private fun SelectGameViewModel.OneTimeEvent.Error.asSnackbarEvent() =

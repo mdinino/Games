@@ -3,6 +3,9 @@ Targeting Android, iOS, Web, Desktop.
 Uses Koin as a DI framework.
 Supports light and dar mode.
 
+Known issue: when screens are being transitioned in when animation, button clicks are not available
+until transition is complete. So if you click a button too fast after navigation, a button press wont do anything.
+
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
   - `commonMain` is for code that’s common for all targets.
