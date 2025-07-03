@@ -1,0 +1,20 @@
+CREATE TABLE TetrisGameEntity (
+    uuid TEXT NOT NULL PRIMARY KEY,
+    gameAsJson TEXT NOT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO TetrisGameEntity(uuid, gameAsJson)
+VALUES(?,?);
+
+getAll:
+SELECT * FROM TetrisGameEntity;
+
+updateName:
+UPDATE TetrisGameEntity
+SET gameAsJson = :gameAsJson
+WHERE uuid IS :uuid;
+
+delete:
+DELETE FROM TetrisGameEntity
+WHERE uuid IS :uuid;

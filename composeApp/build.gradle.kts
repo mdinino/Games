@@ -140,7 +140,7 @@ compose.desktop {
 
 sqldelight {
     databases {
-        create("Database") {
+        create("AppDatabase") {
             packageName.set("dinino.marc.games")
         }
     }
