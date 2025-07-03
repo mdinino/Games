@@ -5,9 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface GameRepository<SERIALIZABLE_TYPE: Any> {
     val status: StateFlow<SyncStatus<SERIALIZABLE_TYPE>>
 
-    suspend fun syncFromRemote()
-    suspend fun syncToRemote()
-
     suspend fun updateItemIfDifferent(new: SERIALIZABLE_TYPE)
     suspend fun clearItem()
 
