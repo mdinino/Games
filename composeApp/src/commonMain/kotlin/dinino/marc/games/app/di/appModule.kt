@@ -1,8 +1,5 @@
 package dinino.marc.games.app.di
 
-import dinino.marc.games.platform.PlatformManager
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
-val appModule = module {
-    single { PlatformManager() }
-}
+expect val appModule: Module

@@ -92,7 +92,6 @@ kotlin {
             implementation(libs.sqldelight.native)
         }
     }
-
 }
 
 android {
@@ -140,7 +139,7 @@ compose.desktop {
 
 sqldelight {
     databases {
-        create("AppDatabase") {
+        create("Database") {
             packageName.set("dinino.marc.games")
         }
     }
