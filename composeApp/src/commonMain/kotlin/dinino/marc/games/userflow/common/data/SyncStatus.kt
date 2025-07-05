@@ -4,21 +4,21 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-sealed interface SyncStatus<out T: Any>{
-    val lastSuccessfulSync: LastSuccessfulSync<T>?
+sealed interface SyncStatus<out SERIALIZABLE_TYPE: Any>{
+    val lastSuccessfulSync: LastSuccessfulSync<SERIALIZABLE_TYPE>?
 
-    data class NotSynced<out T: Any>(
-        override val lastSuccessfulSync: LastSuccessfulSync<T>? = null,
+    data class NotSynced<out SERIALIZABLE_TYPE: Any>(
+        override val lastSuccessfulSync: LastSuccessfulSync<SERIALIZABLE_TYPE>? = null,
         val reason: Throwable? = null
-    ): SyncStatus<T>
+    ): SyncStatus<SERIALIZABLE_TYPE>
 
     @OptIn(ExperimentalTime::class)
-    data class Syncing<out T: Any>(
+    data class Syncing<out SERIALIZABLE_TYPE: Any>(
         val syncStartedAt: Instant = Clock.System.now(),
-        override val lastSuccessfulSync: LastSuccessfulSync<T>?
-    ): SyncStatus<T>
+        override val lastSuccessfulSync: LastSuccessfulSync<SERIALIZABLE_TYPE>?
+    ): SyncStatus<SERIALIZABLE_TYPE>
 
-    data class Synced<out T: Any>(
-        override val lastSuccessfulSync: LastSuccessfulSync<T>
-    ): SyncStatus<T>
+    data class Synced<out SERIALIZABLE_TYPE: Any>(
+        override val lastSuccessfulSync: LastSuccessfulSync<SERIALIZABLE_TYPE>
+    ): SyncStatus<SERIALIZABLE_TYPE>
 }
