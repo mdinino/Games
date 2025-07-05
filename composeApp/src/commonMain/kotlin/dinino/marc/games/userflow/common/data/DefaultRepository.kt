@@ -9,13 +9,13 @@ import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
+class DefaultRepository<SERIALIZABLE_TYPE: Any>(
     private val cs: CoroutineCriticalSection,
     private val _status: MutableStateFlow<SyncStatus<SERIALIZABLE_TYPE>> =
         MutableStateFlow(SyncStatus.NotSynced()),
-    private val inMemoryEndpoint: GameRepository.Endpoint.InMemory<SERIALIZABLE_TYPE>,
-    private val databaseEndpoint: GameRepository.Endpoint.Persistent<SERIALIZABLE_TYPE>,
-): GameRepository<SERIALIZABLE_TYPE> {
+    private val inMemoryEndpoint: Repository.Endpoint.InMemory<SERIALIZABLE_TYPE>,
+    private val databaseEndpoint: Repository.Endpoint.Persistent<SERIALIZABLE_TYPE>,
+): Repository<SERIALIZABLE_TYPE> {
 
     constructor(
         cs: CoroutineCriticalSection = CoroutineCriticalSection(),
@@ -43,6 +43,12 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
     override suspend fun sync() =
         cs.lockAndRunNonCancelable { syncInternal() }
 
+    private suspend fun upsertLatestIfDifferent(latest: SERIALIZABLE_TYPE) {
+        val items = _status.value.lastSuccessfulSync?.items
+        if (latest == _status.value.lastSuccessfulSync?.items?.last()) return
+
+    }
+
     private suspend fun syncInternal() {
         try {
             notifySyncing()
@@ -53,6 +59,8 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
             notifyNotSynced(reason = t)
         }
     }
+
+
 
     override suspend fun setItemsIfDifferent(items: List<SERIALIZABLE_TYPE>) =
         cs.lockAndRun { setItemsIfDifferentInternal(items) }
@@ -100,7 +108,7 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
 private class DefaultInMemoryEndpoint<SERIALIZABLE_TYPE: Any>(
     private val cs: CoroutineCriticalSection,
     initial: List<SERIALIZABLE_TYPE> = emptyList(),
-) : GameRepository.Endpoint.InMemory<SERIALIZABLE_TYPE> {
+) : Repository.Endpoint.InMemory<SERIALIZABLE_TYPE> {
 
     private var items: List<SERIALIZABLE_TYPE> = initial
 
@@ -115,7 +123,7 @@ private class DefaultDatabaseEndpoint<SERIALIZABLE_TYPE: Any>(
     private val cs: CoroutineCriticalSection,
     private val doGetItems: suspend ()->List<SERIALIZABLE_TYPE>,
     private val doSetItems: suspend (List<SERIALIZABLE_TYPE>)->Unit,
-): GameRepository.Endpoint.Persistent<SERIALIZABLE_TYPE> {
+): Repository.Endpoint.Persistent<SERIALIZABLE_TYPE> {
 
     override suspend fun getItems(): List<SERIALIZABLE_TYPE> =
         cs.lockAndRun { doGetItems() }
