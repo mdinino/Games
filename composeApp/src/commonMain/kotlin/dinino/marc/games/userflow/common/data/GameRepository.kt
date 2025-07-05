@@ -12,7 +12,7 @@ interface GameRepository<SERIALIZABLE_TYPE: Any> {
 
     sealed interface Endpoint<SERIALIZABLE_TYPE: Any> {
         suspend fun getItems(): List<SERIALIZABLE_TYPE>
-        suspend fun setItemsIfDifferent(items: List<SERIALIZABLE_TYPE>)
+        suspend fun setItems(items: List<SERIALIZABLE_TYPE>)
 
         interface InMemory<SERIALIZABLE_TYPE: Any>: Endpoint<SERIALIZABLE_TYPE>
         interface Persistent<SERIALIZABLE_TYPE: Any>: Endpoint<SERIALIZABLE_TYPE>

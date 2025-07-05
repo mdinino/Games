@@ -1,7 +1,6 @@
 package dinino.marc.games.userflow.common.data
 
 import dinino.marc.games.coroutine.CoroutineCriticalSection
-import dinino.marc.games.coroutine.runInParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,8 +33,6 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
         )
     )
 
-    private val endpoints = listOf(inMemoryEndpoint, databaseEndpoint)
-
     override val status = _status.asStateFlow()
 
     init {
@@ -47,9 +44,11 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
         cs.lockAndRunNonCancelable { syncInternal() }
 
     private suspend fun syncInternal() {
-        notifySyncing()
         try {
-            notifySynced(items = databaseEndpoint.getItems())
+            notifySyncing()
+            val items = databaseEndpoint.getItems()
+            inMemoryEndpoint.setItems(items = items)
+            notifySynced(items = items)
         } catch (t: Throwable) {
             notifyNotSynced(reason = t)
         }
@@ -59,7 +58,16 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
         cs.lockAndRun { setItemsIfDifferentInternal(items) }
 
     private suspend fun setItemsIfDifferentInternal(items: List<SERIALIZABLE_TYPE>) {
-        runInParallelOverEndpoints { setItemsIfDifferent(items) }
+        if (items == _status.value.lastSuccessfulSync?.items) return
+
+        try {
+            notifySyncing()
+            inMemoryEndpoint.setItems(items = items)
+            databaseEndpoint.setItems(items = items)
+            notifySynced(items = items)
+        } catch (t: Throwable) {
+            notifyNotSynced(reason = t)
+        }
     }
 
     private suspend fun notifySyncing() {
@@ -87,27 +95,6 @@ class DefaultGameRepository<SERIALIZABLE_TYPE: Any>(
         )
         _status.emit(newStatus)
     }
-
-    private suspend fun emitStatus(status: SyncStatus<SERIALIZABLE_TYPE>) {
-        _status.emit(status)
-    }
-
-    @Suppress("unused")
-    private suspend fun <RETURN> runInParallelOverEndpoints(
-        block: suspend GameRepository.Endpoint<SERIALIZABLE_TYPE>.() -> RETURN
-    ) = mutableListOf<suspend CoroutineScope.() -> RETURN>()
-        .apply {
-            endpoints
-                .forEach { add { block(it) } }
-        }.runInParallel()
-
-    private suspend fun runInParallelOverEndpoints(
-        block: suspend GameRepository.Endpoint<SERIALIZABLE_TYPE>.() -> Unit
-    ): Unit = mutableListOf<suspend CoroutineScope.() -> Unit>()
-        .apply {
-            endpoints
-                .forEach { add { block(it) } }
-        }.runInParallel()
 }
 
 private class DefaultInMemoryEndpoint<SERIALIZABLE_TYPE: Any>(
@@ -120,12 +107,8 @@ private class DefaultInMemoryEndpoint<SERIALIZABLE_TYPE: Any>(
     override suspend fun getItems() =
         cs.lockAndRun { items }
 
-    override suspend fun setItemsIfDifferent(items: List<SERIALIZABLE_TYPE>) =
-        cs.lockAndRun {
-            if (this.items != items) {
-                this.items = items
-            }
-        }
+    override suspend fun setItems(items: List<SERIALIZABLE_TYPE>) =
+        cs.lockAndRun { this.items = items }
 }
 
 private class DefaultDatabaseEndpoint<SERIALIZABLE_TYPE: Any>(
@@ -137,11 +120,7 @@ private class DefaultDatabaseEndpoint<SERIALIZABLE_TYPE: Any>(
     override suspend fun getItems(): List<SERIALIZABLE_TYPE> =
         cs.lockAndRun { doGetItems() }
 
-    override suspend fun setItemsIfDifferent(items: List<SERIALIZABLE_TYPE>) =
-        cs.lockAndRun {
-            if (items != doGetItems()) {
-                doSetItems(items)
-            }
-        }
+    override suspend fun setItems(items: List<SERIALIZABLE_TYPE>) =
+        cs.lockAndRun { doSetItems(items) }
 }
 
