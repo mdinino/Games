@@ -1,11 +1,8 @@
 package dinino.marc.games.userflow.common.data
 
+import dinino.marc.games.coroutine.runInParallel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -231,20 +228,4 @@ private class LocalDatabaseEndpoint<T: Any>(
                 block()
             }
         }
-}
-
-/**
- * Runs a list of coroutine execution blocks in parallel, waits for all of them to complete,
- * then returns a list of the return values.
- * THis function will fail as soon as a single exception is thrown, and this function will
- * throw that exception
- */
-private suspend fun <R> List<suspend CoroutineScope.() -> R>.runInParallel(): List<R> {
-    val asyncs = mutableListOf<Deferred<R>>()
-    forEach {
-        coroutineScope {
-            asyncs.add(async { it() })
-        }
-    }
-    return asyncs.awaitAll()
 }
