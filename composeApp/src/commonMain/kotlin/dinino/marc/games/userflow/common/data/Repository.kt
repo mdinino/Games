@@ -15,8 +15,19 @@ interface Repository<T: Any> {
     suspend fun syncFromRemotesToLocal()
     suspend fun syncFromLocalToRemotes()
 
+    /**
+     * Puts this item at the tail of the list of repository entries.
+     * If identical to the current one, returns and does nothing.
+     *
+     * @return the latest repository entry.
+     * This may be the one just added or the one that was already there
+     */
+    suspend fun upsertLatestItemIfDifferent(item: T): RepositoryEntry<T>
+
     suspend fun setEntriesIfDifferent(entries: List<RepositoryEntry<T>>)
     suspend fun clearEntries() = setEntriesIfDifferent(emptyList())
+
+
 
     sealed interface Endpoint<T: Any> {
         suspend fun getEntries(): List<RepositoryEntry<T>>

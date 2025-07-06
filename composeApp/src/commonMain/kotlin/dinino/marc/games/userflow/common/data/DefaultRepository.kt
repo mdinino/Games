@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalTime::class)
 class DefaultRepository<T: Any>(
@@ -82,6 +83,37 @@ class DefaultRepository<T: Any>(
         } catch (t: Throwable) {
             notifyNotSynced(t)
         }
+    }
+
+    override suspend fun upsertLatestItemIfDifferent(item: T): RepositoryEntry<T> =
+        lockAndRun { upsertLatestItemIfDifferentInternal(item) }
+
+    private suspend fun upsertLatestItemIfDifferentInternal(item: T): RepositoryEntry<T> {
+        val currentEntries = localCache.getEntries()
+        val latestEntry = currentEntries.lastOrNull()
+        if (latestEntry != null && latestEntry.item == item) return latestEntry
+
+        val newEntries = currentEntries.updateLastWithItem(item)
+        setEntriesIfDifferentInternal(newEntries)
+
+        return newEntries.last()
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun List<RepositoryEntry<T>>.updateLastWithItem(item: T): List<RepositoryEntry<T>> =
+        mutate {
+            when(isEmpty()) {
+                true -> add(RepositoryEntry(item = item))
+                else -> this[size] = this[size].copy(item = item)
+            }
+        }
+
+    private fun List<RepositoryEntry<T>>.mutate(
+        mutator: MutableList<RepositoryEntry<T>>.()->Unit
+    ): List<RepositoryEntry<T>> {
+        val mutableList = this.toMutableList()
+        mutableList.mutator()
+        return mutableList.toList()
     }
 
     override suspend fun setEntriesIfDifferent(entries: List<RepositoryEntry<T>>) =
