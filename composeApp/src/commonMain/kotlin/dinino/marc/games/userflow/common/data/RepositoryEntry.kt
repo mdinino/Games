@@ -5,7 +5,7 @@ import kotlin.uuid.Uuid
 
 
 @OptIn(ExperimentalUuidApi::class)
-data class RepositoryEntry<out SERIALIZABLE_TYPE: Any>(
+data class RepositoryEntry<out T: Any>(
     val uuid: Uuid = Uuid.random(),
-    val serializableItem: SERIALIZABLE_TYPE
+    val serializableItem: T
 )

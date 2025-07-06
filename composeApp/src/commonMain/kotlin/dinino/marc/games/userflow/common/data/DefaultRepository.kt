@@ -1,80 +1,99 @@
 package dinino.marc.games.userflow.common.data
 
-import dinino.marc.games.coroutine.CoroutineCriticalSection
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class DefaultRepository<SERIALIZABLE_TYPE: Any>(
-    private val cs: CoroutineCriticalSection,
-    private val _status: MutableStateFlow<SyncStatus<SERIALIZABLE_TYPE>> =
-        MutableStateFlow(SyncStatus.NotSynced()),
-    private val inMemoryEndpoint: Repository.Endpoint.InMemory<SERIALIZABLE_TYPE>,
-    private val databaseEndpoint: Repository.Endpoint.Persistent<SERIALIZABLE_TYPE>,
-): Repository<SERIALIZABLE_TYPE> {
+class DefaultRepository<T: Any>(
+    override val autoSync: Boolean =
+        true,
+    override val localCache: Repository.Endpoint<T> =
+        InMemoryEndpoint(),
+    override val remoteEndpoints: List<Repository.Endpoint<T>>,
+    private val coroutineContext: CoroutineContext =
+        CoroutineScope(Dispatchers.Default).coroutineContext,
+    private val mutex: Mutex = Mutex(),
+    private val _status: MutableStateFlow<SyncStatus<T>> =
+        MutableStateFlow(SyncStatus.NotSynced())
+): Repository<T> {
 
     constructor(
-        cs: CoroutineCriticalSection = CoroutineCriticalSection(),
-        getItemsFromDatabase: suspend () -> List<SERIALIZABLE_TYPE>,
-        setItemsInDatabase: suspend (List<SERIALIZABLE_TYPE>) -> Unit,
+        autoSync: Boolean = true,
+        localCache: Repository.Endpoint<T> = InMemoryEndpoint(),
+        getItemsFromDatabase: suspend ()->List<RepositoryEntry<T>>,
+        setItemsToDatabase: suspend (List<RepositoryEntry<T>>)->Unit,
     ) : this(
-        cs = cs,
-        inMemoryEndpoint = DefaultInMemoryEndpoint<SERIALIZABLE_TYPE>(
-            cs = CoroutineCriticalSection(parent = cs)
-        ),
-        databaseEndpoint = DefaultDatabaseEndpoint<SERIALIZABLE_TYPE>(
-            cs = CoroutineCriticalSection(parent = cs),
-            doGetItems = getItemsFromDatabase,
-            doSetItems = setItemsInDatabase
+        autoSync = autoSync,
+        localCache = localCache,
+        remoteEndpoints = listOf(
+            LocalDatabaseEndpoint(
+                doGetItems = getItemsFromDatabase,
+                doSetItems = setItemsToDatabase
+            )
         )
     )
 
     override val status = _status.asStateFlow()
 
     init {
-        CoroutineScope(Dispatchers.Default)
-            .launch { sync() }
-    }
+        remoteEndpoints.requireIsNotEmpty()
 
-    override suspend fun sync() =
-        cs.lockAndRunNonCancelable { syncInternal() }
-
-    private suspend fun upsertLatestIfDifferent(latest: SERIALIZABLE_TYPE) {
-        val items = _status.value.lastSuccessfulSync?.items
-        if (latest == _status.value.lastSuccessfulSync?.items?.last()) return
-
-    }
-
-    private suspend fun syncInternal() {
-        try {
-            notifySyncing()
-            val items = databaseEndpoint.getItems()
-            inMemoryEndpoint.setItems(items = items)
-            notifySynced(items = items)
-        } catch (t: Throwable) {
-            notifyNotSynced(reason = t)
+        if (autoSync) {
+            CoroutineScope(Dispatchers.Default)
+                .launch { syncFromRemotesToLocal() }
         }
     }
 
+    override suspend fun syncFromLocalToRemotes() =
+        lockAndRun { syncFromLocalToRemotesInternal() }
 
-
-    override suspend fun setItemsIfDifferent(items: List<SERIALIZABLE_TYPE>) =
-        cs.lockAndRun { setItemsIfDifferentInternal(items) }
-
-    private suspend fun setItemsIfDifferentInternal(items: List<SERIALIZABLE_TYPE>) {
-        if (items == _status.value.lastSuccessfulSync?.items) return
-
+    private suspend fun syncFromLocalToRemotesInternal() {
         try {
             notifySyncing()
-            inMemoryEndpoint.setItems(items = items)
-            databaseEndpoint.setItems(items = items)
-            notifySynced(items = items)
+            val entries = localCache.getEntries()
+            remoteEndpoints.runInParallel { setEntries(entries) }
+            notifySynced(entries)
         } catch (t: Throwable) {
-            notifyNotSynced(reason = t)
+            notifyNotSynced(t)
+        }
+    }
+
+    override suspend fun syncFromRemotesToLocal() =
+        lockAndRun { syncFromRemotesToLocalInternal() }
+
+    private suspend fun syncFromRemotesToLocalInternal() {
+        try {
+            notifySyncing()
+            val entries = remoteEndpoints.runInParallel { getEntries() }
+            localCache.setEntries(entries)
+            notifySynced(entries)
+        } catch (t: Throwable) {
+            notifyNotSynced(t)
+        }
+    }
+
+    override suspend fun setEntriesIfDifferent(entries: List<RepositoryEntry<T>>) =
+        lockAndRun { setEntriesIfDifferentInternal(entries) }
+
+    private suspend fun setEntriesIfDifferentInternal(entries: List<RepositoryEntry<T>>) {
+        val currentEntries  = _status.value.lastSuccessfulSync?.entries
+        if (entries == currentEntries) return
+
+        localCache.setEntries(entries)
+        if (autoSync) {
+            syncFromLocalToRemotesInternal()
         }
     }
 
@@ -86,10 +105,10 @@ class DefaultRepository<SERIALIZABLE_TYPE: Any>(
         _status.emit(newStatus)
     }
 
-    private suspend fun notifySynced(items: List<SERIALIZABLE_TYPE>) {
+    private suspend fun notifySynced(entries: List<RepositoryEntry<T>>) {
         val newStatus = SyncStatus.Synced(
             lastSuccessfulSync = LastSuccessfulSync(
-                items = items
+                entries = entries
             )
         )
         _status.emit(newStatus)
@@ -103,32 +122,97 @@ class DefaultRepository<SERIALIZABLE_TYPE: Any>(
         )
         _status.emit(newStatus)
     }
+
+    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
+        withContext(coroutineContext) {
+            mutex.withLock {
+                block()
+            }
+        }
+
+    private suspend fun <R> List<Repository.Endpoint<T>>.runInParallel(
+        block: suspend Repository.Endpoint<T>.() ->R
+    ): R {
+        requireIsNotEmpty()
+
+        val suspendables: List<suspend CoroutineScope.() -> R> =
+            map { endpoint -> { endpoint.block() } }
+
+        return suspendables
+            .runInParallel()
+            .reduceIdentical()
+    }
+
+    private fun List<Repository.Endpoint<T>>.requireIsNotEmpty() =
+        require(isNotEmpty()) { "Repository endpoints cannot be empty" }
+
+    private fun <R> List<R>.reduceIdentical(): R =
+        this.reduce { accumulator: R, element: R ->
+            require(accumulator == element) { "Items not identical" }
+            accumulator
+        }
 }
 
-private class DefaultInMemoryEndpoint<SERIALIZABLE_TYPE: Any>(
-    private val cs: CoroutineCriticalSection,
-    initial: List<SERIALIZABLE_TYPE> = emptyList(),
-) : Repository.Endpoint.InMemory<SERIALIZABLE_TYPE> {
+private class InMemoryEndpoint<T: Any>(
+    initial: List<RepositoryEntry<T>> =
+        emptyList(),
+    private val coroutineContext: CoroutineContext =
+        CoroutineScope(Dispatchers.Default).coroutineContext,
+    private val mutex: Mutex =
+        Mutex()
+) : Repository.Endpoint<T> {
 
-    private var items: List<SERIALIZABLE_TYPE> = initial
+    private var entries: List<RepositoryEntry<T>> = initial
 
-    override suspend fun getItems() =
-        cs.lockAndRun { items }
+    override suspend fun getEntries() =
+        lockAndRun { entries }
 
-    override suspend fun setItems(items: List<SERIALIZABLE_TYPE>) =
-        cs.lockAndRun { this.items = items }
+    override suspend fun setEntries(entries: List<RepositoryEntry<T>>) =
+        lockAndRun { this.entries = entries }
+
+    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
+        withContext(coroutineContext) {
+            mutex.withLock {
+                block()
+            }
+        }
 }
 
-private class DefaultDatabaseEndpoint<SERIALIZABLE_TYPE: Any>(
-    private val cs: CoroutineCriticalSection,
-    private val doGetItems: suspend ()->List<SERIALIZABLE_TYPE>,
-    private val doSetItems: suspend (List<SERIALIZABLE_TYPE>)->Unit,
-): Repository.Endpoint.Persistent<SERIALIZABLE_TYPE> {
+private class LocalDatabaseEndpoint<T: Any>(
+    private val doGetItems: suspend ()->List<RepositoryEntry<T>>,
+    private val doSetItems: suspend (List<RepositoryEntry<T>>)->Unit,
+    private val coroutineContext: CoroutineContext =
+        CoroutineScope(Dispatchers.Default).coroutineContext,
+    private val mutex: Mutex =
+        Mutex()
+): Repository.Endpoint<T> {
 
-    override suspend fun getItems(): List<SERIALIZABLE_TYPE> =
-        cs.lockAndRun { doGetItems() }
+    override suspend fun getEntries(): List<RepositoryEntry<T>> =
+        lockAndRun { doGetItems() }
 
-    override suspend fun setItems(items: List<SERIALIZABLE_TYPE>) =
-        cs.lockAndRun { doSetItems(items) }
+    override suspend fun setEntries(entries: List<RepositoryEntry<T>>) =
+        lockAndRun { doSetItems(entries) }
+
+    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
+        withContext(coroutineContext) {
+            mutex.withLock {
+                block()
+            }
+        }
 }
 
+/**
+ * Runs a list of coroutine execution blocks in parallel, waits for all of them to complete,
+ * then returns a list of the return values.
+ * THis function will fail as soon as a single exception is thrown, and this function will
+ * throw that exception
+ */
+private suspend fun <R> List<suspend CoroutineScope.() -> R>.runInParallel(): List<R> {
+    val asyncs = mutableListOf<Deferred<R>>()
+    forEach {
+        coroutineScope {
+            asyncs.add(async { it() })
+        }
+    }
+    return asyncs.awaitAll()
+}
