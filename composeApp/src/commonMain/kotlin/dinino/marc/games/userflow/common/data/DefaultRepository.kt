@@ -26,23 +26,6 @@ class DefaultRepository<T: Any>(
     private val _status: MutableStateFlow<SyncStatus<T>> =
         MutableStateFlow(SyncStatus.NotSynced())
 ): Repository<T> {
-
-    constructor(
-        autoSync: Boolean = true,
-        localCache: Repository.Endpoint<T> = InMemoryEndpoint(),
-        getItemsFromDatabase: suspend ()->List<RepositoryEntry<T>>,
-        setItemsToDatabase: suspend (List<RepositoryEntry<T>>)->Unit,
-    ) : this(
-        autoSync = autoSync,
-        localCache = localCache,
-        remoteEndpoints = listOf(
-            LocalDatabaseEndpoint(
-                doGetItems = getItemsFromDatabase,
-                doSetItems = setItemsToDatabase
-            )
-        )
-    )
-
     override val status = _status.asStateFlow()
 
     init {
@@ -179,53 +162,5 @@ class DefaultRepository<T: Any>(
         this.reduce { accumulator: R, element: R ->
             require(accumulator == element) { "Items not identical" }
             accumulator
-        }
-}
-
-private class InMemoryEndpoint<T: Any>(
-    initial: List<RepositoryEntry<T>> =
-        emptyList(),
-    private val coroutineContext: CoroutineContext =
-        CoroutineScope(Dispatchers.Default).coroutineContext,
-    private val mutex: Mutex =
-        Mutex()
-) : Repository.Endpoint<T> {
-
-    private var entries: List<RepositoryEntry<T>> = initial
-
-    override suspend fun getEntries() =
-        lockAndRun { entries }
-
-    override suspend fun setEntries(entries: List<RepositoryEntry<T>>) =
-        lockAndRun { this.entries = entries }
-
-    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
-        withContext(coroutineContext) {
-            mutex.withLock {
-                block()
-            }
-        }
-}
-
-private class LocalDatabaseEndpoint<T: Any>(
-    private val doGetItems: suspend ()->List<RepositoryEntry<T>>,
-    private val doSetItems: suspend (List<RepositoryEntry<T>>)->Unit,
-    private val coroutineContext: CoroutineContext =
-        CoroutineScope(Dispatchers.Default).coroutineContext,
-    private val mutex: Mutex =
-        Mutex()
-): Repository.Endpoint<T> {
-
-    override suspend fun getEntries(): List<RepositoryEntry<T>> =
-        lockAndRun { doGetItems() }
-
-    override suspend fun setEntries(entries: List<RepositoryEntry<T>>) =
-        lockAndRun { doSetItems(entries) }
-
-    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
-        withContext(coroutineContext) {
-            mutex.withLock {
-                block()
-            }
         }
 }

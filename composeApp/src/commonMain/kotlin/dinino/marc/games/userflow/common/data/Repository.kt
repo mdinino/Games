@@ -25,11 +25,12 @@ interface Repository<T: Any> {
     suspend fun upsertLatestItemIfDifferent(item: T): RepositoryEntry<T>
 
     suspend fun setEntriesIfDifferent(entries: List<RepositoryEntry<T>>)
-    suspend fun clearEntries() = setEntriesIfDifferent(emptyList())
+    suspend fun clearEntries()
 
     sealed interface Endpoint<T: Any> {
         suspend fun getEntries(): List<RepositoryEntry<T>>
         suspend fun setEntries(entries: List<RepositoryEntry<T>>)
+        suspend fun clearEntries()
     }
 
     companion object {

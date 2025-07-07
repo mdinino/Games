@@ -18,3 +18,5 @@ WHERE uuid IS :uuid;
 delete:
 DELETE FROM TetrisGameEntity
 WHERE uuid IS :uuid;
+
+DELETE FROM TetrisGameEntity;
