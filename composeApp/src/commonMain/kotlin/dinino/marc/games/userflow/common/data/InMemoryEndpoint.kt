@@ -8,8 +8,7 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class InMemoryEndpoint<T: Any>(
-    initial: List<RepositoryEntry<T>> =
-        emptyList(),
+    initial: List<RepositoryEntry<T>> = emptyList(),
     private val coroutineContext: CoroutineContext =
         CoroutineScope(Dispatchers.Default).coroutineContext,
     private val mutex: Mutex =

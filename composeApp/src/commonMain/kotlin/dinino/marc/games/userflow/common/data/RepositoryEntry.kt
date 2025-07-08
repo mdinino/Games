@@ -6,6 +6,6 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 data class RepositoryEntry<out T: Any>(
-    val uuid: Uuid = Uuid.random(),
+    val uuid: String = Uuid.random().toString(),
     val item: T
 )

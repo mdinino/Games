@@ -1,30 +1,22 @@
 package dinino.marc.games.userflow.common.data
 
+import dinino.marc.games.coroutine.CoroutineCriticalSection
 import dinino.marc.games.coroutine.runInParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalTime::class)
 class DefaultRepository<T: Any>(
-    override val autoSync: Boolean =
-        true,
-    override val localCache: Repository.Endpoint<T> =
-        InMemoryEndpoint(),
+    override val autoSync: Boolean = true,
+    override val localCache: Repository.Endpoint<T> = InMemoryEndpoint(),
     override val remoteEndpoints: List<Repository.Endpoint<T>>,
-    private val coroutineContext: CoroutineContext =
-        CoroutineScope(Dispatchers.Default).coroutineContext,
-    private val mutex: Mutex = Mutex(),
-    private val _status: MutableStateFlow<SyncStatus<T>> =
-        MutableStateFlow(SyncStatus.NotSynced())
+    private val cs: CoroutineCriticalSection = CoroutineCriticalSection(),
+    private val _status: MutableStateFlow<SyncStatus<T>> = MutableStateFlow(SyncStatus.NotSynced())
 ): Repository<T> {
     override val status = _status.asStateFlow()
 
@@ -38,7 +30,7 @@ class DefaultRepository<T: Any>(
     }
 
     override suspend fun syncFromLocalToRemotes() =
-        lockAndRun { syncFromLocalToRemotesInternal() }
+        cs.lockAndRun { syncFromLocalToRemotesInternal() }
 
     private suspend fun syncFromLocalToRemotesInternal() {
         try {
@@ -52,32 +44,34 @@ class DefaultRepository<T: Any>(
     }
 
     override suspend fun syncFromRemotesToLocal() =
-        lockAndRun { syncFromRemotesToLocalInternal() }
-
-    private suspend fun syncFromRemotesToLocalInternal() {
-        try {
-            notifySyncing()
-            val entries = remoteEndpoints.runInParallel { getEntries() }
-            localCache.setEntries(entries)
-            notifySynced(entries)
-        } catch (t: Throwable) {
-            notifyNotSynced(t)
+        cs.lockAndRunNonCancelable {
+            try {
+                notifySyncing()
+                val entries = remoteEndpoints.runInParallel { getEntries() }
+                localCache.setEntries(entries)
+                notifySynced(entries)
+            } catch (t: Throwable) {
+                notifyNotSynced(t)
+            }
         }
-    }
 
     override suspend fun upsertLatestItemIfDifferent(item: T): RepositoryEntry<T> =
-        lockAndRun { upsertLatestItemIfDifferentInternal(item) }
+        cs.lockAndRunNonCancelable {
+            val currentEntries = localCache.getEntries()
+            val latestEntry = currentEntries.lastOrNull()
+            if (latestEntry != null && latestEntry.item == item) return@lockAndRunNonCancelable latestEntry
 
-    private suspend fun upsertLatestItemIfDifferentInternal(item: T): RepositoryEntry<T> {
-        val currentEntries = localCache.getEntries()
-        val latestEntry = currentEntries.lastOrNull()
-        if (latestEntry != null && latestEntry.item == item) return latestEntry
+            val newEntries = currentEntries.updateLastWithItem(item)
+            setEntriesIfDifferentInternal(newEntries)
 
-        val newEntries = currentEntries.updateLastWithItem(item)
-        setEntriesIfDifferentInternal(newEntries)
+            newEntries.last()
+        }
 
-        return newEntries.last()
-    }
+    override suspend fun clearEntries() =
+        cs.lockAndRunNonCancelable {
+            localCache.clearEntries()
+            remoteEndpoints.runInParallel { clearEntries() }
+        }
 
     @OptIn(ExperimentalUuidApi::class)
     private fun List<RepositoryEntry<T>>.updateLastWithItem(item: T): List<RepositoryEntry<T>> =
@@ -97,7 +91,7 @@ class DefaultRepository<T: Any>(
     }
 
     override suspend fun setEntriesIfDifferent(entries: List<RepositoryEntry<T>>) =
-        lockAndRun { setEntriesIfDifferentInternal(entries) }
+        cs.lockAndRunNonCancelable { setEntriesIfDifferentInternal(entries) }
 
     private suspend fun setEntriesIfDifferentInternal(entries: List<RepositoryEntry<T>>) {
         val currentEntries  = _status.value.lastSuccessfulSync?.entries
@@ -134,13 +128,6 @@ class DefaultRepository<T: Any>(
         )
         _status.emit(newStatus)
     }
-
-    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
-        withContext(coroutineContext) {
-            mutex.withLock {
-                block()
-            }
-        }
 
     private suspend fun <R> List<Repository.Endpoint<T>>.runInParallel(
         block: suspend Repository.Endpoint<T>.() ->R

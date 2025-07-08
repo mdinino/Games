@@ -1,22 +1,22 @@
 CREATE TABLE TicTacToeGameEntity (
     uuid TEXT NOT NULL PRIMARY KEY,
-    gameAsJson BLOB NOT NULL
+    json TEXT NOT NULL
 );
 
-insert:
-INSERT OR REPLACE INTO TicTacToeGameEntity(uuid, gameAsJson)
+upsert:
+INSERT OR REPLACE INTO TicTacToeGameEntity(uuid, json)
 VALUES(?,?);
 
-getAll:
-SELECT * FROM TicTacToeGameEntity;
+getAllUuids:
+SELECT uuid FROM TicTacToeGameEntity;
 
-updateName:
-UPDATE TicTacToeGameEntity
-SET gameAsJson = :gameAsJson
+getJsonByUuid:
+SELECT json FROM TicTacToeGameEntity
 WHERE uuid IS :uuid;
 
-delete:
+removeByUuid:
 DELETE FROM TicTacToeGameEntity
 WHERE uuid IS :uuid;
 
+clearAll:
 DELETE FROM TicTacToeGameEntity;

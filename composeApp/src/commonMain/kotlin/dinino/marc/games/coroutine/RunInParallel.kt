@@ -21,7 +21,3 @@ suspend fun <RETURN> List<suspend CoroutineScope.() -> RETURN>.runInParallel(): 
     }
     return asyncs.awaitAll()
 }
-
-suspend fun List<suspend CoroutineScope.() -> Unit>.runInParallel() {
-    runInParallel<Unit>()
-}
