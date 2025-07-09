@@ -14,9 +14,5 @@ getJsonByUuid:
 SELECT json FROM TicTacToeGameEntity
 WHERE uuid IS :uuid;
 
-removeByUuid:
-DELETE FROM TicTacToeGameEntity
-WHERE uuid IS :uuid;
-
 clearAll:
 DELETE FROM TicTacToeGameEntity;

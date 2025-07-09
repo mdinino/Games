@@ -22,7 +22,7 @@ fun <T: Any> SerializableJsonRepository(
 interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
     val jsonConverter: JsonConverter<T>
     val getAllUuids: suspend ()->List<String>
-    val getItemByUuid: suspend (uuid: String)->JsonString
+    val getItemByUuid: suspend (uuid: String)->JsonString?
     val upsertItemByUuid: suspend (uuid: String, item: JsonString)->Unit
     val clearAll: suspend ()->Unit
 }
@@ -30,7 +30,7 @@ interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
 class DefaultJsonLocalDatabaseEndpoint<T: Any> (
     override val jsonConverter: JsonConverter<T>,
     override val getAllUuids: suspend ()->List<String>,
-    override val getItemByUuid: suspend (uuid: String)->JsonString,
+    override val getItemByUuid: suspend (uuid: String)->JsonString?,
     override val upsertItemByUuid: suspend (uuid: String, item: JsonString)->Unit,
     override val clearAll: suspend ()->Unit,
     private val cs: CoroutineCriticalSection = CoroutineCriticalSection()
@@ -38,11 +38,10 @@ class DefaultJsonLocalDatabaseEndpoint<T: Any> (
     override suspend fun getEntries(): List<RepositoryEntry<T>> =
         cs.lockAndRun {
             getAllUuids.invoke()
-                .map { uuid ->
+                .mapNotNull { uuid ->
                     RepositoryEntry(
                         uuid = uuid,
-                        item = getItemByUuid.invoke(uuid)
-                            .deserialize()
+                        item = getItemByUuid.invoke(uuid)?.deserialize() ?: return@mapNotNull null
                     )
                 }
         }

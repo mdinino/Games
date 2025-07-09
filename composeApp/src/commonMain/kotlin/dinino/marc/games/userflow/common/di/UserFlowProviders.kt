@@ -1,11 +1,13 @@
 package dinino.marc.games.userflow.common.di
 
 import androidx.compose.runtime.Composable
+import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 
-interface UserFlowProviders {
+interface UserFlowProviders<GAME: Any> {
     val localizedNameProvider: LocalizedNameProvider
     val snackbarControllerProvider: SnackbarControllerProvider
+    val repositoryProvider: RepositoryProvider<GAME>
 
     /**
      * Every user-flow has a name associated with it that can be displayed to the user.
@@ -20,5 +22,9 @@ interface UserFlowProviders {
      */
     interface SnackbarControllerProvider {
         @Composable fun provide(): SnackbarController
+    }
+
+    interface RepositoryProvider<GAME: Any> {
+        fun provide(): Repository<GAME>
     }
 }
