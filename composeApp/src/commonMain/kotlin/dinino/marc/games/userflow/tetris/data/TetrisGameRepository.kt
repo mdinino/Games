@@ -18,4 +18,5 @@ class TetrisGameRepository(
         getItemByUuid = { uuid -> queries.getJsonByUuid(uuid).toList().firstOrNull() },
         upsertItemByUuid = { uuid, json -> queries.upsert(uuid, json) },
         clearAll = { queries.clearAll() }
+    )
 )

@@ -2,7 +2,7 @@ package dinino.marc.games.userflow.tictactoe.di
 
 import androidx.compose.runtime.Composable
 import dinino.marc.games.Database
-import dinino.marc.games.userflow.common.data.Repository
+import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGame
@@ -17,9 +17,9 @@ class TicTacToeUserFlowProviders(
         _localizedNameProvider,
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider =
         _snackbarControllerProvider,
-    override val repositoryProvider: UserFlowProviders.RepositoryProvider<TicTacToeGame> =
+    override val repositoryProvider: GameUserFlowProviders.RepositoryProvider<TicTacToeGame> =
         _repositoryProvider
-): UserFlowProviders<TicTacToeGame> {
+): GameUserFlowProviders<TicTacToeGame> {
     companion object {
         private val _localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {
             @Composable override fun provide() = stringResource(Res.string.userflow_tictactoe)
@@ -29,12 +29,13 @@ class TicTacToeUserFlowProviders(
             @Composable override fun provide() = _snackbarController
         }
 
-        private val _repositoryProvider = object : UserFlowProviders.RepositoryProvider<TicTacToeGame> {
-            override fun provide() = _repostory
+        private val _repositoryProvider = object :
+            GameUserFlowProviders.RepositoryProvider<TicTacToeGame> {
+                override fun provide() = _repostory
         }
 
         private val _snackbarController = SnackbarController()
 
-        private val _repostory = TicTacToeGameRepository(database = getKoin().get())
+        private val _repostory = TicTacToeGameRepository(getKoin().get<Database>().ticTacToeGameEntityQueries)
     }
 }

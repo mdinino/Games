@@ -19,4 +19,4 @@ class TicTacToeGameRepository(
             upsertItemByUuid = { uuid, json -> queries.upsert(uuid, json) },
             clearAll = { queries.clearAll() }
         )
-    )
+)

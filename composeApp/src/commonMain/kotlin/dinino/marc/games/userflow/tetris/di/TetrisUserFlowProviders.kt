@@ -1,6 +1,8 @@
 package dinino.marc.games.userflow.tetris.di
 
 import androidx.compose.runtime.Composable
+import dinino.marc.games.Database
+import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.nav.SnackbarController
 import dinino.marc.games.userflow.tetris.data.TetrisGame
@@ -15,9 +17,9 @@ class TetrisUserFlowProviders(
         _localizedNameProvider,
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider =
         _snackbarControllerProvider,
-    override val repositoryProvider: UserFlowProviders.RepositoryProvider<TetrisGame> =
+    override val repositoryProvider: GameUserFlowProviders.RepositoryProvider<TetrisGame> =
         _repositoryProvider
-): UserFlowProviders<TetrisGame> {
+): GameUserFlowProviders<TetrisGame> {
     companion object {
         private val _localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {
             @Composable override fun provide() = stringResource(Res.string.userflow_tetris)
@@ -27,12 +29,13 @@ class TetrisUserFlowProviders(
             @Composable override fun provide() = _snackbarController
         }
 
-        private val _repositoryProvider = object : UserFlowProviders.RepositoryProvider<TetrisGame> {
-            override fun provide() = _repository
+        private val _repositoryProvider = object :
+            GameUserFlowProviders.RepositoryProvider<TetrisGame> {
+            override fun provide() = _repostory
         }
 
         private val _snackbarController = SnackbarController()
 
-        private val _repository = TetrisGameRepository(database = getKoin().get())
+        private val _repostory = TetrisGameRepository(getKoin().get<Database>().tetrisGameEntityQueries)
     }
 }
