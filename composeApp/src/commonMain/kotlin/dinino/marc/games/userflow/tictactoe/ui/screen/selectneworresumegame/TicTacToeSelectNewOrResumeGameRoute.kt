@@ -17,4 +17,4 @@ data object TicTacToeSelectNewOrResumeGameRoute :
                 navHostController = navHostController
             )
         }
-    )
+    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStackUpToHere
