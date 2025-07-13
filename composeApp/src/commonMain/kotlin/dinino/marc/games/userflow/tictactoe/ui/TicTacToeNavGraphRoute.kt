@@ -1,8 +1,9 @@
-package dinino.marc.games.userflow.tictactoe.ui.nav
+package dinino.marc.games.userflow.tictactoe.ui
 
-import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowNavGraphRoute
-import dinino.marc.games.userflow.common.ui.nav.UserFlowNavGraphRouteImpl
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
+import dinino.marc.games.userflow.common.ui.route.UserFlowNavGraphRouteImpl
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
+import dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame.TicTacToeSelectNewOrResumeGameRoute
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 

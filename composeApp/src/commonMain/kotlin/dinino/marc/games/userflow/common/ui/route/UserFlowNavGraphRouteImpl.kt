@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui.nav
+package dinino.marc.games.userflow.common.ui.route
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -14,7 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController.Companion.ObserveEffect
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
+import dinino.marc.games.userflow.common.ui.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
 
 class UserFlowNavGraphRouteImpl(
     override val landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
@@ -73,8 +75,8 @@ class UserFlowNavGraphRouteImpl(
 
         private fun <T: SerializableUserFlowRoute> NavGraphBuilder.
             serializableUserFlowRouteComposable(
-                navHostController: NavHostController,
-                route: T
+            navHostController: NavHostController,
+            route: T
         ) {
             when(route) {
                 is SerializableUserFlowRoute.UserFlowScreenRoute ->
@@ -93,8 +95,8 @@ class UserFlowNavGraphRouteImpl(
 
         private fun <T: SerializableUserFlowRoute.UserFlowNavGraphRoute> NavGraphBuilder.
             userFlowNavGraphRouteComposable(
-                navHostController: NavHostController,
-                route: T
+            navHostController: NavHostController,
+            route: T
         ) {
             navigation(
                 route = route::class,
@@ -117,11 +119,11 @@ class UserFlowNavGraphRouteImpl(
 
         private fun <T: SerializableUserFlowRoute.UserFlowScreenRoute> NavGraphBuilder.
             userFlowScreenRouteComposable(
-                navHostController: NavHostController,
-                route: T
+            navHostController: NavHostController,
+            route: T
         ) {
             composable(route = route::class) { backStackEntry ->
-                backStackEntry.toRoute<T>(route::class).Screen(Modifier, navHostController)
+                backStackEntry.toRoute<T>(route::class).Screen(Modifier.Companion, navHostController)
             }
         }
     }

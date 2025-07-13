@@ -1,15 +1,14 @@
-package dinino.marc.games.userflow.tictactoe.ui.nav
+package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 
-import dinino.marc.games.userflow.common.ui.nav.ContentWithAppBarScreenRoute
-import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowScreenRoute
+import dinino.marc.games.userflow.common.ui.route.ContentWithAppBarScreenRoute
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
-import dinino.marc.games.userflow.tictactoe.ui.screen.TicTacToeSelectNewOrResumeGameScreen
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
 data object TicTacToeSelectNewOrResumeGameRoute :
-    UserFlowScreenRoute by ContentWithAppBarScreenRoute(
+    SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider,
         content = { modifier, navHostController ->

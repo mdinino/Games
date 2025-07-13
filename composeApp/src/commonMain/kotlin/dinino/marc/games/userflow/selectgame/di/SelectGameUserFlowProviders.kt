@@ -2,7 +2,7 @@ package dinino.marc.games.userflow.selectgame.di
 
 import androidx.compose.runtime.Composable
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_select_game
 import org.jetbrains.compose.resources.stringResource

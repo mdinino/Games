@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
@@ -19,3 +20,4 @@ fun <T, K> StateFlow<T>.mapState(
     mapLatest {
         transform(it)
     }.stateIn(scope, SharingStarted.Eagerly, transform(value))
+

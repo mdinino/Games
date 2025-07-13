@@ -1,0 +1,45 @@
+package dinino.marc.games.userflow.tetris.ui.screen.selectneworresumegame
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import dinino.marc.games.userflow.common.ui.layout.SelectNewOrResumeGameLayout
+import dinino.marc.games.userflow.common.ui.SnackbarController
+import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import org.koin.compose.koinInject
+
+@Composable
+fun TetrisSelectNewOrResumeGameScreen(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    snackbarController: SnackbarController = defaultSnackbarController,
+    oneTimeEvents: Flow<Any> = emptyFlow(),
+    onNewGameOrNullIfDisabled : (()->Unit)? = {},
+    onResumeGameOrNullIfDisabled : (()->Unit)? = null,
+) {
+    oneTimeEvents.ObserveEffect(
+        navHostController = navHostController,
+        snackbarController = snackbarController
+    )
+
+    SelectNewOrResumeGameLayout(
+        modifier = modifier,
+        navHostController = navHostController,
+        onNewGameOrNullIfDisabled = onNewGameOrNullIfDisabled,
+        onResumeGameOrNullIfDisabled = onResumeGameOrNullIfDisabled
+    )
+}
+
+@Composable
+private fun Flow<Any>.ObserveEffect(
+    navHostController: NavHostController,
+    snackbarController: SnackbarController = defaultSnackbarController
+) = ObserveOneTimeEventEffect(this) { event ->
+
+}
+
+@get:Composable
+private val defaultSnackbarController
+    get() = koinInject<TicTacToeUserFlowProviders>().snackbarControllerProvider.provide()

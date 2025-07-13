@@ -1,14 +1,15 @@
-package dinino.marc.games.userflow.common.ui.nav
+package dinino.marc.games.userflow.common.ui.route
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import dinino.marc.games.DataType
 
 /**
  * ALl implementing classes should be marked with @Serializable
  */
-sealed interface SerializableUserFlowRoute{
+sealed interface SerializableUserFlowRoute {
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
 
         @Composable

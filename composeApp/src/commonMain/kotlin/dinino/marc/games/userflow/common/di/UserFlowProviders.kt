@@ -1,8 +1,7 @@
 package dinino.marc.games.userflow.common.di
 
 import androidx.compose.runtime.Composable
-import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 
 interface UserFlowProviders {
     val localizedNameProvider: LocalizedNameProvider

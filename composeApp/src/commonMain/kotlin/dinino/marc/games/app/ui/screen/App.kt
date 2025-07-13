@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dinino.marc.games.app.ui.theme.GamesTheme
-import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.UserFlowNavGraphRoute
-import dinino.marc.games.userflow.selectgame.ui.nav.SelectGameNavGraphRoute
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
+import dinino.marc.games.userflow.selectgame.ui.SelectGameNavGraphRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 

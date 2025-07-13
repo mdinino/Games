@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import dinino.marc.games.Database
 import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGame
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameRepository
 import games.composeapp.generated.resources.Res

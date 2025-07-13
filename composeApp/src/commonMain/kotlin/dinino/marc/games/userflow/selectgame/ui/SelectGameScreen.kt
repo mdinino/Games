@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.selectgame.ui.screen
+package dinino.marc.games.userflow.selectgame.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -7,11 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventLayout
-import dinino.marc.games.userflow.common.ui.nav.SerializableUserFlowRoute.Companion.navigateToRoute
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
-import dinino.marc.games.userflow.tictactoe.ui.nav.TicTacToeNavGraphRoute
+import dinino.marc.games.userflow.tictactoe.ui.TicTacToeNavGraphRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import games.composeapp.generated.resources.userflow_tictactoe

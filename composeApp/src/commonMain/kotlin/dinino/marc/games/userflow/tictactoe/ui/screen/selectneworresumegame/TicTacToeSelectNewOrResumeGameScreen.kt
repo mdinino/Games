@@ -1,11 +1,10 @@
-package dinino.marc.games.userflow.tictactoe.ui.screen
+package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.SelectNewOrResumeGameLayout
-import dinino.marc.games.userflow.common.ui.nav.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

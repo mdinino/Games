@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import dinino.marc.games.Database
 import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.nav.SnackbarController
+import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.tetris.data.TetrisGame
 import dinino.marc.games.userflow.tetris.data.TetrisGameRepository
 import games.composeapp.generated.resources.Res
