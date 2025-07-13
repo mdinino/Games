@@ -9,7 +9,9 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController
+import dinino.marc.games.userflow.common.ui.onetimeevent.ObserveOneTimeEventLayout
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
+import dinino.marc.games.userflow.tetris.ui.TetrisNavGraphRoute
 import dinino.marc.games.userflow.tictactoe.ui.TicTacToeNavGraphRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
@@ -87,7 +89,7 @@ private suspend fun <T> handleOneTimeEvent(
         is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
             navHostController.navigateToRoute(TicTacToeNavGraphRoute)
         is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
-            TODO()
+            navHostController.navigateToRoute(TetrisNavGraphRoute)
     }
 }
 
