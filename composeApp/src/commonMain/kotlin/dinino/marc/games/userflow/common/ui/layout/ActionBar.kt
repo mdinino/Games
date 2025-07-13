@@ -111,7 +111,11 @@ fun ActionBar(
     val onBackClicked: ()->Unit = {
         when(showBackIcon) {
             false -> {}
-            true -> { navHostController.popBackStack() }
+            true -> {
+                if (navHostController.previousBackStackEntry != null) {
+                    navHostController.popBackStack()
+                }
+            }
         }
     }
 

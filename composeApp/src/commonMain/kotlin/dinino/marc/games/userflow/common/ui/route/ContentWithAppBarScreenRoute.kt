@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 import dinino.marc.games.userflow.common.ui.layout.ActionBar
 
 class ContentWithAppBarScreenRoute(
