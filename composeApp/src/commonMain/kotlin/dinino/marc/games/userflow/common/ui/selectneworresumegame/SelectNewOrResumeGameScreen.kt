@@ -17,10 +17,9 @@ fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent,
 > SelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    vm: VM,
-    initialState: ()->STATE
+    vm: VM
 ) {
-    val state = vm.selectNewOrResumeGameState.collectAsState(initialState.invoke())
+    val state = vm.selectNewOrResumeGameState.collectAsState()
 
     val onNewGame: (()->Unit)? =
         when(state.value.isSelectNewGameAvailable) {

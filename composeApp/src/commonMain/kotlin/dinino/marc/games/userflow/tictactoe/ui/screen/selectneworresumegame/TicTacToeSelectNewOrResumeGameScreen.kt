@@ -15,12 +15,6 @@ fun TicTacToeSelectNewOrResumeGameScreen(
     SelectNewOrResumeGameScreen(
         modifier = modifier,
         navHostController = navHostController,
-        vm = vm,
-        initialState = {
-            TicTacToeSelectNewOrResumeGameState(
-                isSelectNewGameAvailable = true,
-                isSelectResumeGameAvailable = false
-            )
-        }
+        vm = vm
     )
 }

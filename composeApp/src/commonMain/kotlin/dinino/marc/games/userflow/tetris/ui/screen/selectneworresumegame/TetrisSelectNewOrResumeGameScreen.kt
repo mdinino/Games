@@ -15,12 +15,6 @@ fun TetrisSelectNewOrResumeGameScreen(
     SelectNewOrResumeGameScreen(
         modifier = modifier,
         navHostController = navHostController,
-        vm = vm,
-        initialState = {
-            TetrisSelectNewOrResumeGameState(
-                isSelectNewGameAvailable = true,
-                isSelectResumeGameAvailable = false
-            )
-        }
+        vm = vm
     )
 }

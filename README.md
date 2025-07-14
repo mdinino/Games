@@ -3,6 +3,8 @@ Targeting Android, iOS, Web, Desktop.
 Uses Koin as a DI framework.
 Supports light and dar mode.
 
+NOTE: WasmJs will crash for now util SQLDelight supports a driver for that build.
+
 Known issue: when screens are being transitioned in when animation, button clicks are not available
 until transition is complete. So if you click a button too fast after navigation, a button press wont do anything.
 

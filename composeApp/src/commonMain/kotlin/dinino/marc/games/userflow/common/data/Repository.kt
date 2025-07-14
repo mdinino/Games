@@ -1,6 +1,6 @@
 package dinino.marc.games.userflow.common.data
 
-import dinino.marc.games.flow.mapState
+import dinino.marc.games.stateflow.mapStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -35,9 +35,9 @@ interface Repository<T: Any> {
 
     companion object {
         val <T: Any> Repository<T>.lastestItem: StateFlow<T?>
-            get() = status.mapState { it.lastSuccessfulSync?.entries?.last()?.item }
+            get() = status.mapStateFlow { it.lastSuccessfulSync?.entries?.last()?.item }
 
         val <T: Any> Repository<T>.hasEntry: StateFlow<Boolean>
-            get() = lastestItem.mapState { it != null }
+            get() = lastestItem.mapStateFlow { it != null }
     }
 }

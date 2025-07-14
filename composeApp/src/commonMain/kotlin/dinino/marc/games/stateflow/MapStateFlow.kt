@@ -1,11 +1,10 @@
-package dinino.marc.games.flow
+package dinino.marc.games.stateflow
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
  * Used to transform one StateFlow into another
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T, K> StateFlow<T>.mapState(
+fun <T, K> StateFlow<T>.mapStateFlow(
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     transform: (T) -> K
 ): StateFlow<K> =

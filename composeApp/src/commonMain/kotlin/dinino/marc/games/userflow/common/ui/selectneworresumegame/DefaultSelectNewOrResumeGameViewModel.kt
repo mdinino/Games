@@ -2,6 +2,7 @@ package dinino.marc.games.userflow.common.ui.selectneworresumegame
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dinino.marc.games.stateflow.mapStateFlow
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.data.Repository.Companion.hasEntry
 import kotlinx.coroutines.channels.Channel
@@ -19,7 +20,7 @@ class DefaultSelectNewOrResumeGameViewModel<out GAME: Any, out STATE: SelectNewO
 
     override val selectNewOrResumeGameState
         get() = repository.hasEntry
-            .map { hasEntry -> stateFactory.invoke(hasEntry) }
+            .mapStateFlow { hasEntry -> stateFactory.invoke(hasEntry) }
 
         override val oneTimeEvents
             get() = _oneTimeEvents.receiveAsFlow()
