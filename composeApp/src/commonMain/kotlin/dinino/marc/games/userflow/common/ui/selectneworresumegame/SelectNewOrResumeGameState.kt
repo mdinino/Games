@@ -1,8 +1,6 @@
 package dinino.marc.games.userflow.common.ui.selectneworresumegame
 
-import dinino.marc.games.DataType
-
-interface SelectNewOrResumeGameState: DataType {
+interface SelectNewOrResumeGameState {
     val isSelectNewGameAvailable: Boolean
     val isSelectResumeGameAvailable: Boolean
 }

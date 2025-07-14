@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import dinino.marc.games.DataType
 
 /**
  * ALl implementing classes should be marked with @Serializable

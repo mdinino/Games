@@ -1,9 +1,8 @@
 package dinino.marc.games.userflow.common.ui.onetimeevent
 
-import dinino.marc.games.DataType
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 
-sealed interface CommonOneTimeEvents: DataType {
+sealed interface CommonOneTimeEvents {
 
     interface NavigateOneTimeEvent: CommonOneTimeEvents {
         val route: SerializableUserFlowRoute

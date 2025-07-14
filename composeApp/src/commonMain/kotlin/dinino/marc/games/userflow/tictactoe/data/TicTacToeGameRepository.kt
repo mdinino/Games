@@ -1,6 +1,5 @@
 package dinino.marc.games.userflow.tictactoe.data
 
-import dinino.marc.games.database.TicTacToeGameEntityQueries
 import dinino.marc.games.query.toList
 import dinino.marc.games.userflow.common.data.DefaultJsonConverter
 import dinino.marc.games.userflow.common.data.DefaultJsonLocalDatabaseEndpoint
