@@ -3,7 +3,7 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.selectneworresumegame.SelectNewOrResumeGameScreen
+import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

@@ -1,19 +1,20 @@
-package dinino.marc.games.userflow.common.ui.selectneworresumegame
+package dinino.marc.games.userflow.common.ui.screen.selectneworresumegame
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.SelectNewOrResumeGameLayout
-import dinino.marc.games.userflow.common.ui.onetimeevent.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
-fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent,
-        STATE: SelectNewOrResumeGameState,
-        VM: SelectNewOrResumeGameViewModel<STATE, ONE_TIME_EVENT>
+fun <GAME: Any,
+     STATE: SelectNewOrResumeGameState,
+     ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent,
+     VM: AbstractSelectNewOrResumeGameViewModel<GAME, STATE, ONE_TIME_EVENT>
 > SelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,

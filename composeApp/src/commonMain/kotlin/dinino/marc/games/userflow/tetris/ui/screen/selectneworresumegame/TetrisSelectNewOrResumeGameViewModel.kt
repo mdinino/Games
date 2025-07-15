@@ -2,17 +2,18 @@ package dinino.marc.games.userflow.tetris.ui.screen.selectneworresumegame
 
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
-import dinino.marc.games.userflow.common.ui.selectneworresumegame.AbstractSelectNewOrResumeGameViewModel
-import dinino.marc.games.userflow.common.ui.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
+import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.AbstractSelectNewOrResumeGameViewModel
+import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.tetris.data.TetrisGame
 
 class TetrisSelectNewOrResumeGameViewModel(
     repository: Repository<TetrisGame>
-): AbstractSelectNewOrResumeGameViewModel<TetrisGame, TetrisSelectNewOrResumeGameState>(
+): AbstractSelectNewOrResumeGameViewModel
+    <TetrisGame, TetrisSelectNewOrResumeGameState, SelectNewOrResumeGameOneTimeEvent>(
     repository = repository,
     stateFactory = { TetrisSelectNewOrResumeGameState(isSelectResumeGameAvailable = it) },
-    selectNewGameEventFactory = { SelectNewGame },
-    selectResumeGameEventFactory = { SelectResumeGame },
+    navigateToNewGameEventFactory = { SelectNewGame },
+    navigateToResumeGameEventFactory = { SelectResumeGame },
 )
 
 private data object SelectNewGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
