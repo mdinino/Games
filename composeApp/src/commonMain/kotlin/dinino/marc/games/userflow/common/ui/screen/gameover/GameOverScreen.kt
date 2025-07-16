@@ -1,15 +1,18 @@
 package dinino.marc.games.userflow.common.ui.screen.gameover
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign.Companion.Center
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.spacing
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
@@ -98,11 +101,12 @@ fun GameOverLayout(
     onSelectDifferentGameOrNullIfDisabled : (()->Unit)? = {}
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            modifier = Modifier,
-            textAlign = Center,
+            textAlign = TextAlign.Center,
             text = stringResource(Res.string.game_over_screen_subtitle)
         )
 
