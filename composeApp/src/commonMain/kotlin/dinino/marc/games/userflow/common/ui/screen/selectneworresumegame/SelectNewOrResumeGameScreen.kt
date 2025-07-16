@@ -1,20 +1,28 @@
 package dinino.marc.games.userflow.common.ui.screen.selectneworresumegame
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.layout.SelectNewOrResumeGameLayout
+import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
+import games.composeapp.generated.resources.Res
+import games.composeapp.generated.resources.select_new_or_resume_game_screen_new_game
+import games.composeapp.generated.resources.select_new_or_resume_game_screen_resume_game
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun <GAME: Any,
      STATE: SelectNewOrResumeGameState,
      ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent,
-     VM: AbstractSelectNewOrResumeGameViewModel<GAME, STATE, ONE_TIME_EVENT>
+     VM: SelectNewOrResumeGameViewModel<GAME, STATE, ONE_TIME_EVENT>
 > SelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
@@ -22,13 +30,13 @@ fun <GAME: Any,
 ) {
     val state = vm.selectNewOrResumeGameState.collectAsState()
 
-    val onNewGame: (()->Unit)? =
+    val onSelectNewGame: (()->Unit)? =
         when(state.value.isSelectNewGameAvailable) {
             true -> { { vm.selectNewGame() } }
             else -> null
         }
 
-    val onResumeGame: (()->Unit)? =
+    val onSelectResumeGame: (()->Unit)? =
         when(state.value.isSelectResumeGameAvailable) {
             true -> { { vm.selectResumeGame() } }
             else -> null
@@ -38,8 +46,8 @@ fun <GAME: Any,
         modifier = modifier,
         navHostController = navHostController,
         oneTimeEvents = vm.oneTimeEvents,
-        onNewGameOrNullIfDisabled = onNewGame,
-        onResumeGameOrNullIfDisabled = onResumeGame
+        onSelectNewGameOrNullIfDisabled = onSelectNewGame,
+        onSelectResumeGameOrNullIfDisabled = onSelectResumeGame
     )
 }
 
@@ -49,8 +57,8 @@ fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
             modifier: Modifier = Modifier,
             navHostController: NavHostController,
             oneTimeEvents: Flow<ONE_TIME_EVENT> = emptyFlow(),
-            onNewGameOrNullIfDisabled : (()->Unit)? = {},
-            onResumeGameOrNullIfDisabled : (()->Unit)? = null
+            onSelectNewGameOrNullIfDisabled : (()->Unit)? = {},
+            onSelectResumeGameOrNullIfDisabled : (()->Unit)? = null
 ) {
     oneTimeEvents.ObserveEffect(
         navHostController = navHostController
@@ -58,9 +66,8 @@ fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
 
     SelectNewOrResumeGameLayout(
         modifier = modifier,
-        navHostController = navHostController,
-        onNewGameOrNullIfDisabled = onNewGameOrNullIfDisabled,
-        onResumeGameOrNullIfDisabled = onResumeGameOrNullIfDisabled
+        onSelectNewGameOrNullIfDisabled = onSelectNewGameOrNullIfDisabled,
+        onSelectResumeGameOrNullIfDisabled = onSelectResumeGameOrNullIfDisabled
     )
 }
 
@@ -75,5 +82,34 @@ private fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
                 navHostController.navigateToRoute(oneTimeEvent.route)
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun SelectNewOrResumeGameLayout(
+    modifier: Modifier = Modifier,
+    onSelectNewGameOrNullIfDisabled : (()->Unit)? = {},
+    onSelectResumeGameOrNullIfDisabled : (()->Unit)? = {},
+) {
+    AlignWidthsColumnLayout(modifier = modifier) {
+        listOf(
+            @Composable {
+                Button(
+                    enabled = onSelectNewGameOrNullIfDisabled != null,
+                    onClick = onSelectNewGameOrNullIfDisabled ?: {}
+                ) {
+                    Text(stringResource(Res.string.select_new_or_resume_game_screen_new_game))
+                }
+            },
+            @Composable {
+                Button(
+                    enabled = onSelectResumeGameOrNullIfDisabled != null,
+                    onClick = onSelectResumeGameOrNullIfDisabled ?: {}
+                ) {
+                    Text(stringResource(Res.string.select_new_or_resume_game_screen_resume_game))
+                }
+            }
+        )
     }
 }

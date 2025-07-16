@@ -1,6 +1,7 @@
 package dinino.marc.games.userflow.tetris.di
 
 
+import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverViewModel
 import dinino.marc.games.userflow.tetris.ui.screen.selectneworresumegame.TetrisSelectNewOrResumeGameViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -14,4 +15,5 @@ val tetrisUserFlowModule = module {
             .repositoryProvider
             .provide())
     }
+    viewModel { TetrisGameOverViewModel() }
 }

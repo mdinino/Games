@@ -2,13 +2,14 @@ package dinino.marc.games.userflow.tetris.ui.screen.selectneworresumegame
 
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
-import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.AbstractSelectNewOrResumeGameViewModel
+import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameViewModel
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.tetris.data.TetrisGame
+import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
 
 class TetrisSelectNewOrResumeGameViewModel(
     repository: Repository<TetrisGame>
-): AbstractSelectNewOrResumeGameViewModel
+): SelectNewOrResumeGameViewModel
     <TetrisGame, TetrisSelectNewOrResumeGameState, SelectNewOrResumeGameOneTimeEvent>(
     repository = repository,
     stateFactory = { TetrisSelectNewOrResumeGameState(isSelectResumeGameAvailable = it) },
@@ -18,10 +19,10 @@ class TetrisSelectNewOrResumeGameViewModel(
 
 private data object SelectNewGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
     override val route: SerializableUserFlowRoute
-        get() = TODO("Not yet implemented")
+        get() = TetrisGameOverRoute
 }
 
 private data object SelectResumeGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
     override val route: SerializableUserFlowRoute
-        get() = TODO("Not yet implemented")
+        get() = TetrisGameOverRoute
 }

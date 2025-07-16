@@ -2,13 +2,14 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
-import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.AbstractSelectNewOrResumeGameViewModel
+import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameViewModel
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGame
+import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
 
 class TicTacToeSelectNewOrResumeGameViewModel(
     repository: Repository<TicTacToeGame>
-): AbstractSelectNewOrResumeGameViewModel
+): SelectNewOrResumeGameViewModel
 <TicTacToeGame, TicTacToeSelectNewOrResumeGameState, SelectNewOrResumeGameOneTimeEvent>(
     repository = repository,
     stateFactory = { TicTacToeSelectNewOrResumeGameState(isSelectResumeGameAvailable = it) },
@@ -18,10 +19,10 @@ class TicTacToeSelectNewOrResumeGameViewModel(
 
 private data object SelectNewGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
     override val route: SerializableUserFlowRoute
-        get() = TODO("Not yet implemented")
+        get() = TicTacToeGameOverRoute
 }
 
 private data object SelectResumeGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
     override val route: SerializableUserFlowRoute
-        get() = TODO("Not yet implemented")
+        get() = TicTacToeGameOverRoute
 }

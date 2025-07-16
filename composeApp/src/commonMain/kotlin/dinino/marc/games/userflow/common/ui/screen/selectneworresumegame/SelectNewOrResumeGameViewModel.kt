@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class AbstractSelectNewOrResumeGameViewModel<
+abstract class SelectNewOrResumeGameViewModel<
         out GAME: Any,
         out STATE: SelectNewOrResumeGameState,
         out ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent
