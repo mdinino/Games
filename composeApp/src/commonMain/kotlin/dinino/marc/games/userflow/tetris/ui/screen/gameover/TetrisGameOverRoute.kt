@@ -17,4 +17,4 @@ data object TetrisGameOverRoute :
                 navHostController = navHostController
             )
         }
-    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStackUpToHere
+    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack

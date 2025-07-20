@@ -17,4 +17,4 @@ data object TicTacToeGameOverRoute :
                 navHostController = navHostController
             )
         }
-    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStackUpToHere
+    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack

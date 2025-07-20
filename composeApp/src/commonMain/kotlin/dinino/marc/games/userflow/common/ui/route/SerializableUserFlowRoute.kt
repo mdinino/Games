@@ -3,6 +3,7 @@ package dinino.marc.games.userflow.common.ui.route
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
 /**
@@ -14,7 +15,12 @@ sealed interface SerializableUserFlowRoute {
         @Composable
         fun Screen(modifier: Modifier, navHostController: NavHostController)
 
-        interface ClearBackStackUpToHere
+        /**
+         * When navigating to UserFlowScreenRoutes that inherit from this market interface
+         * all items in the current user flow will be cleared before navigating.
+         * Parent nav graphs will be preserved
+         */
+        interface ClearUserFlowBackStack
     }
 
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
@@ -36,24 +42,30 @@ sealed interface SerializableUserFlowRoute {
     companion object {
         fun NavController.navigateToRoute(route: SerializableUserFlowRoute) =
             when(route) {
-                is UserFlowScreenRoute -> navigateToUserFlowScreenRoute(route)
-                is UserFlowNavGraphRoute -> navigateToUserFlowNavGraphRoute(route)
+                is UserFlowScreenRoute -> navigate(
+                    route = route,
+                    clearNavGraphBackStack = (route is UserFlowScreenRoute.ClearUserFlowBackStack)
+                )
+                is UserFlowNavGraphRoute -> navigate(route)
             }
 
-        private fun NavController.navigateToUserFlowScreenRoute(route: UserFlowScreenRoute) =
+        /**
+         * Navigates to given route.
+         * @param clearNavGraphBackStack: If set to true, will clear the back stack
+         * of the nav graph that the route is in before navigating, so that after navigation
+         * this route is the only route on the nav graph's back stack.
+         * Note that other nav graphs (including parent nav graphs) will remain unchanged.
+         */
+        private fun NavController.navigate(
+            route: UserFlowScreenRoute,
+            clearNavGraphBackStack: Boolean = false
+        ) {
             navigate(route) {
-                if (route is UserFlowScreenRoute.ClearBackStackUpToHere) {
-                    popUpTo(route) { inclusive = false }
+                if (clearNavGraphBackStack) {
+                    popUpTo(route = graph.findStartDestination().route!!) { inclusive = true }
                 }
-            }
 
-        private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) =
-            route.landingScreenRoute.let { finalDestination ->
-                navigate(finalDestination) {
-                    if (finalDestination is UserFlowScreenRoute.ClearBackStackUpToHere) {
-                        popUpTo(finalDestination) { inclusive = false }
-                    }
-                }
             }
+        }
     }
 }
