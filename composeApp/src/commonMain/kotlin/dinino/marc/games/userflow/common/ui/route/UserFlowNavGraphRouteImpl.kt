@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
 

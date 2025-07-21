@@ -2,9 +2,10 @@ package dinino.marc.games.userflow.common.ui.route
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 
 /**
  * ALl implementing classes should be marked with @Serializable
@@ -41,31 +42,49 @@ sealed interface SerializableUserFlowRoute {
 
     companion object {
         fun NavController.navigateToRoute(route: SerializableUserFlowRoute) =
-            when(route) {
-                is UserFlowScreenRoute -> navigate(
-                    route = route,
-                    clearNavGraphBackStack = (route is UserFlowScreenRoute.ClearUserFlowBackStack)
-                )
-                is UserFlowNavGraphRoute -> navigate(route)
+            when (route) {
+                is UserFlowScreenRoute -> navigateToUserFlowScreenRoute(route)
+                is UserFlowNavGraphRoute -> navigateToUserFlowNavGraphRoute(route)
             }
+
+        private fun NavController.navigateToUserFlowScreenRoute(route: UserFlowScreenRoute) =
+            navigate(route) {
+                if (route is UserFlowScreenRoute.ClearUserFlowBackStack) {
+                    popSubGraph()
+                }
+            }
+
+        private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) =
+            navigateToUserFlowScreenRoute(route.landingScreenRoute)
 
         /**
-         * Navigates to given route.
-         * @param clearNavGraphBackStack: If set to true, will clear the back stack
-         * of the nav graph that the route is in before navigating, so that after navigation
-         * this route is the only route on the nav graph's back stack.
-         * Note that other nav graphs (including parent nav graphs) will remain unchanged.
+         * Pops all backstack entries associated with the given nav graph.
+         * Stops as soon as the current backstack's parent is different than the given one.
          */
-        private fun NavController.navigate(
-            route: UserFlowScreenRoute,
-            clearNavGraphBackStack: Boolean = false
-        ) {
-            navigate(route) {
-                if (clearNavGraphBackStack) {
-                    popUpTo(route = graph.findStartDestination().route!!) { inclusive = true }
-                }
-
-            }
+        context(controller: NavController, builder: NavOptionsBuilder)
+        private fun popSubGraph() {
+            val popUpToRoute = controller.firstRouteOfSubNavGraph() ?: return
+            builder.popUpTo(route = popUpToRoute) { inclusive = true }
         }
+
+        private fun NavController.firstRouteOfSubNavGraph(): String? {
+            val currentBackStackEntry = this.currentBackStackEntry ?: return null
+            val currentParentRoute = currentBackStackEntry.parentRoute ?: return null
+
+            val backStackEntries = visibleEntries.value
+
+            var lastRouteOfSubGraph: String? = null
+            for (backStackEntry in backStackEntries.reversed()) {
+                if (backStackEntry.parentRoute != currentParentRoute) break
+                lastRouteOfSubGraph = backStackEntry.route
+            }
+
+            return lastRouteOfSubGraph
+        }
+        private val NavBackStackEntry.route: String
+            get() = destination.route!!
+
+        private val NavBackStackEntry.parentRoute: String?
+            get() = destination.parent?.route
     }
 }
