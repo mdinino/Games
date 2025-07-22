@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.savedstate.SavedState
 
 /**
  * ALl implementing classes should be marked with @Serializable
@@ -54,33 +56,58 @@ sealed interface SerializableUserFlowRoute {
                 }
             }
 
-        private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) =
-            navigateToUserFlowScreenRoute(route.landingScreenRoute)
+        private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) {
+            addOnDestinationChangedListener(
+                object : NavController.OnDestinationChangedListener {
+                    override fun onDestinationChanged(
+                        controller: NavController,
+                        destination: NavDestination,
+                        arguments: SavedState?
+                    ) {
+                        controller.removeOnDestinationChangedListener(this)
+                        if (route.landingScreenRoute is UserFlowScreenRoute.ClearUserFlowBackStack) {
+                            popSubGraph()
+                        }
+                    }
+                }
+            )
+            navigate(route.landingScreenRoute)
+        }
+
 
         /**
-         * Pops all backstack entries associated with the given nav graph.
+         * Pops all backstack entries associated with the given nav graph before navigation is complete.
          * Stops as soon as the current backstack's parent is different than the given one.
          */
-        context(controller: NavController, builder: NavOptionsBuilder)
-        private fun popSubGraph() {
-            val popUpToRoute = controller.firstRouteOfSubNavGraph() ?: return
-            builder.popUpTo(route = popUpToRoute) { inclusive = true }
-        }
-
-        private fun NavController.firstRouteOfSubNavGraph(): String? {
-            val currentBackStackEntry = this.currentBackStackEntry ?: return null
-            val currentParentRoute = currentBackStackEntry.parentRoute ?: return null
-
-            val backStackEntries = visibleEntries.value
-
-            var lastRouteOfSubGraph: String? = null
-            for (backStackEntry in backStackEntries.reversed()) {
-                if (backStackEntry.parentRoute != currentParentRoute) break
-                lastRouteOfSubGraph = backStackEntry.route
+        context(controller: NavController)
+        private fun NavOptionsBuilder.popSubGraph() {
+            popUpTo(route = controller.firstRouteOfSubNavGraph ?: return) {
+                inclusive = true
             }
-
-            return lastRouteOfSubGraph
         }
+
+        private fun NavController.popSubGraph() {
+            popBackStack(
+                route = firstRouteOfSubNavGraph ?: return,
+                inclusive = true
+            )
+        }
+
+        private val NavController.firstRouteOfSubNavGraph: String?
+            get() {
+                val currentBackStackEntry = this.currentBackStackEntry ?: return null
+                val currentParentRoute = currentBackStackEntry.parentRoute ?: return null
+
+                val backStackEntries = visibleEntries.value
+
+                var lastRouteOfSubGraph: String? = null
+                for (backStackEntry in backStackEntries.reversed()) {
+                    if (backStackEntry.parentRoute != currentParentRoute) break
+                    lastRouteOfSubGraph = backStackEntry.route
+                }
+
+                return lastRouteOfSubGraph
+            }
         private val NavBackStackEntry.route: String
             get() = destination.route!!
 
