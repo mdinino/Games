@@ -7,9 +7,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
-import dinino.marc.games.serialization.ToJsonStringStringConverter
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowScreenRoute
+import dinino.marc.games.serialization.DefaultToJsonStringConverter
+import dinino.marc.games.serialization.ToJsonStringConverter
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.serializer
 
 /**
  * ALl implementing classes should be marked with @Serializable
@@ -63,13 +64,19 @@ sealed interface SerializableUserFlowRoute {
         fun NavController.navigateDownTo(route: UserFlowNavGraphRoute) =
             navigate(route)
 
+
+
         /**
          * Navigates up up to parent nav graphs until the nav graph is route is found.
          */
+        @OptIn(InternalSerializationApi::class)
         @MainThread
-        fun NavController.navigateUpTo(
-            route: UserFlowNavGraphRoute,
-            routeJsonConverter: ToJsonStringStringConverter<UserFlowNavGraphRoute>,
+        inline fun <reified T: UserFlowNavGraphRoute> NavController.navigateUpTo(
+            route: T,
+            routeJsonConverter: ToJsonStringConverter<T> =
+                DefaultToJsonStringConverter(
+                    serializer = T::class.serializer()
+                ),
             forceToLadingScreenRoute: Boolean = true
         ) {
             val serializedRoute: String = routeJsonConverter.convertToJson(route)

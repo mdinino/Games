@@ -1,6 +1,6 @@
 package dinino.marc.games.userflow.tetris.ui.screen.gameover
 
-import dinino.marc.games.serialization.DefaultConverterJsonString
+import dinino.marc.games.serialization.DefaultJsonConverter
 import dinino.marc.games.userflow.common.ui.route.NavigateUpNavGraphRouteEvent
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverOneTimeEvent
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverViewModel
@@ -23,7 +23,7 @@ private data object DifferentGame : GameOverOneTimeEvent.Navigate {
     override val routeEvent
         get() = NavigateUpNavGraphRouteEvent(
             route = SelectGameNavGraphRoute,
-            routeJsonConverter = DefaultConverterJsonString<SelectGameNavGraphRoute>(
+            routeJsonConverter = DefaultJsonConverter<SelectGameNavGraphRoute>(
                 serializer = SelectGameNavGraphRoute::serializer()
             )
         )

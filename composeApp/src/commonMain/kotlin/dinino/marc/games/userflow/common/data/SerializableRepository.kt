@@ -1,7 +1,7 @@
 package dinino.marc.games.userflow.common.data
 
 import dinino.marc.games.coroutine.CoroutineCriticalSection
-import dinino.marc.games.serialization.ConverterJsonString
+import dinino.marc.games.serialization.JsonConverter
 import dinino.marc.games.serialization.JsonString
 
 /**
@@ -17,7 +17,7 @@ fun <T: Any> SerializableJsonRepository(
     )
 
 interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
-    val jsonConverter: ConverterJsonString<T>
+    val jsonConverter: JsonConverter<T>
     val getAllUuids: suspend ()->List<String>
     val getItemByUuid: suspend (uuid: String)-> JsonString?
     val upsertItemByUuid: suspend (uuid: String, item: JsonString)->Unit
@@ -25,7 +25,7 @@ interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
 }
 
 class DefaultJsonLocalDatabaseEndpoint<T: Any> (
-    override val jsonConverter: ConverterJsonString<T>,
+    override val jsonConverter: JsonConverter<T>,
     override val getAllUuids: suspend ()->List<String>,
     override val getItemByUuid: suspend (uuid: String)->JsonString?,
     override val upsertItemByUuid: suspend (uuid: String, item: JsonString)->Unit,

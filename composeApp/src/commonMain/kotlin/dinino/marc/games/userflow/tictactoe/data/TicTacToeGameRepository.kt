@@ -1,15 +1,15 @@
 package dinino.marc.games.userflow.tictactoe.data
 
 import dinino.marc.games.query.toList
-import dinino.marc.games.serialization.DefaultConverterJsonString
-import dinino.marc.games.serialization.ConverterJsonString
+import dinino.marc.games.serialization.DefaultJsonConverter
+import dinino.marc.games.serialization.JsonConverter
 import dinino.marc.games.userflow.common.data.DefaultJsonLocalDatabaseEndpoint
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.data.SerializableJsonRepository
 
 class TicTacToeGameRepository(
     queries: TicTacToeGameEntityQueries,
-    jsonConverter: ConverterJsonString<TicTacToeGame> = DefaultConverterJsonString(TicTacToeGame.serializer())
+    jsonConverter: JsonConverter<TicTacToeGame> = DefaultJsonConverter(TicTacToeGame.serializer())
 ): Repository<TicTacToeGame> by SerializableJsonRepository(
         jsonLocalDatabaseEndpoint = DefaultJsonLocalDatabaseEndpoint(
             jsonConverter = jsonConverter,

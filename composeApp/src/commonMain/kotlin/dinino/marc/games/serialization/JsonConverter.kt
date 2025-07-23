@@ -2,8 +2,8 @@ package dinino.marc.games.serialization
 
 typealias JsonString = String
 
-interface ConverterJsonString<T: Any> : ToJsonStringStringConverter<T>, FromJsonStringConverter<T>
-interface ToJsonStringStringConverter<in T: Any> {
+interface JsonConverter<T: Any> : ToJsonStringConverter<T>, FromJsonStringConverter<T>
+interface ToJsonStringConverter<in T: Any> {
     fun convertToJson(item: T): JsonString
 }
 

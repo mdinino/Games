@@ -4,10 +4,10 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 
-class DefaultConverterJsonString<T: Any>(
+class DefaultJsonConverter<T: Any>(
     private val serializer: KSerializer<T>,
     private val serialFormat: StringFormat = Json
-): ConverterJsonString<T> {
+): JsonConverter<T> {
     override fun convertToJson(item: T) =
         serialFormat.encodeToString(serializer, item)
 
