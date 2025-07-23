@@ -16,7 +16,6 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.spacing
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateTo
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over_screen_new_game
 import games.composeapp.generated.resources.game_over_screen_different_game
