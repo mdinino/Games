@@ -1,11 +1,8 @@
 package dinino.marc.games.userflow.common.data
 
 import dinino.marc.games.coroutine.CoroutineCriticalSection
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialFormat
-import kotlinx.serialization.json.Json
-
-private typealias JsonString = String
+import dinino.marc.games.serialization.JsonConverter
+import dinino.marc.games.serialization.JsonString
 
 /**
  * A Repository that converts data to/from JSON before getting/settings items.
@@ -22,7 +19,7 @@ fun <T: Any> SerializableJsonRepository(
 interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
     val jsonConverter: JsonConverter<T>
     val getAllUuids: suspend ()->List<String>
-    val getItemByUuid: suspend (uuid: String)->JsonString?
+    val getItemByUuid: suspend (uuid: String)-> JsonString?
     val upsertItemByUuid: suspend (uuid: String, item: JsonString)->Unit
     val clearAll: suspend ()->Unit
 }
@@ -68,21 +65,3 @@ class DefaultJsonLocalDatabaseEndpoint<T: Any> (
         jsonConverter.convertToJson(this)
 }
 
-interface JsonConverter<T: Any> {
-    val serialFormat: SerialFormat
-    val serializer: KSerializer<T>
-
-    fun convertToJson(item: T): JsonString
-    fun convertFromJson(jsonString: JsonString): T
-}
-
-class DefaultJsonConverter<T: Any>(
-    override val serializer: KSerializer<T>,
-    override val serialFormat: SerialFormat = Json
-): JsonConverter<T> {
-    override fun convertToJson(item: T) =
-        Json.encodeToString(serializer, item)
-
-    override fun convertFromJson(jsonString: JsonString) =
-        Json.decodeFromString(serializer,jsonString)
-}

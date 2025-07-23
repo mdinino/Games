@@ -1,18 +1,18 @@
-package dinino.marc.games.userflow.tetris.ui.screen.selectneworresumegame
+package dinino.marc.games.userflow.tictactoe.ui.screen.gameover
 
 import dinino.marc.games.userflow.common.ui.route.ContentWithAppBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
-import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
+import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TetrisSelectNewOrResumeGameRoute :
+data object TicTacToeGameOverRoute :
     SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
-            .get<TetrisUserFlowProviders>().localizedNameProvider,
+            .get<TicTacToeUserFlowProviders>().localizedNameProvider,
         content = { modifier, navHostController ->
-            TetrisSelectNewOrResumeGameScreen(
+            TicTacToeGameOverScreen(
                 modifier = modifier,
                 navHostController = navHostController
             )

@@ -1,4 +1,4 @@
-package dinino.marc.games.userflow.common.ui.onetimeevent
+package dinino.marc.games.userflow.common.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets

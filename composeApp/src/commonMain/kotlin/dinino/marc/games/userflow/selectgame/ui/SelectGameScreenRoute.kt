@@ -18,4 +18,4 @@ data object SelectGameScreenRoute :
             )
         }
     ),
-    SerializableUserFlowRoute.UserFlowScreenRoute.ClearBackStackUpToHere
+    SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack

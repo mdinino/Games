@@ -79,6 +79,10 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.compose.icons)
             implementation(libs.sqldelight.coroutines)
+
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-parameters")
+            }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
