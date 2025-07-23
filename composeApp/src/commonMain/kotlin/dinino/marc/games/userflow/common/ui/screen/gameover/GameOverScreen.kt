@@ -3,7 +3,6 @@ package dinino.marc.games.userflow.common.ui.screen.gameover
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +16,7 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.spacing
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateTo
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over_screen_new_game
 import games.composeapp.generated.resources.game_over_screen_different_game
@@ -87,7 +86,7 @@ private fun <ONE_TIME_EVENT: GameOverOneTimeEvent>
     ObserveOneTimeEventEffect(oneTimeEvents = this) { oneTimeEvent ->
         when(oneTimeEvent) {
             is GameOverOneTimeEvent.Navigate -> {
-                navHostController.navigateToRoute(oneTimeEvent.route)
+                navHostController.navigateTo(oneTimeEvent.routeEvent)
             }
         }
     }

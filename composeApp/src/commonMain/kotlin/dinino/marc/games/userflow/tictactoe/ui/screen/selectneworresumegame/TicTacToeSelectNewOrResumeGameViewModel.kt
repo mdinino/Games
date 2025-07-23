@@ -1,7 +1,7 @@
 package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 
 import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
+import dinino.marc.games.userflow.common.ui.route.ScreenRouteEvent
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameViewModel
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGame
@@ -18,11 +18,9 @@ class TicTacToeSelectNewOrResumeGameViewModel(
 )
 
 private data object SelectNewGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
-    override val route: SerializableUserFlowRoute
-        get() = TicTacToeGameOverRoute
+    override val routeEvent get() = ScreenRouteEvent(TicTacToeGameOverRoute)
 }
 
 private data object SelectResumeGame : SelectNewOrResumeGameOneTimeEvent.Navigate {
-    override val route: SerializableUserFlowRoute
-        get() = TicTacToeGameOverRoute
+    override val routeEvent get() = ScreenRouteEvent(TicTacToeGameOverRoute)
 }

@@ -8,8 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventLayout
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
 import dinino.marc.games.userflow.common.ui.SnackbarController
+import dinino.marc.games.userflow.common.ui.route.NavigateDownNavGraphRouteEvent
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateTo
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
 import dinino.marc.games.userflow.tetris.ui.TetrisNavGraphRoute
 import dinino.marc.games.userflow.tictactoe.ui.TicTacToeNavGraphRoute
@@ -87,9 +88,9 @@ private suspend fun <T> handleOneTimeEvent(
         is SelectGameViewModel.OneTimeEvent.Error ->
             snackbarController.sendSnackbarEvent(event.asSnackbarEvent())
         is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTicTacToeFlow ->
-            navHostController.navigateToRoute(TicTacToeNavGraphRoute)
+            navHostController.navigateTo(NavigateDownNavGraphRouteEvent(TicTacToeNavGraphRoute))
         is SelectGameViewModel.OneTimeEvent.Navigate.NavigateToTetrisFlow ->
-            navHostController.navigateToRoute(TetrisNavGraphRoute)
+            navHostController.navigateTo(NavigateDownNavGraphRouteEvent(TetrisNavGraphRoute))
     }
 }
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateToRoute
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateTo
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_new_game
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_resume_game
@@ -79,7 +79,7 @@ private fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
     ObserveOneTimeEventEffect(oneTimeEvents = this) { oneTimeEvent ->
         when(oneTimeEvent) {
             is SelectNewOrResumeGameOneTimeEvent.Navigate -> {
-                navHostController.navigateToRoute(oneTimeEvent.route)
+                navHostController.navigateTo(oneTimeEvent.routeEvent)
             }
         }
     }

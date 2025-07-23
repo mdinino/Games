@@ -1,13 +1,15 @@
 package dinino.marc.games.userflow.common.ui.route
 
+import androidx.annotation.MainThread
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
-import androidx.savedstate.SavedState
+import dinino.marc.games.serialization.ToJsonStringStringConverter
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
+import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowScreenRoute
 
 /**
  * ALl implementing classes should be marked with @Serializable
@@ -43,42 +45,56 @@ sealed interface SerializableUserFlowRoute {
     }
 
     companion object {
-        fun NavController.navigateToRoute(route: SerializableUserFlowRoute) =
-            when (route) {
-                is UserFlowScreenRoute -> navigateToUserFlowScreenRoute(route)
-                is UserFlowNavGraphRoute -> navigateToUserFlowNavGraphRoute(route)
-            }
-
-        private fun NavController.navigateToUserFlowScreenRoute(route: UserFlowScreenRoute) =
+        /**
+         * Navigate to a screen at this nav-graph level.
+         */
+        @MainThread
+        fun NavController.navigateTo(route: UserFlowScreenRoute) =
             navigate(route) {
                 if (route is UserFlowScreenRoute.ClearUserFlowBackStack) {
                     popSubGraph()
                 }
             }
 
-        private fun NavController.navigateToUserFlowNavGraphRoute(route: UserFlowNavGraphRoute) {
-            addOnDestinationChangedListener(
-                object : NavController.OnDestinationChangedListener {
-                    override fun onDestinationChanged(
-                        controller: NavController,
-                        destination: NavDestination,
-                        arguments: SavedState?
-                    ) {
-                        controller.removeOnDestinationChangedListener(this)
-                        if (route.landingScreenRoute is UserFlowScreenRoute.ClearUserFlowBackStack) {
-                            popSubGraph()
-                        }
-                    }
-                }
-            )
-            navigate(route.landingScreenRoute)
-        }
+        /**
+         * Adds a nav graph then moves down the stack to that sub-nav-graph
+         */
+        @MainThread
+        fun NavController.navigateDownTo(route: UserFlowNavGraphRoute) =
+            navigate(route)
 
+        /**
+         * Navigates up up to parent nav graphs until the nav graph is route is found.
+         */
+        @MainThread
+        fun NavController.navigateUpTo(
+            route: UserFlowNavGraphRoute,
+            routeJsonConverter: ToJsonStringStringConverter<UserFlowNavGraphRoute>,
+            forceToLadingScreenRoute: Boolean = true
+        ) {
+            val serializedRoute: String = routeJsonConverter.convertToJson(route)
+            var success: Boolean
+            var currentBackStackEntry: NavBackStackEntry?
+
+            do {
+                success = navigateUp()
+                currentBackStackEntry = this.currentBackStackEntry
+            } while(
+                success
+                && currentBackStackEntry?.parentRoute != serializedRoute
+            )
+
+            if (!success) return
+            if (forceToLadingScreenRoute) {
+                navigateTo(route.landingScreenRoute)
+            }
+        }
 
         /**
          * Pops all backstack entries associated with the given nav graph before navigation is complete.
          * Stops as soon as the current backstack's parent is different than the given one.
          */
+        @MainThread
         context(controller: NavController)
         private fun NavOptionsBuilder.popSubGraph() {
             popUpTo(route = controller.firstRouteOfSubNavGraph ?: return) {
@@ -86,15 +102,8 @@ sealed interface SerializableUserFlowRoute {
             }
         }
 
-        private fun NavController.popSubGraph() {
-            popBackStack(
-                route = firstRouteOfSubNavGraph ?: return,
-                inclusive = true
-            )
-        }
-
         private val NavController.firstRouteOfSubNavGraph: String?
-            get() {
+            @MainThread get() {
                 val currentBackStackEntry = this.currentBackStackEntry ?: return null
                 val currentParentRoute = currentBackStackEntry.parentRoute ?: return null
 
@@ -109,9 +118,9 @@ sealed interface SerializableUserFlowRoute {
                 return lastRouteOfSubGraph
             }
         private val NavBackStackEntry.route: String
-            get() = destination.route!!
+            @MainThread get() = destination.route!!
 
-        private val NavBackStackEntry.parentRoute: String?
-            get() = destination.parent?.route
+        val NavBackStackEntry.parentRoute: String?
+            @MainThread get() = destination.parent?.route
     }
 }
