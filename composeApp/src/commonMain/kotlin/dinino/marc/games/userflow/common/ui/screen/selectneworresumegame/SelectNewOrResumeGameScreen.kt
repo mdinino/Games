@@ -1,6 +1,5 @@
 package dinino.marc.games.userflow.common.ui.screen.selectneworresumegame
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.Companion.navigateTo
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_new_game
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_resume_game
@@ -21,12 +19,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun <GAME: Any,
      STATE: SelectNewOrResumeGameState,
-     ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent,
-     VM: SelectNewOrResumeGameViewModel<GAME, STATE, ONE_TIME_EVENT>
+     VM: SelectNewOrResumeGameViewModel<GAME, STATE>
 > SelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    vm: VM
+    vm: VM,
+    oneTimeEventHandler: (navHostController: NavHostController, event: SelectNewOrResumeGameOneTimeEvent)->Unit
 ) {
     val state = vm.selectNewOrResumeGameState.collectAsState()
 
@@ -46,6 +44,7 @@ fun <GAME: Any,
         modifier = modifier,
         navHostController = navHostController,
         oneTimeEvents = vm.oneTimeEvents,
+        oneTimeEventHandler = oneTimeEventHandler,
         onSelectNewGameOrNullIfDisabled = onSelectNewGame,
         onSelectResumeGameOrNullIfDisabled = onSelectResumeGame
     )
@@ -57,32 +56,19 @@ fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
             modifier: Modifier = Modifier,
             navHostController: NavHostController,
             oneTimeEvents: Flow<ONE_TIME_EVENT> = emptyFlow(),
+            oneTimeEventHandler: (navHostController: NavHostController, event: ONE_TIME_EVENT)->Unit,
             onSelectNewGameOrNullIfDisabled : (()->Unit)? = {},
             onSelectResumeGameOrNullIfDisabled : (()->Unit)? = null
 ) {
-    oneTimeEvents.ObserveEffect(
-        navHostController = navHostController
-    )
+    ObserveOneTimeEventEffect(oneTimeEvents = oneTimeEvents) { oneTimeEvent ->
+        oneTimeEventHandler.invoke(navHostController, oneTimeEvent)
+    }
 
     SelectNewOrResumeGameLayout(
         modifier = modifier,
         onSelectNewGameOrNullIfDisabled = onSelectNewGameOrNullIfDisabled,
         onSelectResumeGameOrNullIfDisabled = onSelectResumeGameOrNullIfDisabled
     )
-}
-
-@Composable
-private fun <ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent>
-        Flow<ONE_TIME_EVENT>.ObserveEffect(
-            navHostController: NavHostController
-) {
-    ObserveOneTimeEventEffect(oneTimeEvents = this) { oneTimeEvent ->
-        when(oneTimeEvent) {
-            is SelectNewOrResumeGameOneTimeEvent.Navigate -> {
-                navHostController.navigateTo(oneTimeEvent.routeEvent)
-            }
-        }
-    }
 }
 
 @Composable

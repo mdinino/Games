@@ -27,18 +27,18 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun <STATE: GameOverState,
-     ONE_TIME_EVENT: GameOverOneTimeEvent,
-     VM: GameOverViewModel<STATE, ONE_TIME_EVENT>
+     VM: GameOverViewModel<STATE>
 > GameOverScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    vm: VM
+    vm: VM,
+    oneTimeEventHandler: (navHostController: NavHostController, oneTimeEvent: GameOverOneTimeEvent)->Unit,
 ) {
     val state = vm.state.collectAsState()
 
     val onSelectNewGame: (()->Unit)? =
         when(state.value.isSelectStartNewGameAvailable) {
-            true -> { { vm.selectNewGame() } }
+            true -> { { vm.selectStartNewGame() } }
             else -> null
         }
 
@@ -52,6 +52,7 @@ fun <STATE: GameOverState,
         modifier = modifier,
         navHostController = navHostController,
         oneTimeEvents = vm.oneTimeEvents,
+        oneTimeEventHandler = oneTimeEventHandler,
         onSelectNewGameOrNullIfDisabled = onSelectNewGame,
         onDifferentGameGameOrNullIfDisabled = onSelectDifferentGame
     )
@@ -63,32 +64,19 @@ fun <ONE_TIME_EVENT: GameOverOneTimeEvent>
             modifier: Modifier = Modifier,
             navHostController: NavHostController,
             oneTimeEvents: Flow<ONE_TIME_EVENT> = emptyFlow(),
+            oneTimeEventHandler: (navHostController: NavHostController, oneTimeEvent: ONE_TIME_EVENT)->Unit,
             onSelectNewGameOrNullIfDisabled : (()->Unit)? = {},
             onDifferentGameGameOrNullIfDisabled : (()->Unit)? = null
 ) {
-    oneTimeEvents.ObserveEffect(
-        navHostController = navHostController
-    )
+    ObserveOneTimeEventEffect(oneTimeEvents = oneTimeEvents) { oneTimeEvent ->
+        oneTimeEventHandler.invoke(navHostController, oneTimeEvent)
+    }
 
     GameOverLayout(
         modifier = modifier,
         onSelectNewGameOrNullIfDisabled = onSelectNewGameOrNullIfDisabled,
         onSelectDifferentGameOrNullIfDisabled = onDifferentGameGameOrNullIfDisabled
     )
-}
-
-@Composable
-private fun <ONE_TIME_EVENT: GameOverOneTimeEvent>
-        Flow<ONE_TIME_EVENT>.ObserveEffect(
-            navHostController: NavHostController
-) {
-    ObserveOneTimeEventEffect(oneTimeEvents = this) { oneTimeEvent ->
-        when(oneTimeEvent) {
-            is GameOverOneTimeEvent.Navigate -> {
-                navHostController.navigateTo(oneTimeEvent.routeEvent)
-            }
-        }
-    }
 }
 
 @Composable

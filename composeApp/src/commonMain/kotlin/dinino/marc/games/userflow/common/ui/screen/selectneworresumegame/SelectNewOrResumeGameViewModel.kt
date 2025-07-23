@@ -14,29 +14,26 @@ import kotlinx.coroutines.launch
 abstract class SelectNewOrResumeGameViewModel<
         out GAME: Any,
         out STATE: SelectNewOrResumeGameState,
-        out ONE_TIME_EVENT: SelectNewOrResumeGameOneTimeEvent
 >(
     private val repository: Repository<GAME>,
-    private val _oneTimeEvents: Channel<ONE_TIME_EVENT> = Channel(),
+    private val _oneTimeEvents: Channel<SelectNewOrResumeGameOneTimeEvent> = Channel(),
     private val stateFactory: (isResumeAvailable: Boolean)->STATE,
-    private val navigateToNewGameEventFactory: ()->ONE_TIME_EVENT,
-    private val navigateToResumeGameEventFactory: ()->ONE_TIME_EVENT
 ): ViewModel() {
 
     val selectNewOrResumeGameState: StateFlow<STATE>
         get() = repository.hasEntry
             .mapStateFlow { hasEntry -> stateFactory.invoke(hasEntry) }
 
-    val oneTimeEvents: Flow<ONE_TIME_EVENT>
+    val oneTimeEvents: Flow<SelectNewOrResumeGameOneTimeEvent>
         get() = _oneTimeEvents.receiveAsFlow()
 
     fun selectNewGame() =
-        sendOneTimeEvent(event = navigateToNewGameEventFactory.invoke())
+        sendOneTimeEvent(event = SelectNewOrResumeGameOneTimeEvent.NewGameSelected)
 
     fun selectResumeGame() =
-        sendOneTimeEvent(event = navigateToResumeGameEventFactory.invoke())
+        sendOneTimeEvent(event = SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected)
 
-    private fun sendOneTimeEvent(event: ONE_TIME_EVENT) {
+    private fun sendOneTimeEvent(event: SelectNewOrResumeGameOneTimeEvent) {
         viewModelScope.launch {
             _oneTimeEvents.send(event)
         }

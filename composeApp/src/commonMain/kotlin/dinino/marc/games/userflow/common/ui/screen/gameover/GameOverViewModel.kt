@@ -10,30 +10,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class GameOverViewModel<
-        out STATE: GameOverState,
-        out ONE_TIME_EVENT: GameOverOneTimeEvent
->(
-    private val _oneTimeEvents: Channel<ONE_TIME_EVENT> = Channel(),
+abstract class GameOverViewModel<out STATE: GameOverState>(
+    private val _oneTimeEvents: Channel<GameOverOneTimeEvent> = Channel(),
     initialState: STATE,
     private val _state: MutableStateFlow<STATE> = MutableStateFlow(value = initialState),
-    private val navigateToNewGameEventFactory: ()->ONE_TIME_EVENT,
-    private val navigateToDifferentGameEventFactory: ()->ONE_TIME_EVENT
 ): ViewModel() {
 
     val state: StateFlow<STATE>
         get() = _state.asStateFlow()
 
-    val oneTimeEvents: Flow<ONE_TIME_EVENT>
+    val oneTimeEvents: Flow<GameOverOneTimeEvent>
         get() = _oneTimeEvents.receiveAsFlow()
 
-    fun selectNewGame() =
-        sendOneTimeEvent(event = navigateToNewGameEventFactory.invoke())
+    fun selectStartNewGame() =
+        sendOneTimeEvent(event = GameOverOneTimeEvent.StartNewGameSelected)
 
     fun selectDifferentGame() =
-        sendOneTimeEvent(event = navigateToDifferentGameEventFactory.invoke())
+        sendOneTimeEvent(event = GameOverOneTimeEvent.SelectDifferentGameSelected)
 
-    private fun sendOneTimeEvent(event: ONE_TIME_EVENT) {
+    private fun sendOneTimeEvent(event: GameOverOneTimeEvent) {
         viewModelScope.launch {
             _oneTimeEvents.send(event)
         }
