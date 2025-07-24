@@ -17,5 +17,4 @@ data object SelectGameScreenRoute :
                 navHostController = navHostController
             )
         }
-    ),
-    SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack
+    ), SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack
