@@ -4,8 +4,6 @@ import androidx.annotation.MainThread
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
-import dinino.marc.games.serialization.DefaultToJsonStringConverter
-import dinino.marc.games.serialization.ToJsonStringConverter
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowScreenRoute
 import kotlinx.serialization.InternalSerializationApi
@@ -35,28 +33,15 @@ fun NavController.navigateDownTo(route: UserFlowNavGraphRoute) =
 @OptIn(InternalSerializationApi::class)
 @MainThread
 inline fun <reified T: UserFlowNavGraphRoute> NavController.navigateUpTo(
-    route: T,
-    routeJsonConverter: ToJsonStringConverter<T> =
-        DefaultToJsonStringConverter(
-            serializer = T::class.serializer()
-        ),
+    navGraphRoute: T,
     forceToLadingScreenRoute: Boolean = true
 ) {
-    val serializedRoute: String = routeJsonConverter.convertToJson(route)
-    var success: Boolean
-    var currentBackStackEntry: NavBackStackEntry?
+    val navGraphRouteName = T::class.serializer().descriptor.serialName
+    do { if (!navigateUp()) return }
+    while(currentBackStackEntry?.parentRoute != navGraphRouteName)
 
-    do {
-        success = navigateUp()
-        currentBackStackEntry = this.currentBackStackEntry
-    } while(
-        success
-        && currentBackStackEntry?.parentRoute != serializedRoute
-    )
-
-    if (!success) return
     if (forceToLadingScreenRoute) {
-        navigateTo(route.landingScreenRoute)
+        navigateTo(navGraphRoute.landingScreenRoute)
     }
 }
 
