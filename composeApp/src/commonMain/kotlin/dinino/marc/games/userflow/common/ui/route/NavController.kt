@@ -36,7 +36,9 @@ inline fun <reified T: UserFlowNavGraphRoute> NavController.navigateUpTo(
     navGraphRoute: T,
     forceToLadingScreenRoute: Boolean = true
 ) {
+    // this is how the navigate library converts from a class to a route name
     val navGraphRouteName = T::class.serializer().descriptor.serialName
+
     do { if (!navigateUp()) return }
     while(currentBackStackEntry?.parentRoute != navGraphRouteName)
 
