@@ -7,10 +7,10 @@ import dinino.marc.games.userflow.common.data.DefaultJsonLocalDatabaseEndpoint
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.data.SerializableJsonRepository
 
-class TicTacToeGameRepository(
+class TicTacToeGameDataRepository(
     queries: TicTacToeGameEntityQueries,
-    jsonConverter: JsonConverter<TicTacToeGame> = DefaultJsonConverter(TicTacToeGame.serializer())
-): Repository<TicTacToeGame> by SerializableJsonRepository(
+    jsonConverter: JsonConverter<TicTacToeGameData> = DefaultJsonConverter(TicTacToeGameData.serializer())
+): Repository<TicTacToeGameData> by SerializableJsonRepository(
         jsonLocalDatabaseEndpoint = DefaultJsonLocalDatabaseEndpoint(
             jsonConverter = jsonConverter,
             getAllUuids = { queries.getAllUuids().toList() },

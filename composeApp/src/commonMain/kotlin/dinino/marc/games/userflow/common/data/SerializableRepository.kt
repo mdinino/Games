@@ -14,7 +14,18 @@ fun <T: Any> SerializableJsonRepository(
 ): Repository<T> =
     DefaultRepository(
         remoteEndpoints = listOf(jsonLocalDatabaseEndpoint) + otherEndpoints
-    )
+)
+
+@Suppress("FunctionName")
+fun <GAME_STATE: GameState, BOARD_DATA: Any, GAME_DATA: GameData<GAME_STATE, BOARD_DATA>>
+    SerializableGameStateJsonRepository(
+        jsonLocalDatabaseEndpoint: JsonEndpoint<GAME_DATA>,
+        otherEndpoints: List<JsonEndpoint<GAME_DATA>> = emptyList()
+): Repository<GAME_DATA> =
+    SerializableJsonRepository(
+        jsonLocalDatabaseEndpoint = jsonLocalDatabaseEndpoint,
+        otherEndpoints = otherEndpoints
+)
 
 interface JsonEndpoint<T: Any>: Repository.Endpoint<T> {
     val jsonConverter: JsonConverter<T>

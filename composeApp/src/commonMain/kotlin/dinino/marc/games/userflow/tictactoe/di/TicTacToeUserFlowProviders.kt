@@ -5,8 +5,8 @@ import dinino.marc.games.Database
 import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.SnackbarController
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGame
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameRepository
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameDataRepository
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tictactoe
 import org.jetbrains.compose.resources.stringResource
@@ -17,9 +17,9 @@ class TicTacToeUserFlowProviders(
         _localizedNameProvider,
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider =
         _snackbarControllerProvider,
-    override val repositoryProvider: GameUserFlowProviders.RepositoryProvider<TicTacToeGame> =
+    override val repositoryProvider: GameUserFlowProviders.RepositoryProvider<TicTacToeGameData> =
         _repositoryProvider
-): GameUserFlowProviders<TicTacToeGame> {
+): GameUserFlowProviders<TicTacToeGameData> {
     companion object {
         private val _localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {
             @Composable override fun provide() = stringResource(Res.string.userflow_tictactoe)
@@ -30,12 +30,12 @@ class TicTacToeUserFlowProviders(
         }
 
         private val _repositoryProvider = object :
-            GameUserFlowProviders.RepositoryProvider<TicTacToeGame> {
+            GameUserFlowProviders.RepositoryProvider<TicTacToeGameData> {
                 override fun provide() = _repostory
         }
 
         private val _snackbarController = SnackbarController()
 
-        private val _repostory = TicTacToeGameRepository(getKoin().get<Database>().ticTacToeGameEntityQueries)
+        private val _repostory = TicTacToeGameDataRepository(getKoin().get<Database>().ticTacToeGameEntityQueries)
     }
 }
