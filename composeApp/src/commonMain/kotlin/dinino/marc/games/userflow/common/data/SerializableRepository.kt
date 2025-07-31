@@ -17,10 +17,12 @@ fun <T: Any> SerializableJsonRepository(
 )
 
 @Suppress("FunctionName")
-fun <GAME_STATE: GameState, BOARD_DATA: Any, GAME_DATA: GameData<GAME_STATE, BOARD_DATA>>
-    SerializableGameStateJsonRepository(
-        jsonLocalDatabaseEndpoint: JsonEndpoint<GAME_DATA>,
-        otherEndpoints: List<JsonEndpoint<GAME_DATA>> = emptyList()
+fun <GAME_OVER_DETAILS: Any,
+        BOARD_DATA: Any,
+        GAME_DATA: GameData<GAME_OVER_DETAILS, BOARD_DATA>,
+> SerializableGameStateJsonRepository(
+    jsonLocalDatabaseEndpoint: JsonEndpoint<GAME_DATA>,
+    otherEndpoints: List<JsonEndpoint<GAME_DATA>> = emptyList()
 ): Repository<GAME_DATA> =
     SerializableJsonRepository(
         jsonLocalDatabaseEndpoint = jsonLocalDatabaseEndpoint,

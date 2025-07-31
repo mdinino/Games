@@ -1,27 +1,22 @@
 package dinino.marc.games.userflow.tictactoe.data
 
 import dinino.marc.games.userflow.common.data.GameData
-import dinino.marc.games.userflow.common.data.GameState
+import dinino.marc.games.userflow.common.data.GamePlayData
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class TicTacToeGameData(
-    override val gameState: TicTacToeGameState = TicTacToeGameState.Normal,
-    override val boardData: TicTacToeBoardData = TicTacToeBoardData()
-) : GameData<TicTacToeGameState, TicTacToeBoardData>
+    override val playData: GamePlayData<GameOverDetails> = GamePlayData.Normal(),
+    override val boardData: BoardData = BoardData()
+): GameData<TicTacToeGameData.GameOverDetails, TicTacToeGameData.BoardData> {
+    @Serializable
+    data class BoardData(val string: String = "")
 
-
-@Serializable sealed interface TicTacToeGameState: GameState {
-    @Serializable data object Normal: TicTacToeGameState
-    @Serializable sealed interface Paused: TicTacToeGameState, GameState.Paused {
-        @Serializable data object UserPaused: Paused, GameState.Paused.UserPaused
-        @Serializable data object UserToConfirmGameOver: Paused, GameState.Paused.UserToConfirmGameOver
-    }
-    @Serializable sealed interface GameOver: TicTacToeGameState, GameState.GameOver {
-        @Serializable data object UserInitiatedGameOver : GameOver, GameState.GameOver.UserInitiatedGameOver
-        @Serializable data object PlayerXWins : GameOver, GameState.GameOver.UserInitiatedGameOver
-        @Serializable data object PlayerOWins : GameOver, GameState.GameOver.UserInitiatedGameOver
+    @Serializable
+    sealed interface GameOverDetails {
+        @Serializable data object XWins: GameOverDetails
+        @Serializable data object OWins: GameOverDetails
     }
 }
 
-@Serializable data class TicTacToeBoardData(val json: String = "")
