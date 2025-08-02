@@ -6,16 +6,14 @@ import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 
 class TicTacToeGameViewModel(
-    newGame: Boolean,
     repository: Repository<TicTacToeGameData>,
     defaultGameData: ()->TicTacToeGameData =
         { TicTacToeGameData() },
     convertDataToState: (gameData: TicTacToeGameData)->TicTacToeGameState =
         ::convertDataToState
-): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData.BoardData,
-        TicTacToeGameData, TicTacToeGameOverDetails, TicTacToeBoardState
->(newGame = newGame, repository = repository,
-    defaultGameData = defaultGameData, convertDataToState = convertDataToState) {
+): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
+        TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
+    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState) {
 
     override fun pause() =
         mutateGameData { mutatePaused(paused = true) }

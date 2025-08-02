@@ -14,24 +14,14 @@ import kotlinx.coroutines.launch
 
 abstract class GameViewModel<
         GAME_OVER_DATA_DETAILS: Any,
-        BOARD_DATA: Any,
-        GAME_DATA: GameData<GAME_OVER_DATA_DETAILS, BOARD_DATA>,
+        GAME_DATA: GameData<GAME_OVER_DATA_DETAILS, *>,
         out GAME_OVER_STATE_DETAILS: Any,
         out BOARD_STATE: Any>(
-    newGame: Boolean,
     private val _oneTimeEvents: Channel<GameOneTimeEvent> = Channel(),
     private val repository: Repository<GAME_DATA>,
     private val defaultGameData: ()->GAME_DATA,
     private val convertDataToState: (gameData: GAME_DATA)->GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
 ): ViewModel() {
-
-    init {
-        if (newGame) {
-            viewModelScope.launch {
-                repository.upsertLatestItemIfDifferent(defaultGameData())
-            }
-        }
-    }
 
     val gameState: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>> =
         repository.lastestItem
@@ -40,8 +30,15 @@ abstract class GameViewModel<
     val oneTimeEvent: Flow<GameOneTimeEvent>
         get() = _oneTimeEvents.receiveAsFlow()
 
-    fun navigateToGameOverScreen() =
-        sendOneTimeEvent(GameOneTimeEvent.NavigateToGameOverScreen)
+    fun resetToNewGame() =
+        mutateGameData { defaultGameData() }
+
+    fun navigateToGameOverScreen(clearGame : Boolean = true) {
+        viewModelScope.launch {
+            if (clearGame) repository.clearEntries()
+            _oneTimeEvents.send(GameOneTimeEvent.NavigateToGameOverScreen)
+        }
+    }
 
     protected fun mutateGameData(mutator: GAME_DATA.()->GAME_DATA) {
         val mutated = (repository.lastestItem.value ?: defaultGameData()).mutator()

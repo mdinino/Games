@@ -6,15 +6,13 @@ import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
 
 class TetrisGameViewModel(
-    newGame: Boolean,
     repository: Repository<TetrisGameData>,
     defaultGameData: ()->TetrisGameData =
         { TetrisGameData() },
     convertDataToState: (gameData: TetrisGameData)-> TetrisGameState =
         ::convertDataToState
-): GameViewModel<Unit, TetrisGameData.BoardData, TetrisGameData, Unit, TetrisBoardState>(
-    newGame = newGame, repository = repository, defaultGameData = defaultGameData,
-    convertDataToState = convertDataToState
+): GameViewModel<Unit, TetrisGameData, Unit, TetrisBoardState>(
+    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
 
     override fun pause() =

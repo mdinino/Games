@@ -8,25 +8,14 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 
 val ticTacToeUserFlowModule = module {
-
     single { TicTacToeUserFlowProviders() }
-
-    viewModel {
-        TicTacToeSelectNewOrResumeGameViewModel(
-            repository = KoinPlatform.getKoin()
-                .get<TicTacToeUserFlowProviders>()
-                .repositoryProvider
-                .provide()
-        )
-    }
-
-    viewModel { (newGame: Boolean) -> TicTacToeGameViewModel(
-        newGame = newGame,
-        repository = KoinPlatform.getKoin()
-            .get<TicTacToeUserFlowProviders>()
-            .repositoryProvider
-            .provide())
-    }
-
+    viewModel { TicTacToeSelectNewOrResumeGameViewModel(repository) }
+    viewModel { TicTacToeGameViewModel(repository) }
     viewModel { TicTacToeGameOverViewModel() }
 }
+
+private val repository
+    get() = KoinPlatform.getKoin()
+        .get<TicTacToeUserFlowProviders>()
+        .repositoryProvider
+        .provide()
