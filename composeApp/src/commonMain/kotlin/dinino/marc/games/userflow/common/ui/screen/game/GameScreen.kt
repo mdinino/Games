@@ -8,19 +8,24 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 @Composable
 fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
+    coroutineScope: CoroutineScope
+        = rememberCoroutineScope(),
     modifier: Modifier
         = Modifier,
     oneTimeEvents: Flow<GameOneTimeEvent>
@@ -44,11 +49,13 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         snackbarHost = { SnackbarHost(hostState = gameScreenSnackbarHostState) },
     ) { innerPadding -> content(innerPadding, state.board) }
 
-    // TODO
-    gameScreenSnackbarHostState.showGameOverNotification(
-        localizedMessage = { localizedGameOverMessage(null) },
-        onAction = onGameOverAccepted
-    )
+    coroutineScope.launch {
+        // TODO
+        gameScreenSnackbarHostState.showGameOverNotification(
+            localizedMessage = { localizedGameOverMessage(null) },
+            onAction = onGameOverAccepted
+        )
+    }
 }
 
 private suspend fun SnackbarHostState.showGameOverNotification(
