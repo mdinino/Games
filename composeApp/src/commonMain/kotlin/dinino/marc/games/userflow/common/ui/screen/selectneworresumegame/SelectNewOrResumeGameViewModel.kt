@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 
 abstract class SelectNewOrResumeGameViewModel<
         out GAME: Any,
-        out STATE: SelectNewOrResumeGameState,
->(
+        out STATE: SelectNewOrResumeGameState>(
     private val repository: Repository<GAME>,
     private val _oneTimeEvents: Channel<SelectNewOrResumeGameOneTimeEvent> = Channel(),
     private val stateFactory: (isResumeAvailable: Boolean)->STATE,

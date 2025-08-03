@@ -24,8 +24,8 @@ class TicTacToeGameViewModel(
     override fun togglePause() =
         mutateGameData {
             when(paused) {
-                true -> mutatePaused(false)
-                false -> mutatePaused(true)
+                true -> mutatePaused(paused = false)
+                false -> mutatePaused(paused = true)
                 null -> this
             }
         }

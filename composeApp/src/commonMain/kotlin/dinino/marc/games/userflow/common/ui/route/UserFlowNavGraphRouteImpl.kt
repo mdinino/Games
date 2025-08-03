@@ -37,7 +37,7 @@ class UserFlowNavGraphRouteImpl(
     companion object {
         @Composable
         private fun NavGraphWithSnackbarController(
-            modifier: Modifier = Modifier.Companion,
+            modifier: Modifier = Modifier,
             landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
             otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
             snackbarController: SnackbarController,
@@ -53,7 +53,7 @@ class UserFlowNavGraphRouteImpl(
                 NavHost(
                     navController = navHostController,
                     startDestination = landingScreenRoute,
-                    modifier = Modifier.Companion.padding(innerPadding),
+                    modifier = Modifier.padding(innerPadding),
                 ) {
                     serializableUserFlowRouteComposable(
                         navHostController = navHostController,

@@ -3,6 +3,7 @@
     <string name="back_button">Back</string>
     <string name="menu">Menu</string>
     <string name="ok">OK</string>
+    <string name="game_over">Game Over</string>
     <string name="select_new_or_resume_game_screen_new_game">New Game</string>
     <string name="select_new_or_resume_game_screen_resume_game">Resume Game</string>
     <string name="game_over_screen_subtitle">Game Over</string>
