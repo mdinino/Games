@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 abstract class GameViewModel<
         GAME_OVER_DATA_DETAILS: Any,
         GAME_DATA: GameData<GAME_OVER_DATA_DETAILS, *>,
-        out GAME_OVER_STATE_DETAILS: Any,
+        GAME_OVER_STATE_DETAILS: Any,
         out BOARD_STATE: Any>(
-    private val _oneTimeEvents: Channel<GameOneTimeEvent> = Channel(),
+    private val _oneTimeEvents: Channel<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = Channel(),
     private val repository: Repository<GAME_DATA>,
     private val defaultGameData: ()->GAME_DATA,
     private val convertDataToState: (gameData: GAME_DATA)->GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
@@ -27,16 +27,23 @@ abstract class GameViewModel<
         repository.lastestItem
             .mapStateFlow { convertDataToState(it ?: defaultGameData()) }
 
-    val oneTimeEvent: Flow<GameOneTimeEvent>
+    val oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>
         get() = _oneTimeEvents.receiveAsFlow()
 
     fun resetToNewGame() =
         mutateGameData { defaultGameData() }
 
-    fun navigateToGameOverScreen(clearGame : Boolean = true) {
+    fun navigateToGameOverScreen(
+        gameOverDetails: GAME_OVER_STATE_DETAILS? = null,
+        clearGame : Boolean = true
+    ) {
         viewModelScope.launch {
             if (clearGame) repository.clearEntries()
-            _oneTimeEvents.send(GameOneTimeEvent.NavigateToGameOverScreen)
+            _oneTimeEvents.send(element =
+                GameOneTimeEvent.NavigateToGameOverScreen(
+                    gameOverDetails = gameOverDetails
+                )
+            )
         }
     }
 
@@ -47,7 +54,7 @@ abstract class GameViewModel<
         }
     }
 
-    private fun sendOneTimeEvent(event: GameOneTimeEvent) {
+    private fun sendOneTimeEvent(event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) {
         viewModelScope.launch {
             _oneTimeEvents.send(event)
         }
