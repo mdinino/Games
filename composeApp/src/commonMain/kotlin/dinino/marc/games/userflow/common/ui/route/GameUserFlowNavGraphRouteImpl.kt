@@ -4,10 +4,11 @@ import dinino.marc.games.userflow.common.di.UserFlowProviders
 
 class GameUserFlowNavGraphRouteImpl(
     selectNewOrResumeGameRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
+    gameRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
     gameOverRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
     private val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider,
 ): SerializableUserFlowRoute.UserFlowNavGraphRoute by UserFlowNavGraphRouteImpl(
     landingScreenRoute = selectNewOrResumeGameRoute,
-    otherRoutes = listOf(gameOverRoute),
+    otherRoutes = listOf(gameRoute, gameOverRoute),
     snackbarControllerProvider = snackbarControllerProvider
 )

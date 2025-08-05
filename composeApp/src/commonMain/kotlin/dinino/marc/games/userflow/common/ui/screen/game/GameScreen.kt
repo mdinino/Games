@@ -26,15 +26,15 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 @Composable
-fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any> GameScreen(
+fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
+        GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> SerializableUserFlowRoute.UserFlowScreenRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit
-        = { _, _ -> }
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) = GameScreen(
     vm = vm,
     modifier = modifier,
@@ -50,19 +50,15 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any> GameScreen(
     content = content
 )
 
-
 @Composable
 fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
-    modifier: Modifier
-        = Modifier,
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit
-        = {},
+    modifier: Modifier = Modifier,
+    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit
-        = { _, _ -> }
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) = GameScreen(
     state = vm.gameState,
     coroutineScope = rememberCoroutineScope(),
@@ -78,20 +74,14 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
-    coroutineScope: CoroutineScope
-        = rememberCoroutineScope(),
-    modifier: Modifier
-        = Modifier,
-    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>
-        = emptyFlow(),
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit
-        = {},
-    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
-        = { getString(Res.string.game_over) },
-    onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit
-        = {},
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit
-        = { _, _ -> }
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    modifier: Modifier = Modifier,
+    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
+    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
+    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
+        { getString(Res.string.game_over) },
+    onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) {
     val currentState = state.collectAsStateWithLifecycle()
     GameScreen(
@@ -110,20 +100,14 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
-    coroutineScope: CoroutineScope
-        = rememberCoroutineScope(),
-    modifier: Modifier
-        = Modifier,
-    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>
-        = emptyFlow(),
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit
-        = {},
-    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
-        = { getString(Res.string.game_over) },
-    onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit
-        = {},
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit
-        = { _, _ -> }
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    modifier: Modifier = Modifier,
+    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
+    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
+    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
+        { getString(Res.string.game_over) },
+    onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) {
     ObserveOneTimeEventEffect(oneTimeEvents = oneTimeEvent) { oneTimeEvent ->
         onOneTimeEvent(oneTimeEvent)

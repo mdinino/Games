@@ -2,6 +2,7 @@ package dinino.marc.games.userflow.tetris.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
+import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
 
@@ -35,7 +36,8 @@ class TetrisGameViewModel(
 
     companion object {
         private fun convertDataToState(gameData: TetrisGameData): TetrisGameState {
-            TODO()
+            // TODO
+            return defaultTetrisGameState
         }
     }
 
