@@ -12,7 +12,31 @@ import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TetrisGameScreen(
+fun TetrisNewGameScreen(
+    modifier: Modifier,
+    navHostController: NavHostController,
+    vm: TetrisGameViewModel = koinViewModel()
+) = TetrisGameScreen(
+    modifier = modifier,
+    navHostController = navHostController,
+    newGame = true,
+    vm = vm
+)
+
+@Composable
+fun TetrisResumeGameScreen(
+    modifier: Modifier,
+    navHostController: NavHostController,
+    vm: TetrisGameViewModel = koinViewModel()
+) = TetrisGameScreen(
+    modifier = modifier,
+    navHostController = navHostController,
+    newGame = false,
+    vm = vm
+)
+
+@Composable
+private fun TetrisGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     newGame: Boolean,
@@ -20,7 +44,7 @@ fun TetrisGameScreen(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(newGame, vm) {
-        lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.INITIALIZED) {
+        lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.CREATED) {
             vm.resetToNewGame()
         }
     }

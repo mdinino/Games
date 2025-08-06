@@ -7,15 +7,27 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data class TicTacToeGameRoute(val newGame: Boolean = true) :
+data object TicTacToeNewGameRoute :
     SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider,
         content = { modifier, navHostController ->
-            TicTacToeGameScreen(
+            TicTacToeNewGameScreen(
                 modifier = modifier,
                 navHostController = navHostController,
-                newGame = newGame
+            )
+        }
+    )
+
+@Serializable
+data object TicTacToeResumeGameRoute :
+    SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
+        localizedTitleProvider = KoinPlatform.getKoin()
+            .get<TicTacToeUserFlowProviders>().localizedNameProvider,
+        content = { modifier, navHostController ->
+            TicTacToeResumeGameScreen(
+                modifier = modifier,
+                navHostController = navHostController,
             )
         }
     )

@@ -7,15 +7,25 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data class TetrisGameRoute(val newGame: Boolean = true) :
+data object TetrisNewGameRoute :
     SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
         localizedTitleProvider = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider,
         content = { modifier, navHostController ->
-            TetrisGameScreen(
+            TetrisNewGameScreen(
                 modifier = modifier,
-                navHostController = navHostController,
-                newGame = newGame
-            )
+                navHostController = navHostController)
+        }
+    )
+
+@Serializable
+data object TetrisResumeGameRoute :
+    SerializableUserFlowRoute.UserFlowScreenRoute by ContentWithAppBarScreenRoute(
+        localizedTitleProvider = KoinPlatform.getKoin()
+            .get<TicTacToeUserFlowProviders>().localizedNameProvider,
+        content = { modifier, navHostController ->
+            TetrisResumeGameScreen(
+                modifier = modifier,
+                navHostController = navHostController)
         }
     )

@@ -18,7 +18,31 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TicTacToeGameScreen(
+fun TicTacToeNewGameScreen(
+    modifier: Modifier,
+    navHostController: NavHostController,
+    vm: TicTacToeGameViewModel = koinViewModel()
+) = TicTacToeGameScreen(
+    modifier = modifier,
+    navHostController = navHostController,
+    newGame = true,
+    vm = vm
+)
+
+@Composable
+fun TicTacToeResumeGameScreen(
+    modifier: Modifier,
+    navHostController: NavHostController,
+    vm: TicTacToeGameViewModel = koinViewModel()
+) = TicTacToeGameScreen(
+    modifier = modifier,
+    navHostController = navHostController,
+    newGame = false,
+    vm = vm
+)
+
+@Composable
+private fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     newGame: Boolean,
@@ -26,7 +50,7 @@ fun TicTacToeGameScreen(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(newGame, vm) {
-        lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.INITIALIZED) {
+        lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.CREATED) {
             vm.resetToNewGame()
         }
     }
