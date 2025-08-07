@@ -16,15 +16,14 @@ import androidx.navigation.toRoute
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.ui.SnackbarController.Companion.ObserveEffect
+import kotlinx.serialization.Serializable
 
-class UserFlowNavGraphRouteImpl(
-    override val landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
-    override val otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
-    private val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider,
-): SerializableUserFlowRoute.UserFlowNavGraphRoute {
+@Serializable
+abstract class UserFlowNavGraphRoute(): SerializableUserFlowRoute.UserFlowNavGraphRoute {
+    protected abstract val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider
 
     @Composable
-    override fun Navigation(modifier: Modifier, navHostController: NavHostController) {
+    final override fun Navigation(modifier: Modifier, navHostController: NavHostController) {
         NavGraphWithSnackbarController(
             modifier = modifier,
             landingScreenRoute = landingScreenRoute,
@@ -34,7 +33,7 @@ class UserFlowNavGraphRouteImpl(
         )
     }
 
-    companion object {
+    companion object Companion {
         @Composable
         private fun NavGraphWithSnackbarController(
             modifier: Modifier = Modifier,
