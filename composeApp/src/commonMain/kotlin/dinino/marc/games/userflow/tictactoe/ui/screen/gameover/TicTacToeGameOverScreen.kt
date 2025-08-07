@@ -3,7 +3,8 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.gameover
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.route.navigateTo
+import dinino.marc.games.userflow.common.ui.route.navigateBackTo
+import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import dinino.marc.games.userflow.common.ui.route.navigateUpTo
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverOneTimeEvent
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverScreen
@@ -24,7 +25,7 @@ fun TicTacToeGameOverScreen(
         oneTimeEventHandler = { navHostController, oneTimeEvent ->
             when(oneTimeEvent) {
                 GameOverOneTimeEvent.StartNewGameSelected ->
-                    navHostController.navigateTo(TicTacToeGameRoute(newGame = true))
+                    navHostController.navigateBackTo(TicTacToeGameRoute::class)
                 GameOverOneTimeEvent.SelectDifferentGameSelected ->
                     navHostController.navigateUpTo(SelectGameNavGraphRoute)
             }

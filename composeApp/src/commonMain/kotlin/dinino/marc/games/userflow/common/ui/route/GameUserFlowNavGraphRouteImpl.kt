@@ -11,13 +11,13 @@ class GameUserFlowNavGraphRouteImpl(
     landingScreenRoute = selectNewOrResumeGameRoute,
     otherRoutes = listOf(gameRoute, gameOverRoute),
     snackbarControllerProvider = snackbarControllerProvider
-) {
-    interface SelectNewOrResumeGameRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
-        SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack
+)
 
-    interface GameRoute: SerializableUserFlowRoute.UserFlowScreenRoute {
-        val newGame: Boolean
-    }
+interface SelectNewOrResumeGameRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
+    SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack
 
-    interface GameOverRoute: SerializableUserFlowRoute.UserFlowScreenRoute
+interface GameRoute: SerializableUserFlowRoute.UserFlowScreenRoute {
+    val newGame: Boolean
 }
+
+interface GameOverRoute: SerializableUserFlowRoute.UserFlowScreenRoute

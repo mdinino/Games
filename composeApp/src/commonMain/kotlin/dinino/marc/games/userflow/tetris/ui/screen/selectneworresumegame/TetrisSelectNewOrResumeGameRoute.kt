@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.route.ContentWithAppBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRouteImpl
+import dinino.marc.games.userflow.common.ui.route.SelectNewOrResumeGameRoute
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
 import kotlinx.serialization.Serializable
@@ -12,7 +13,7 @@ import org.koin.mp.KoinPlatform
 
 @Serializable
 data object TetrisSelectNewOrResumeGameRoute : ContentWithAppBarScreenRoute(),
-    GameUserFlowNavGraphRouteImpl.SelectNewOrResumeGameRoute {
+    SelectNewOrResumeGameRoute {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()

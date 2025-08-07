@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
-import dinino.marc.games.userflow.common.ui.route.navigateTo
+import dinino.marc.games.userflow.common.ui.route.GameOverRoute
+import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
@@ -31,7 +31,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> SerializableUserFlowRoute.UserFlowScreenRoute,
+    gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
     content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
@@ -41,7 +41,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     onOneTimeEvent = { event ->
         when(event) {
             is GameOneTimeEvent.NavigateToGameOverScreen<GAME_OVER_STATE_DETAILS> ->
-                navHostController.navigateTo(
+                navHostController.navigateForwardTo(
                     route = gameOverRoute(event.gameOverDetails)
                 )
         }

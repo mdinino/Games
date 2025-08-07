@@ -38,7 +38,7 @@ abstract class GameViewModel<
         clearGame : Boolean = true
     ) {
         viewModelScope.launch {
-            if (clearGame) repository.clearEntries()
+            //if (clearGame) repository.clearEntries()
             _oneTimeEvents.send(element =
                 GameOneTimeEvent.NavigateToGameOverScreen(
                     gameOverDetails = gameOverDetails

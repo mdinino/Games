@@ -17,5 +17,5 @@ data object TicTacToeNavGraphRoute :
        gameOverRoute = TicTacToeGameOverRoute,
        snackbarControllerProvider = KoinPlatform.getKoin()
            .get<TicTacToeUserFlowProviders>()
-           .snackbarControllerProvider
+                .snackbarControllerProvider
    )

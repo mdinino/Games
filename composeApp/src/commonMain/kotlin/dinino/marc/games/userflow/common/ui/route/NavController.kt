@@ -8,17 +8,25 @@ import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.User
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowScreenRoute
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
+import kotlin.reflect.KClass
 
 /**
- * Navigate to a screen at this nav-graph level.
+ * Navigate to a screen at this nav-graph level, adding it to the backstack
  */
 @MainThread
-fun NavController.navigateTo(route: UserFlowScreenRoute) =
+fun NavController.navigateForwardTo(route: UserFlowScreenRoute) =
     navigate(route) {
         if (route is UserFlowScreenRoute.ClearUserFlowBackStack) {
             popSubGraph()
         }
     }
+
+/**
+ * Pops the backstack until the route class is reached
+ */
+@MainThread
+fun NavController.navigateBackTo(routeClass: KClass<out UserFlowScreenRoute>) =
+    popBackStack(route = routeClass, inclusive = false)
 
 /**
  * Adds a nav graph then moves down the stack to that sub-nav-graph
@@ -43,7 +51,7 @@ inline fun <reified T: UserFlowNavGraphRoute> NavController.navigateUpTo(
     while(currentBackStackEntry?.parentRoute != navGraphRouteName)
 
     if (forceToLadingScreenRoute) {
-        navigateTo(navGraphRoute.landingScreenRoute)
+        navigateForwardTo(navGraphRoute.landingScreenRoute)
     }
 }
 
