@@ -18,31 +18,7 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TicTacToeNewGameScreen(
-    modifier: Modifier,
-    navHostController: NavHostController,
-    vm: TicTacToeGameViewModel = koinViewModel()
-) = TicTacToeGameScreen(
-    modifier = modifier,
-    navHostController = navHostController,
-    newGame = true,
-    vm = vm
-)
-
-@Composable
-fun TicTacToeResumeGameScreen(
-    modifier: Modifier,
-    navHostController: NavHostController,
-    vm: TicTacToeGameViewModel = koinViewModel()
-) = TicTacToeGameScreen(
-    modifier = modifier,
-    navHostController = navHostController,
-    newGame = false,
-    vm = vm
-)
-
-@Composable
-private fun TicTacToeGameScreen(
+fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     newGame: Boolean,

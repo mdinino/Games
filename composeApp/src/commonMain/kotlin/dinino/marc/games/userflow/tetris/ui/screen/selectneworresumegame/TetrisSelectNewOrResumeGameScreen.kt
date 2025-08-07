@@ -6,8 +6,7 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.route.navigateTo
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameScreen
-import dinino.marc.games.userflow.tetris.ui.screen.game.TetrisNewGameRoute
-import dinino.marc.games.userflow.tetris.ui.screen.game.TetrisResumeGameRoute
+import dinino.marc.games.userflow.tetris.ui.screen.game.TetrisGameRoute
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -23,9 +22,9 @@ fun TetrisSelectNewOrResumeGameScreen(
         oneTimeEventHandler = { navHostController, event ->
             when(event) {
                 SelectNewOrResumeGameOneTimeEvent.NewGameSelected ->
-                    navHostController.navigateTo(route = TetrisNewGameRoute)
+                    navHostController.navigateTo(route = TetrisGameRoute(newGame = true))
                 SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected ->
-                    navHostController.navigateTo(route = TetrisResumeGameRoute)
+                    navHostController.navigateTo(route = TetrisGameRoute(newGame = false))
             }
         }
     )

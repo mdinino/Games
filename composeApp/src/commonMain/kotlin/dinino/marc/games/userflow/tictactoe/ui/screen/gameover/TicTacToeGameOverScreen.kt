@@ -8,7 +8,7 @@ import dinino.marc.games.userflow.common.ui.route.navigateUpTo
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverOneTimeEvent
 import dinino.marc.games.userflow.common.ui.screen.gameover.GameOverScreen
 import dinino.marc.games.userflow.selectgame.ui.SelectGameNavGraphRoute
-import dinino.marc.games.userflow.tictactoe.ui.screen.game.TicTacToeNewGameRoute
+import dinino.marc.games.userflow.tictactoe.ui.screen.game.TicTacToeGameRoute
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -24,7 +24,7 @@ fun TicTacToeGameOverScreen(
         oneTimeEventHandler = { navHostController, oneTimeEvent ->
             when(oneTimeEvent) {
                 GameOverOneTimeEvent.StartNewGameSelected ->
-                    navHostController.navigateTo(TicTacToeNewGameRoute)
+                    navHostController.navigateTo(TicTacToeGameRoute(newGame = true))
                 GameOverOneTimeEvent.SelectDifferentGameSelected ->
                     navHostController.navigateUpTo(SelectGameNavGraphRoute)
             }
