@@ -1,8 +1,9 @@
-package dinino.marc.games.userflow.tetris.ui.screen.gameover
+package dinino.marc.games.userflow.tetris.ui.screen.game
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.route.ContentWithAppBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
@@ -10,17 +11,17 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TetrisGameOverRoute : ContentWithAppBarScreenRoute(),
-    GameUserFlowNavGraphRoute.GameOverRoute {
-
-    override val localizedTitleProvider
+data class TetrisGameRoute(override val newGame: Boolean) : ContentWithAppBarScreenRoute(),
+    GameUserFlowNavGraphRoute.GameRoute {
+    override val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider
         get() = KoinPlatform.getKoin()
             .get<TetrisUserFlowProviders>().localizedNameProvider
 
     @Composable
     override fun Content(modifier: Modifier, navHostController: NavHostController) =
-        TetrisGameOverScreen(
+        TetrisGameScreen(
             modifier = modifier,
-            navHostController = navHostController
+            navHostController = navHostController,
+            newGame = newGame
         )
 }

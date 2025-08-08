@@ -21,7 +21,7 @@ class SelectGameViewModel(private val _oneTimeEvents: Channel<OneTimeEvent> = Ch
         sendNavigationEvent(OneTimeEvent.Navigate.NavigateToTicTacToeFlow)
 
     fun navigateToTetrisFLow() =
-        sendErrorEvent(Res.string.userflow_tetris_not_available)
+        sendNavigationEvent(OneTimeEvent.Navigate.NavigateToTetrisFlow)
 
     private fun sendNavigationEvent(event: OneTimeEvent.Navigate) {
         viewModelScope.launch {

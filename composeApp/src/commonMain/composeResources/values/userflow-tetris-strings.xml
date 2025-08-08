@@ -1,4 +1,4 @@
 <resources>
     <string name="userflow-tetris">Tetris</string>
-    <string name="userflow-tetris-not-available">Tetris is not available at this time.</string>
+    <string name="userflow-tetris-not-available">Tetris is not available at this time</string>
 </resources>

@@ -7,10 +7,10 @@ import dinino.marc.games.userflow.common.data.DefaultJsonLocalDatabaseEndpoint
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.data.SerializableJsonRepository
 
-class TetrisGameRepository(
+class TetrisGameDataRepository(
     queries: TetrisGameEntityQueries,
-    jsonConverter: JsonConverter<TetrisGame> = DefaultJsonConverter(TetrisGame.serializer())
-): Repository<TetrisGame> by SerializableJsonRepository(
+    jsonConverter: JsonConverter<TetrisGameData> = DefaultJsonConverter(TetrisGameData.serializer())
+): Repository<TetrisGameData> by SerializableJsonRepository(
     jsonLocalDatabaseEndpoint = DefaultJsonLocalDatabaseEndpoint(
         jsonConverter = jsonConverter,
         getAllUuids = { queries.getAllUuids().toList() },

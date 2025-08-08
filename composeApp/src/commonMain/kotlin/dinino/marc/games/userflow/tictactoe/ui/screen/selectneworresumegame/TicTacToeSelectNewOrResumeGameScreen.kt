@@ -3,10 +3,10 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.route.navigateTo
+import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameOneTimeEvent
 import dinino.marc.games.userflow.common.ui.screen.selectneworresumegame.SelectNewOrResumeGameScreen
-import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
+import dinino.marc.games.userflow.tictactoe.ui.screen.game.TicTacToeGameRoute
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -22,9 +22,9 @@ fun TicTacToeSelectNewOrResumeGameScreen(
         oneTimeEventHandler = { navHostController, event ->
             when(event) {
                 SelectNewOrResumeGameOneTimeEvent.NewGameSelected ->
-                    navHostController.navigateTo(TicTacToeGameOverRoute)
+                    navHostController.navigateForwardTo(route = TicTacToeGameRoute(newGame = true))
                 SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected ->
-                    navHostController.navigateTo(TicTacToeGameOverRoute)
+                    navHostController.navigateForwardTo(route = TicTacToeGameRoute(newGame = false))
             }
         }
     )

@@ -9,46 +9,49 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.di.UserFlowProviders
 import dinino.marc.games.userflow.common.ui.layout.ActionBar
+import kotlinx.serialization.Serializable
 
-class ContentWithAppBarScreenRoute(
-    private val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider,
-    private val content: @Composable (Modifier, NavHostController)->Unit
-) : SerializableUserFlowRoute.UserFlowScreenRoute {
+@Serializable
+abstract class ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFlowScreenRoute {
+    protected abstract val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider
 
-   @Composable
-   override fun Screen(modifier: Modifier, navHostController: NavHostController) {
-       ContentWithAppBar(
-           localizedTitle = localizedTitleProvider.provide(),
-           navHostController = navHostController
-       ) { innerPadding ->
-           content(
-               Modifier.Companion
-                       .padding(innerPadding)
-                       .fillMaxSize(),
+    @Composable
+    protected abstract fun Content(modifier: Modifier, navHostController: NavHostController)
+
+    @Composable
+    override fun Screen(modifier: Modifier, navHostController: NavHostController) {
+        ContentWithAppBar(
+            localizedTitle = localizedTitleProvider.provide(),
+            navHostController = navHostController
+        ) { innerPadding ->
+            Content(
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                navHostController
-           )
-       }
-   }
+            )
+        }
+    }
 
-   companion object {
-       @Composable
-       private fun ContentWithAppBar(
-           modifier: Modifier = Modifier.Companion,
-           localizedTitle: String,
-           navHostController: NavHostController,
-           content: @Composable (PaddingValues) -> Unit
-       ) {
-           Scaffold(
-               modifier = modifier,
-               topBar = {
-                   ActionBar(
-                       modifier = modifier,
-                       localizedTitle = localizedTitle,
-                       navHostController = navHostController
-                   )
-               },
-               content = content
-           )
-       }
-   }
+    companion object {
+        @Composable
+        private fun ContentWithAppBar(
+            modifier: Modifier = Modifier,
+            localizedTitle: String,
+            navHostController: NavHostController,
+            content: @Composable (PaddingValues) -> Unit
+        ) {
+            Scaffold(
+                modifier = modifier,
+                topBar = {
+                    ActionBar(
+                        modifier = modifier,
+                        localizedTitle = localizedTitle,
+                        navHostController = navHostController
+                    )
+                },
+                content = content
+            )
+        }
+    }
 }
