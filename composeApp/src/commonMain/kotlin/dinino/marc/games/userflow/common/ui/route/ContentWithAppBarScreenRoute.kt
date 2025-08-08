@@ -12,8 +12,7 @@ import dinino.marc.games.userflow.common.ui.layout.ActionBar
 import kotlinx.serialization.Serializable
 
 @Serializable
-abstract class
-ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFlowScreenRoute {
+abstract class ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFlowScreenRoute {
     protected abstract val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider
 
     @Composable

@@ -4,13 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.route.ContentWithAppBarScreenRoute
-import dinino.marc.games.userflow.common.ui.route.GameOverRoute
+import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TicTacToeGameOverRoute : ContentWithAppBarScreenRoute(), GameOverRoute {
+data object TicTacToeGameOverRoute : ContentWithAppBarScreenRoute(),
+    GameUserFlowNavGraphRoute.GameOverRoute {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()

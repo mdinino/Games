@@ -1,7 +1,7 @@
 package dinino.marc.games.userflow.tetris.ui
 
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRouteImpl
+import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 
 import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
 import dinino.marc.games.userflow.tetris.ui.screen.game.TetrisGameRoute
@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TetrisNavGraphRoute : GameUserFlowNavGraphRouteImpl() {
+data object TetrisNavGraphRoute : GameUserFlowNavGraphRoute() {
     override val selectNewOrResumeGameRoute = TetrisSelectNewOrResumeGameRoute
     override val gameRoute = TetrisGameRoute(newGame = true)
     override val gameOverRoute = TetrisGameOverRoute

@@ -9,10 +9,12 @@ import org.koin.mp.KoinPlatform
 
 @Serializable
 data object SelectGameNavGraphRoute : UserFlowNavGraphRoute() {
-    override val landingScreenRoute = SelectGameScreenRoute
-    override val otherRoutes = listOf(TicTacToeNavGraphRoute, TetrisNavGraphRoute)
+    override val landingScreenRoute
+        get() = SelectGameScreenRoute
+    override val otherRoutes
+        get() = listOf(TicTacToeNavGraphRoute, TetrisNavGraphRoute)
     override val snackbarControllerProvider
         get() = KoinPlatform.getKoin()
             .get<SelectGameUserFlowProviders>()
-            .snackbarControllerProvider
+                .snackbarControllerProvider
 }
