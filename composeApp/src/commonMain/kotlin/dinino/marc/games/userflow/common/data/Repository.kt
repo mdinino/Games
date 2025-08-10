@@ -35,7 +35,7 @@ interface Repository<T: Any> {
 
     companion object {
         val <T: Any> Repository<T>.lastestItem: StateFlow<T?>
-            get() = status.mapStateFlow { it.lastSuccessfulSync?.entries?.last()?.item }
+            get() = status.mapStateFlow { it.lastSuccessfulSync?.entries?.lastOrNull()?.item }
 
         val <T: Any> Repository<T>.hasEntry: StateFlow<Boolean>
             get() = lastestItem.mapStateFlow { it != null }

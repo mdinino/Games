@@ -6,6 +6,6 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 data class LastSuccessfulSync<out T: Any>(
-    val entries: List<RepositoryEntry<T>>,
+    val  entries: List<RepositoryEntry<T>>,
     val instant: Instant = Clock.System.now()
 )
