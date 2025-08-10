@@ -10,6 +10,6 @@ sealed interface GameState<out GAME_OVER_STATE_DETAILS: Any, out BOARD_STATE: An
 
     data class GameOver<out GAME_OVER_STATE_DETAILS: Any, out BOARD_STATE: Any>(
         override val board: BOARD_STATE,
-        val details: GAME_OVER_STATE_DETAILS
+        val details: GAME_OVER_STATE_DETAILS?
     ): GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
 }

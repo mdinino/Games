@@ -138,11 +138,15 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     ) { innerPadding -> content(innerPadding, state.board) }
 
     coroutineScope.launch {
-        // TODO
-        gameScreenSnackbarHostState.showGameOverNotification(
-            localizedMessage = { localizedGameOverMessage(null) },
-            onAction = { onGameOverAccepted(null) }
-        )
+        when(state) {
+            is GameState.Normal ->
+                gameScreenSnackbarHostState.dismissGameOverNotification()
+            else ->
+                gameScreenSnackbarHostState.showGameOverNotification(
+                    localizedMessage = { localizedGameOverMessage(null) },
+                    onAction = { onGameOverAccepted(null) }
+                )
+        }
     }
 }
 

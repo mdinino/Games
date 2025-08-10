@@ -1,5 +1,6 @@
 package dinino.marc.games.userflow.tetris.ui.screen.game
 
+import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.screen.game.GameState
@@ -35,10 +36,16 @@ class TetrisGameViewModel(
         mutateGameData { mutateGameOver() }
 
     companion object {
-        private fun convertDataToState(gameData: TetrisGameData): TetrisGameState {
-            // TODO
-            return defaultTetrisGameState
-        }
+        private fun convertDataToState(gameData: TetrisGameData): TetrisGameState =
+            when(gameData.playData) {
+                is GamePlayData.Normal ->
+                    GameState.Normal(defaultTetrisBoardState)
+                is GamePlayData.Paused -> GameState.Paused(hiddenTetrisBoardState)
+                is GamePlayData.GameOver<Unit> -> GameState.GameOver(
+                    details = gameData.playData.details,
+                    board = defaultTetrisBoardState
+                )
+            }
     }
 
     private val TetrisGameData.paused: Boolean?
