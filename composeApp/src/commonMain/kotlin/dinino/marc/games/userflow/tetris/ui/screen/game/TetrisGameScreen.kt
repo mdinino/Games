@@ -24,7 +24,9 @@ fun TetrisGameScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(newGame, vm) {
         lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.CREATED) {
-            vm.resetToNewGame()
+            if (newGame) {
+                vm.resetToNewGame()
+            }
         }
     }
 
