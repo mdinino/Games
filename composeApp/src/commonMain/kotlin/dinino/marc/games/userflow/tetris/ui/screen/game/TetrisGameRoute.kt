@@ -13,15 +13,20 @@ import org.koin.mp.KoinPlatform
 @Serializable
 data class TetrisGameRoute(override val newGame: Boolean) : ContentWithAppBarScreenRoute(),
     GameUserFlowNavGraphRoute.GameRoute {
+
     override val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider
         get() = KoinPlatform.getKoin()
             .get<TetrisUserFlowProviders>().localizedNameProvider
+
+    override val showMenuIcon: Boolean
+        get() = true
 
     @Composable
     override fun Content(modifier: Modifier, navHostController: NavHostController) =
         TetrisGameScreen(
             modifier = modifier,
             navHostController = navHostController,
-            newGame = newGame
+            newGame = newGame,
+            actionBarOneTimeEvent = actionBarOneTimeEvent,
         )
 }

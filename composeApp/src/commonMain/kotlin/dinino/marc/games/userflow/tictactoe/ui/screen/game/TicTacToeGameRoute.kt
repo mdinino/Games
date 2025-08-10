@@ -18,11 +18,15 @@ data class TicTacToeGameRoute(override val newGame: Boolean) : ContentWithAppBar
         get() = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider
 
+    override val showMenuIcon: Boolean
+        get() = true
+
     @Composable
     override fun Content(modifier: Modifier, navHostController: NavHostController) =
         TicTacToeGameScreen(
             modifier = modifier,
             navHostController = navHostController,
-            newGame = newGame
+            newGame = newGame,
+            actionBarOneTimeEvent = actionBarOneTimeEvent
         )
 }

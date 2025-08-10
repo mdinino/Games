@@ -78,7 +78,7 @@ class DefaultRepository<T: Any>(
         mutate {
             when(isEmpty()) {
                 true -> add(RepositoryEntry(item = item))
-                else -> this[size] = this[size].copy(item = item)
+                else -> this[size-1] = this[size-1].copy(item = item)
             }
         }
 

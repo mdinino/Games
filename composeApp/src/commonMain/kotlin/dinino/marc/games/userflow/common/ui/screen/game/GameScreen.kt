@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
+import dinino.marc.games.userflow.common.ui.layout.ActionBarEvent
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import games.composeapp.generated.resources.Res
@@ -31,6 +32,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -38,7 +40,8 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 ) = GameScreen(
     vm = vm,
     modifier = modifier,
-    onOneTimeEvent = { event ->
+    actionBarOneTimeEvent = actionBarOneTimeEvent,
+    onViewModelOneTimeEvent = { event ->
         when(event) {
             is GameOneTimeEvent.NavigateToGameOverScreen<GAME_OVER_STATE_DETAILS> ->
                 navHostController.navigateForwardTo(
@@ -51,11 +54,12 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 )
 
 @Composable
-fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
+private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
+    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
     content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
@@ -63,21 +67,25 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state = vm.gameState,
     coroutineScope = rememberCoroutineScope(),
     modifier = modifier,
-    oneTimeEvent = vm.oneTimeEvent,
-    onOneTimeEvent = onOneTimeEvent,
+    actionBarOneTimeEvent = actionBarOneTimeEvent,
+    onActionBarOneTimeEvent = {  event -> vm.togglePause() },
+    viewModelOneTimeEvent = vm.oneTimeEvent,
+    onViewModelOneTimeEvent = onViewModelOneTimeEvent,
     localizedGameOverMessage = localizedGameOverMessage,
     onGameOverAccepted = { vm.navigateToGameOverScreen(clearGame = true) },
     content = content,
 )
 
 @Composable
-fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
+private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
+    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    onActionBarOneTimeEvent: (event: ActionBarEvent.MenuSelected)->Unit = {},
+    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
@@ -88,8 +96,10 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         state = currentState.value,
         coroutineScope = coroutineScope,
         modifier = modifier,
-        oneTimeEvent = oneTimeEvent,
-        onOneTimeEvent = onOneTimeEvent,
+        actionBarOneTimeEvent = actionBarOneTimeEvent,
+        onActionBarOneTimeEvent = onActionBarOneTimeEvent,
+        viewModelOneTimeEvent = viewModelOneTimeEvent,
+        onViewModelOneTimeEvent = onViewModelOneTimeEvent,
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = onGameOverAccepted,
         content = content
@@ -97,20 +107,26 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 }
 
 @Composable
-fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
+private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
-    onOneTimeEvent: (oneTimeEvent: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
+    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    onActionBarOneTimeEvent: (event: ActionBarEvent.MenuSelected)->Unit = {},
+    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
     content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) {
-    ObserveOneTimeEventEffect(oneTimeEvents = oneTimeEvent) { oneTimeEvent ->
-        onOneTimeEvent(oneTimeEvent)
+    ObserveOneTimeEventEffect(oneTimeEvents = actionBarOneTimeEvent) { oneTimeEvent ->
+        onActionBarOneTimeEvent(oneTimeEvent)
+    }
+
+    ObserveOneTimeEventEffect(oneTimeEvents = viewModelOneTimeEvent) { oneTimeEvent ->
+        onViewModelOneTimeEvent(oneTimeEvent)
     }
 
     val gameScreenSnackbarHostState = remember { SnackbarHostState() }
