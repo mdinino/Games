@@ -20,9 +20,11 @@ import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
@@ -32,7 +34,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -58,7 +60,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -82,7 +84,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     onActionBarOneTimeEvent: (event: ActionBarEvent.MenuSelected)->Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
@@ -112,7 +114,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> = emptyFlow(),
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     onActionBarOneTimeEvent: (event: ActionBarEvent.MenuSelected)->Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
@@ -121,7 +123,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
     content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) {
-    ObserveOneTimeEventEffect(oneTimeEvents = actionBarOneTimeEvent) { oneTimeEvent ->
+    ObserveOneTimeEventEffect(oneTimeEvents = actionBarOneTimeEvent.receiveAsFlow()) { oneTimeEvent ->
         onActionBarOneTimeEvent(oneTimeEvent)
     }
 

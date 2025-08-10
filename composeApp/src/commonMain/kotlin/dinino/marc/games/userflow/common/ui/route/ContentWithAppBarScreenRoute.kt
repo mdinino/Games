@@ -13,27 +13,19 @@ import dinino.marc.games.userflow.common.ui.layout.ActionBarEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
 abstract class ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFlowScreenRoute {
-    private val _actionBarOneTimeEventEvent by lazy {
-        Channel<ActionBarEvent.MenuSelected>()
-    }
-    private val sendActionBarEventScope by lazy {
-        CoroutineScope(Dispatchers.Default)
-    }
 
     protected abstract val localizedTitleProvider: UserFlowProviders.LocalizedNameProvider
     protected open val showMenuIcon: Boolean
         get() = false
 
-    protected val actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected> by lazy {
-        _actionBarOneTimeEventEvent.receiveAsFlow()
-    }
+    protected val actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>
+        get() = _actionBarOneTimeEventEvent
 
     @Composable
     protected abstract fun Content(
@@ -62,7 +54,7 @@ abstract class ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFl
     }
 
     private fun sendActionBarOneTimeEventEvent(event: ActionBarEvent.MenuSelected) {
-        sendActionBarEventScope.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             _actionBarOneTimeEventEvent.send(event)
         }
     }
@@ -91,5 +83,7 @@ abstract class ContentWithAppBarScreenRoute() : SerializableUserFlowRoute.UserFl
                 content = content
             )
         }
+
+        private val _actionBarOneTimeEventEvent = Channel<ActionBarEvent.MenuSelected>()
     }
 }

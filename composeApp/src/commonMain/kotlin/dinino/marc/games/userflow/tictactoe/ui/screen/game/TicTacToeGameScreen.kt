@@ -15,7 +15,7 @@ import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.player_o_wins
 import games.composeapp.generated.resources.player_x_wins
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.ReceiveChannel
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -24,7 +24,7 @@ fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     newGame: Boolean,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected>,
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     vm: TicTacToeGameViewModel = koinViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current

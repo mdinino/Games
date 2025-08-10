@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.ActionBarEvent
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.ReceiveChannel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -18,7 +18,7 @@ fun TetrisGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     newGame: Boolean,
-    actionBarOneTimeEvent: Flow<ActionBarEvent.MenuSelected>,
+    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
     vm: TetrisGameViewModel = koinViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
