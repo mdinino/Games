@@ -1,5 +1,6 @@
 package dinino.marc.games.userflow.common.data
 
+import dinino.marc.games.coroutine.CoroutineCriticalSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -9,27 +10,16 @@ import kotlin.coroutines.CoroutineContext
 
 class InMemoryEndpoint<T: Any>(
     initial: List<RepositoryEntry<T>> = emptyList(),
-    private val coroutineContext: CoroutineContext =
-        CoroutineScope(Dispatchers.Default).coroutineContext,
-    private val mutex: Mutex =
-        Mutex()
+    private val cs: CoroutineCriticalSection = CoroutineCriticalSection()
 ) : Repository.Endpoint<T> {
-
     private var entries: List<RepositoryEntry<T>> = initial
 
     override suspend fun getEntries() =
-        lockAndRun { entries }
+        cs.lockAndRun { entries }
 
     override suspend fun setEntries(entries: List<RepositoryEntry<T>>) =
-        lockAndRun { this.entries = entries }
+        cs.lockAndRun { this.entries = entries }
 
     override suspend fun clearEntries() =
-        lockAndRun { this.entries = emptyList() }
-
-    private suspend fun <R> lockAndRun(block : suspend ()->R): R =
-        withContext(coroutineContext) {
-            mutex.withLock {
-                block()
-            }
-        }
+        cs.lockAndRun { this.entries = emptyList() }
 }

@@ -36,7 +36,7 @@ class DefaultRepository<T: Any>(
         try {
             notifySyncing()
             val entries = localCache.getEntries()
-            remoteEndpoints.runInParallel { setEntries(entries) }
+            remoteEndpoints.runAll { setEntries(entries) }
             notifySynced(entries)
         } catch (t: Throwable) {
             notifyNotSynced(t)
@@ -47,7 +47,7 @@ class DefaultRepository<T: Any>(
         cs.lockAndRunNonCancelable {
             try {
                 notifySyncing()
-                val entries = remoteEndpoints.runInParallel { getEntries() }
+                val entries = remoteEndpoints.runAll { getEntries() }
                 localCache.setEntries(entries)
                 notifySynced(entries)
             } catch (t: Throwable) {
@@ -70,7 +70,7 @@ class DefaultRepository<T: Any>(
     override suspend fun clearEntries() =
         cs.lockAndRunNonCancelable {
             localCache.clearEntries()
-            remoteEndpoints.runInParallel { clearEntries() }
+            remoteEndpoints.runAll { clearEntries() }
         }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -129,15 +129,12 @@ class DefaultRepository<T: Any>(
         _status.emit(newStatus)
     }
 
-    private suspend fun <R> List<Repository.Endpoint<T>>.runInParallel(
-        block: suspend Repository.Endpoint<T>.() ->R
+    private suspend fun <R> List<Repository.Endpoint<T>>.runAll(
+        block: suspend Repository.Endpoint<T>.() -> R
     ): R {
         requireIsNotEmpty()
 
-        val suspendables: List<suspend CoroutineScope.() -> R> =
-            map { endpoint -> { endpoint.block() } }
-
-        return suspendables
+        return map { endpoint -> suspend { block(endpoint) } }
             .runInParallel()
             .reduceIdentical()
     }

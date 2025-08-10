@@ -1,6 +1,5 @@
 package dinino.marc.games.userflow.tictactoe.data
 
-import dinino.marc.games.query.toList
 import dinino.marc.games.serialization.DefaultJsonConverter
 import dinino.marc.games.serialization.JsonConverter
 import dinino.marc.games.userflow.common.data.DefaultJsonLocalDatabaseEndpoint
@@ -13,8 +12,8 @@ class TicTacToeGameDataRepository(
 ): Repository<TicTacToeGameData> by SerializableJsonRepository(
         jsonLocalDatabaseEndpoint = DefaultJsonLocalDatabaseEndpoint(
             jsonConverter = jsonConverter,
-            getAllUuids = { queries.getAllUuids().toList() },
-            getItemByUuid = { uuid -> queries.getJsonByUuid(uuid).toList().firstOrNull() },
+            getAllUuids = { queries.getAllUuids().executeAsList() },
+            getItemByUuid = { uuid -> queries.getJsonByUuid(uuid).executeAsList().firstOrNull() },
             upsertItemByUuid = { uuid, json -> queries.upsert(uuid, json) },
             clearAll = { queries.clearAll() }
         )
