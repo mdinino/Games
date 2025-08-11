@@ -1,13 +1,8 @@
 package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.layout.ActionBarEvent
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
@@ -15,32 +10,20 @@ import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.player_o_wins
 import games.composeapp.generated.resources.player_x_wins
-import kotlinx.coroutines.channels.ReceiveChannel
 import org.jetbrains.compose.resources.getString
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
-    newGame: Boolean,
-    actionBarOneTimeEvent: ReceiveChannel<ActionBarEvent.MenuSelected>,
-    vm: TicTacToeGameViewModel = koinViewModel()
+    onActionBarMenuSelected: ()->Unit,
+    vm: TicTacToeGameViewModel
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(newGame, vm) {
-        lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.CREATED) {
-            if (newGame) {
-                vm.resetToNewGame()
-            }
-        }
-    }
-
     GameScreen(
         modifier = modifier,
         navHostController = navHostController,
         vm = vm,
-        actionBarOneTimeEvent = actionBarOneTimeEvent,
+        onActionBarMenuSelected = onActionBarMenuSelected,
         localizedGameOverMessage = {
             getString( resource =
                 when(it) {

@@ -13,37 +13,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.platform.PlatformManager
 import dinino.marc.games.platform.PlatformType
-import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.back_button
 import games.composeapp.generated.resources.menu
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-
-@Serializable
-sealed interface ActionBarEvent {
-    @Serializable data object BackSelected: ActionBarEvent
-    @Serializable data object MenuSelected: ActionBarEvent
-}
 
 /**
  * A top bar inspired by the traditional Android action bar, with a back button, title, and menu button.
  * @param localizedTitle: Title string or null if should not be shown.
  * @param showBackIcon: Set to true if a an auto-mirrored back icon should be shown at the start of the bar.
+ * @param onBackSelected: Called when the back icon is selected.
  * @param showMenuIcon: Set to true if an auto-mirrored menu icon should be shown at the end of the bar.
- * @param events: A channel send/receive ActionBar Events
- * @see ActionBarEvent
+ * @param onMenuSelected: Called when the menu icon is selected
  */
 @Composable
 @Preview
@@ -52,21 +39,15 @@ fun ActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = "Lorem Ipsum",
     showBackIcon: Boolean = true,
+    onBackSelected: ()->Unit = {},
     showMenuIcon: Boolean = true,
-    events: Channel<ActionBarEvent> = Channel(),
-    eventsSendScope: CoroutineScope = rememberCoroutineScope()
+    onMenuSelected: ()->Unit
 ) {
-    fun sendEvent(event: ActionBarEvent) {
-        eventsSendScope.launch {
-            events.send(event)
-        }
-    }
-
     val navigationIcon: @Composable ()->Unit = {
         when(showBackIcon) {
             false -> {}
             true -> {
-                IconButton(onClick = { sendEvent(ActionBarEvent.BackSelected) }) {
+                IconButton(onClick = onBackSelected) {
                     Icon(
                         imageVector = platformSpecificNavigationVector(),
                         contentDescription = stringResource(Res.string.back_button)
@@ -80,7 +61,7 @@ fun ActionBar(
         when(showMenuIcon) {
             false -> {}
             true -> {
-                IconButton(onClick = { sendEvent(ActionBarEvent.MenuSelected) }) {
+                IconButton(onClick = onMenuSelected) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = stringResource(Res.string.menu)
@@ -104,59 +85,14 @@ fun ActionBar(
 @Composable
 fun ActionBar(
     modifier: Modifier = Modifier,
-    localizedTitle: String? = null,
-    showBackIcon: Boolean = true,
-    showMenuIcon: Boolean = true,
-    onBackSelected: (event: ActionBarEvent.BackSelected) -> Unit = {},
-    onMenuSelected: (event: ActionBarEvent.MenuSelected) -> Unit = {},
-) {
-    val events = Channel<ActionBarEvent>()
-
-    ObserveOneTimeEventEffect(oneTimeEvents = events.receiveAsFlow()) { event ->
-        when(event) {
-            is ActionBarEvent.BackSelected -> onBackSelected(event)
-            is ActionBarEvent.MenuSelected -> onMenuSelected(event)
-        }
-    }
-
-    ActionBar(
-        modifier = modifier,
-        localizedTitle = localizedTitle,
-        showBackIcon = showBackIcon,
-        showMenuIcon = showMenuIcon,
-        events = events
-    )
-}
-
-
-
-@Composable
-private fun String?.toLocalizedTitleComposable(): @Composable ()->Unit = {
-    when(this) {
-        null -> {}
-        else -> Text(text = this)
-    }
-}
-
-@Composable
-private fun platformSpecificNavigationVector(
-    platformType: PlatformType = koinInject<PlatformManager>().platformType
-) = when(platformType) {
-    is PlatformType.IOS -> Icons.AutoMirrored.Filled.ArrowBackIos
-    else -> Icons.AutoMirrored.Filled.ArrowBack
-}
-
-@Composable
-fun ActionBar(
-    modifier: Modifier = Modifier,
     localizedTitle: String? = "Lorem Ipsum",
     navHostController: NavHostController,
     showMenuIcon: Boolean,
-    onMenuSelected: (ActionBarEvent.MenuSelected)->Unit
+    onMenuSelected: ()->Unit
 ) {
     val showBackIcon = navHostController.previousBackStackEntry != null
 
-    val onBackSelected = { backSelected: ActionBarEvent.BackSelected ->
+    val onBackSelected = {
         when(showBackIcon) {
             false -> {}
             true -> {
@@ -176,3 +112,20 @@ fun ActionBar(
         onMenuSelected = onMenuSelected
     )
 }
+
+@Composable
+private fun String?.toLocalizedTitleComposable(): @Composable ()->Unit = {
+    when(this) {
+        null -> {}
+        else -> Text(text = this)
+    }
+}
+
+@Composable
+private fun platformSpecificNavigationVector(
+    platformType: PlatformType = koinInject<PlatformManager>().platformType
+) = when(platformType) {
+    is PlatformType.IOS -> Icons.AutoMirrored.Filled.ArrowBackIos
+    else -> Icons.AutoMirrored.Filled.ArrowBack
+}
+
