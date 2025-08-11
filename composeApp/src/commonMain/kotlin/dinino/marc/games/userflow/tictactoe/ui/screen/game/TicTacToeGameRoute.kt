@@ -29,7 +29,7 @@ data object TicTacToeGameRoute : ContentWithAppBarScreenRoute(),
             vm = viewModel
         )
 
-    private val viewModel
+    private val viewModel: TicTacToeGameViewModel
         get() = KoinPlatform.getKoin()
             .get<TicTacToeGameViewModel>()
 }
