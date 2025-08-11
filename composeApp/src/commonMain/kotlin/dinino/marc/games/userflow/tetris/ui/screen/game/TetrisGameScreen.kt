@@ -10,14 +10,12 @@ import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
 fun TetrisGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
-    onActionBarMenuSelected: ()->Unit,
     vm: TetrisGameViewModel
 ) {
     GameScreen(
         modifier = modifier,
         navHostController = navHostController,
         vm = vm,
-        onActionBarMenuSelected = onActionBarMenuSelected,
         gameOverRoute = { TetrisGameOverRoute }
     )
 }

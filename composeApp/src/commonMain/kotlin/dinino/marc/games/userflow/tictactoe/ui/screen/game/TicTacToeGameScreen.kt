@@ -16,14 +16,12 @@ import org.jetbrains.compose.resources.getString
 fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
-    onActionBarMenuSelected: ()->Unit,
     vm: TicTacToeGameViewModel
 ) {
     GameScreen(
         modifier = modifier,
         navHostController = navHostController,
         vm = vm,
-        onActionBarMenuSelected = onActionBarMenuSelected,
         localizedGameOverMessage = {
             getString( resource =
                 when(it) {

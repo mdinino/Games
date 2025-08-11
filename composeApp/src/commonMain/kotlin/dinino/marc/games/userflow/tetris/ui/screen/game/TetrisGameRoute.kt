@@ -26,7 +26,6 @@ data object TetrisGameRoute : ContentWithAppBarScreenRoute(),
         TetrisGameScreen(
             modifier = modifier,
             navHostController = navHostController,
-            onActionBarMenuSelected = onMenuSelected,
             vm = viewModel
         )
 

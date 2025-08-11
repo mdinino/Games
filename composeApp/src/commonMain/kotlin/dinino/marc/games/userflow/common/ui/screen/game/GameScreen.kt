@@ -31,7 +31,6 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    onActionBarMenuSelected: () -> Unit = {},
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -39,7 +38,6 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 ) = GameScreen(
     vm = vm,
     modifier = modifier,
-    onActionBarMenuSelected = onActionBarMenuSelected,
     onViewModelOneTimeEvent = { event ->
         when(event) {
             is GameOneTimeEvent.NavigateToGameOverScreen<GAME_OVER_STATE_DETAILS> ->
@@ -57,7 +55,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
-    onActionBarMenuSelected: () -> Unit = {},
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -66,7 +63,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state = vm.gameState,
     coroutineScope = rememberCoroutineScope(),
     modifier = modifier,
-    onActionBarMenuSelected = onActionBarMenuSelected,
     viewModelOneTimeEvent = vm.oneTimeEvent,
     onViewModelOneTimeEvent = onViewModelOneTimeEvent,
     localizedGameOverMessage = localizedGameOverMessage,
@@ -80,7 +76,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    onActionBarMenuSelected: () -> Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
@@ -93,7 +88,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         state = currentState.value,
         coroutineScope = coroutineScope,
         modifier = modifier,
-        onActionBarMenuSelected = onActionBarMenuSelected,
         viewModelOneTimeEvent = viewModelOneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
         localizedGameOverMessage = localizedGameOverMessage,
@@ -108,7 +102,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     modifier: Modifier = Modifier,
-    onActionBarMenuSelected: () -> Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =

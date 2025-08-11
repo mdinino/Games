@@ -26,15 +26,17 @@ abstract class SelectNewOrResumeGameViewModel<
     val oneTimeEvents: Flow<SelectNewOrResumeGameOneTimeEvent>
         get() = _oneTimeEvents.receiveAsFlow()
 
-    fun selectNewGame() =
-        sendOneTimeEvent(event = SelectNewOrResumeGameOneTimeEvent.NewGameSelected)
-
-    fun selectResumeGame() =
-        sendOneTimeEvent(event = SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected)
-
-    private fun sendOneTimeEvent(event: SelectNewOrResumeGameOneTimeEvent) {
+    fun selectNewGame() {
         viewModelScope.launch {
-            _oneTimeEvents.send(event)
+            repository.clearEntries()
+            _oneTimeEvents.send(SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected)
+        }
+    }
+
+
+    fun selectResumeGame() {
+        viewModelScope.launch {
+            _oneTimeEvents.send(SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected)
         }
     }
 }

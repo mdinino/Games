@@ -25,7 +25,6 @@ data object TicTacToeGameRoute : ContentWithAppBarScreenRoute(),
         TicTacToeGameScreen(
             modifier = modifier,
             navHostController = navHostController,
-            onActionBarMenuSelected = onMenuSelected,
             vm = viewModel
         )
 
