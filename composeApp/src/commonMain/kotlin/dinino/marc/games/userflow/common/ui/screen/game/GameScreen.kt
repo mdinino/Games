@@ -114,7 +114,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     modifier: Modifier = Modifier,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected> = emptyFlow(),
     onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected) -> Unit = {},
-    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>,
+    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },

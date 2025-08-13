@@ -34,5 +34,4 @@ data object TetrisGameRoute : ContentWithActionBarScreenRoute(),
             navHostController = navHostController,
             menuSelectedOneTimeEvent = menuSelectedOneTimeEvent
         )
-
 }
