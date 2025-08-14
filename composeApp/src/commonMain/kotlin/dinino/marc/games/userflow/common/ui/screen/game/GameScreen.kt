@@ -17,6 +17,7 @@ import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import games.composeapp.generated.resources.Res
+import games.composeapp.generated.resources.game_hidden_while_paused
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
 import kotlinx.coroutines.CoroutineScope
@@ -138,14 +139,28 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     coroutineScope.launch {
         when(state) {
             is GameState.Normal ->
-                gameScreenSnackbarHostState.dismissGameOverNotification()
-            else ->
+                gameScreenSnackbarHostState.dismissNotifications()
+            is GameState.Paused ->
+                gameScreenSnackbarHostState.showGameHiddenWhilePausedNotification()
+            is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> ->
                 gameScreenSnackbarHostState.showGameOverNotification(
-                    localizedMessage = { localizedGameOverMessage(null) },
-                    onAction = { onGameOverAccepted(null) }
+                    localizedMessage = { localizedGameOverMessage(state.details) },
+                    onAction = { onGameOverAccepted(state.details) }
                 )
         }
     }
+}
+
+private suspend fun SnackbarHostState.showGameHiddenWhilePausedNotification(
+    localizedMessage: suspend ()->String =
+        { getString(Res.string.game_hidden_while_paused) },
+) {
+    dismissNotifications()
+    showSnackbar(
+        message = localizedMessage(),
+        withDismissAction = true,
+        duration = SnackbarDuration.Indefinite
+    )
 }
 
 private suspend fun SnackbarHostState.showGameOverNotification(
@@ -155,7 +170,7 @@ private suspend fun SnackbarHostState.showGameOverNotification(
         { getString(Res.string.ok) },
     onAction: ()->Unit
 ) {
-    dismissGameOverNotification()
+    dismissNotifications()
     val result = showSnackbar(
         message = localizedMessage(),
         withDismissAction = false,
@@ -167,5 +182,5 @@ private suspend fun SnackbarHostState.showGameOverNotification(
         onAction()
 }
 
-private fun SnackbarHostState.dismissGameOverNotification() =
+private fun SnackbarHostState.dismissNotifications() =
     currentSnackbarData?.dismiss()
