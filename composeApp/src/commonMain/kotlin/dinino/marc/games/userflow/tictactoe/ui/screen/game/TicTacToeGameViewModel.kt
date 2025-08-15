@@ -2,8 +2,8 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
+import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
-import dinino.marc.games.userflow.tetris.ui.screen.game.defaultTetrisGameState
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 
 class TicTacToeGameViewModel(
@@ -15,7 +15,7 @@ class TicTacToeGameViewModel(
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
         TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
     repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState) {
-
+            
     override fun pause() =
         mutateGameData { mutatePaused(paused = true) }
 
@@ -35,10 +35,16 @@ class TicTacToeGameViewModel(
         mutateGameData { mutateGameOver() }
 
     companion object {
-        private fun convertDataToState(gameData: TicTacToeGameData): TicTacToeGameState {
-            // TODO
-            return defaultTicTacToeBoardState
-        }
+        private fun convertDataToState(gameData: TicTacToeGameData): TicTacToeGameState =
+            when(gameData.playData) {
+                is GamePlayData.Normal ->
+                    GameState.Normal(defaultTicTacToeBoardState)
+                is GamePlayData.Paused -> GameState.Paused(hiddenTicTacToeBoardState)
+                is GamePlayData.GameOver<TicTacToeGameData.GameOverDetails> -> GameState.GameOver(
+                    details = gameData.playData.details,
+                    board = defaultTicTacToeBoardState
+                )
+            }
     }
 
     private val TicTacToeGameData.paused: Boolean?

@@ -11,7 +11,7 @@ import org.koin.mp.KoinPlatform
 @Serializable
 data object TicTacToeNavGraphRoute : GameUserFlowNavGraphRoute() {
     override val selectNewOrResumeGameRoute = TicTacToeSelectNewOrResumeGameRoute
-    override val gameRoute = TicTacToeGameRoute(newGame = true)
+    override val gameRoute = TicTacToeGameRoute
     override val gameOverRoute = TicTacToeGameOverRoute
     override val snackbarControllerProvider
         get() = KoinPlatform.getKoin()

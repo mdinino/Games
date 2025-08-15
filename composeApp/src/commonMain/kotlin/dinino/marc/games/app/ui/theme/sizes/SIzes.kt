@@ -1,0 +1,18 @@
+package dinino.marc.games.app.ui.theme.sizes
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
+
+val MaterialTheme.sizes: Sizes
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalSizes.current
+
+val LocalSizes = compositionLocalOf { Sizes() }
+
+data class Sizes(
+    val buttonWidths: ButtonWidths = ButtonWidths(),
+    val spacings: Spacings = Spacings()
+)

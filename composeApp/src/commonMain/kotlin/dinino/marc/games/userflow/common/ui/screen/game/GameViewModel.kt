@@ -30,9 +30,6 @@ abstract class GameViewModel<
     val oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>
         get() = _oneTimeEvents.receiveAsFlow()
 
-    fun resetToNewGame() =
-        mutateGameData { defaultGameData() }
-
     fun navigateToGameOverScreen(
         gameOverDetails: GAME_OVER_STATE_DETAILS? = null,
         clearGame : Boolean = true
@@ -53,13 +50,7 @@ abstract class GameViewModel<
             repository.upsertLatestItemIfDifferent(mutated)
         }
     }
-
-    private fun sendOneTimeEvent(event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) {
-        viewModelScope.launch {
-            _oneTimeEvents.send(event)
-        }
-    }
-
+    
     abstract fun pause()
     abstract fun unPause()
     abstract fun togglePause()

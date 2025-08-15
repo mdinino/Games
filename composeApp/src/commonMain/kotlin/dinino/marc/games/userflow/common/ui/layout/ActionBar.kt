@@ -13,41 +13,65 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import dinino.marc.games.platform.PlatformManager
 import dinino.marc.games.platform.PlatformType
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.back_button
 import games.composeapp.generated.resources.menu
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+
+sealed interface ActionBarOneTimeEvent {
+    data object BackSelected: ActionBarOneTimeEvent
+    data object MenuSelected: ActionBarOneTimeEvent
+}
 
 /**
  * A top bar inspired by the traditional Android action bar, with a back button, title, and menu button.
  * @param localizedTitle: Title string or null if should not be shown.
- * @param showBackIcon: Set to true if a an auto-mirrored back icon should be shown at the start of the bar..
- * @param onBackClicked: The action to take when the user clicks on the back icon.
- * @param showMenuIcon: Set to true if an auto-mirrored menu icon should be sows at the end of the bar.
- * @param onMenuClicked: The action to take when the menu icon is clicked.
+ * @param showBackIcon: Set to true if a an auto-mirrored back icon should be shown at the start of the bar.
+ * @param showMenuIcon: Set to true if an auto-mirrored menu icon should be shown at the end of the bar.
+ * @param actionBarOneTimeEvents: ActionBarEvents are sent here
+ *  @see ActionBarOneTimeEvent
  */
 @Composable
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 fun ActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = "Lorem Ipsum",
     showBackIcon: Boolean = true,
-    onBackClicked: ()->Unit = {},
     showMenuIcon: Boolean = true,
-    onMenuClicked: ()->Unit = {}
+    sendEventScope: CoroutineScope = rememberCoroutineScope(),
+    actionBarOneTimeEvents: Channel<ActionBarOneTimeEvent> = Channel()
 ) {
+    fun sendActionBarEvent(event: ActionBarOneTimeEvent) {
+        sendEventScope.launch {
+            actionBarOneTimeEvents.send(event)
+        }
+    }
+
+    fun sendOnBackSelected() {
+        if (showBackIcon) {
+            sendActionBarEvent(ActionBarOneTimeEvent.BackSelected)
+        }
+    }
+
+    fun sendOnMenuSelected() {
+        if (showMenuIcon) {
+            sendActionBarEvent(ActionBarOneTimeEvent.MenuSelected)
+        }
+    }
+
     val navigationIcon: @Composable ()->Unit = {
         when(showBackIcon) {
             false -> {}
             true -> {
-                IconButton(onClick = onBackClicked) {
+                IconButton(onClick = { sendOnBackSelected() } ) {
                     Icon(
                         imageVector = platformSpecificNavigationVector(),
                         contentDescription = stringResource(Res.string.back_button)
@@ -61,7 +85,7 @@ fun ActionBar(
         when(showMenuIcon) {
             false -> {}
             true -> {
-                IconButton(onClick = onMenuClicked) {
+                IconButton(onClick = { sendOnMenuSelected() } ) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = stringResource(Res.string.menu)
@@ -98,49 +122,3 @@ private fun platformSpecificNavigationVector(
     else -> Icons.AutoMirrored.Filled.ArrowBack
 }
 
-
-@Composable
-fun ActionBar(
-    modifier: Modifier = Modifier,
-    localizedTitle: String? = "Lorem Ipsum",
-    navHostController: NavHostController,
-    showMenuIcon: Boolean = true,
-    onMenuClicked: ()->Unit = {}
-) {
-    val showBackIcon = navHostController.previousBackStackEntry != null
-    val onBackClicked: ()->Unit = {
-        when(showBackIcon) {
-            false -> {}
-            true -> {
-                if (navHostController.previousBackStackEntry != null) {
-                    navHostController.popBackStack()
-                }
-            }
-        }
-    }
-
-    ActionBar(
-        modifier = modifier,
-        localizedTitle = localizedTitle,
-        showBackIcon = showBackIcon,
-        onBackClicked = onBackClicked,
-        showMenuIcon = showMenuIcon,
-        onMenuClicked = onMenuClicked
-    )
-}
-
-@Composable
-fun ActionBar(
-    modifier: Modifier = Modifier,
-    localizedTitle: String? = "Lorem Ipsum",
-    navHostController: NavHostController,
-    onMenuClicked: (()->Unit)? = null
-) {
-   ActionBar(
-       modifier = modifier,
-       localizedTitle = localizedTitle,
-       navHostController = navHostController,
-       showMenuIcon = onMenuClicked != null,
-       onMenuClicked = onMenuClicked ?: {}
-   )
-}

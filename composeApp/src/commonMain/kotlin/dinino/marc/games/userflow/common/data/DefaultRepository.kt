@@ -2,6 +2,7 @@ package dinino.marc.games.userflow.common.data
 
 import dinino.marc.games.coroutine.CoroutineCriticalSection
 import dinino.marc.games.coroutine.runInParallel
+import dinino.marc.games.userflow.common.data.RepositoryEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,17 +69,14 @@ class DefaultRepository<T: Any>(
         }
 
     override suspend fun clearEntries() =
-        cs.lockAndRunNonCancelable {
-            localCache.clearEntries()
-            remoteEndpoints.runAll { clearEntries() }
-        }
+        cs.lockAndRunNonCancelable { setEntriesIfDifferentInternal(entries = emptyList()) }
 
     @OptIn(ExperimentalUuidApi::class)
     private fun List<RepositoryEntry<T>>.updateLastWithItem(item: T): List<RepositoryEntry<T>> =
         mutate {
             when(isEmpty()) {
                 true -> add(RepositoryEntry(item = item))
-                else -> this[size] = this[size].copy(item = item)
+                else -> this[size-1] = this[size-1].copy(item = item)
             }
         }
 

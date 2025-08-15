@@ -1,13 +1,20 @@
 package dinino.marc.games.userflow.selectgame.ui
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventLayout
-import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.common.ui.route.navigateDownTo
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
@@ -59,21 +66,24 @@ private fun SelectGameScreen(
             )
         }
     ) {
-        AlignWidthsColumnLayout(modifier = modifier) {
-            listOf(
-                @Composable {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onTicTacToeSelected
-                    ) { Text(stringResource(Res.string.userflow_tictactoe)) }
-                },
-                @Composable {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onTetrisSelected
-                    ) { Text(stringResource(Res.string.userflow_tetris)) }
-                }
-            )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = CenterHorizontally
+        ) {
+            Button(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttonWidths.medium),
+                onClick = onTicTacToeSelected
+            ) { Text(stringResource(Res.string.userflow_tictactoe)) }
+
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.tiny))
+
+            Button(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttonWidths.medium),
+                onClick = onTetrisSelected
+            ) { Text(stringResource(Res.string.userflow_tetris)) }
         }
     }
 }
