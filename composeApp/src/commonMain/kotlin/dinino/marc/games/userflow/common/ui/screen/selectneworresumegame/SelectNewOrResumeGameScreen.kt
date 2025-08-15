@@ -1,13 +1,20 @@
 package dinino.marc.games.userflow.common.ui.screen.selectneworresumegame
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_new_game
 import games.composeapp.generated.resources.select_new_or_resume_game_screen_resume_game
@@ -78,24 +85,27 @@ fun SelectNewOrResumeGameLayout(
     onSelectNewGameOrNullIfDisabled : (()->Unit)? = {},
     onSelectResumeGameOrNullIfDisabled : (()->Unit)? = {},
 ) {
-    AlignWidthsColumnLayout(modifier = modifier) {
-        listOf(
-            @Composable {
-                Button(
-                    enabled = onSelectNewGameOrNullIfDisabled != null,
-                    onClick = onSelectNewGameOrNullIfDisabled ?: {}
-                ) {
-                    Text(stringResource(Res.string.select_new_or_resume_game_screen_new_game))
-                }
-            },
-            @Composable {
-                Button(
-                    enabled = onSelectResumeGameOrNullIfDisabled != null,
-                    onClick = onSelectResumeGameOrNullIfDisabled ?: {}
-                ) {
-                    Text(stringResource(Res.string.select_new_or_resume_game_screen_resume_game))
-                }
-            }
-        )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = CenterHorizontally
+    )  {
+        Button(
+            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            enabled = onSelectNewGameOrNullIfDisabled != null,
+            onClick = onSelectNewGameOrNullIfDisabled ?: {}
+        ) {
+            Text(stringResource(Res.string.select_new_or_resume_game_screen_new_game))
+        }
+
+        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.tiny))
+
+        Button(
+            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            enabled = onSelectResumeGameOrNullIfDisabled != null,
+            onClick = onSelectResumeGameOrNullIfDisabled ?: {}
+        ) {
+            Text(stringResource(Res.string.select_new_or_resume_game_screen_resume_game))
+        }
     }
 }

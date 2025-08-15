@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,9 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
-import dinino.marc.games.app.ui.theme.spacing
+import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.layout.AlignWidthsColumnLayout
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over_screen_new_game
 import games.composeapp.generated.resources.game_over_screen_different_game
@@ -96,27 +96,26 @@ fun GameOverLayout(
             text = stringResource(Res.string.game_over_screen_subtitle)
         )
 
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+        Spacer(
+            modifier = Modifier.height(MaterialTheme.sizes.spacings.medium)
+        )
 
-        AlignWidthsColumnLayout(modifier = modifier) {
-            listOf(
-                @Composable {
-                    Button(
-                        enabled = onSelectNewGameOrNullIfDisabled != null,
-                        onClick = onSelectNewGameOrNullIfDisabled ?: {}
-                    ) {
-                        Text(stringResource(Res.string.game_over_screen_new_game))
-                    }
-                },
-                @Composable {
-                    Button(
-                        enabled = onSelectDifferentGameOrNullIfDisabled != null,
-                        onClick = onSelectDifferentGameOrNullIfDisabled  ?: {}
-                    ) {
-                        Text(stringResource(Res.string.game_over_screen_different_game))
-                    }
-                }
-            )
+        Button(
+            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            enabled = onSelectNewGameOrNullIfDisabled != null,
+            onClick = onSelectNewGameOrNullIfDisabled ?: {}
+        ) {
+            Text(stringResource(Res.string.game_over_screen_new_game))
+        }
+
+        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.tiny))
+
+        Button(
+            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            enabled = onSelectDifferentGameOrNullIfDisabled != null,
+            onClick = onSelectDifferentGameOrNullIfDisabled  ?: {}
+        ) {
+            Text(stringResource(Res.string.game_over_screen_different_game))
         }
     }
 }

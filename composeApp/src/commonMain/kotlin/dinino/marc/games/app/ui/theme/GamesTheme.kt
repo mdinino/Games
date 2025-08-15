@@ -6,6 +6,8 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import dinino.marc.games.app.ui.theme.sizes.LocalSizes
+import dinino.marc.games.app.ui.theme.sizes.Sizes
 
 @Composable
 fun GamesTheme(
@@ -13,7 +15,7 @@ fun GamesTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalSpacing provides Spacing(),
+        LocalSizes provides Sizes(),
     ) {
         MaterialTheme(
             colorScheme = scheme(darkTheme),
