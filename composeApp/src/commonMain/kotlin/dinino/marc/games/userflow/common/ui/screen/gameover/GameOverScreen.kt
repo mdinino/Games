@@ -101,17 +101,21 @@ fun GameOverLayout(
         )
 
         Button(
-            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            modifier = Modifier
+                .width(MaterialTheme.sizes.buttons.medium.width)
+                .height(MaterialTheme.sizes.buttons.medium.height),
             enabled = onSelectNewGameOrNullIfDisabled != null,
             onClick = onSelectNewGameOrNullIfDisabled ?: {}
         ) {
             Text(stringResource(Res.string.game_over_screen_new_game))
         }
 
-        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.tiny))
+        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
 
         Button(
-            modifier = Modifier.width(MaterialTheme.sizes.buttonWidths.medium),
+            modifier = Modifier
+                .width(MaterialTheme.sizes.buttons.medium.width)
+                .height(MaterialTheme.sizes.buttons.medium.height),
             enabled = onSelectDifferentGameOrNullIfDisabled != null,
             onClick = onSelectDifferentGameOrNullIfDisabled  ?: {}
         ) {

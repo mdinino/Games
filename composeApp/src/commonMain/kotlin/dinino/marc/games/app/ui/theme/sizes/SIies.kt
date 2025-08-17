@@ -13,6 +13,6 @@ val MaterialTheme.sizes: Sizes
 val LocalSizes = compositionLocalOf { Sizes() }
 
 data class Sizes(
-    val buttonWidths: ButtonWidths = ButtonWidths(),
+    val buttons: ButtonSizes = ButtonSizes(),
     val spacings: Spacings = Spacings()
 )

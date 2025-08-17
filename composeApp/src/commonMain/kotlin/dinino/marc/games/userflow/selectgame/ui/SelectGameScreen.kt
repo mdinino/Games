@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventLayout
@@ -73,15 +75,17 @@ private fun SelectGameScreen(
         ) {
             Button(
                 modifier = Modifier
-                    .width(MaterialTheme.sizes.buttonWidths.medium),
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
                 onClick = onTicTacToeSelected
             ) { Text(stringResource(Res.string.userflow_tictactoe)) }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.tiny))
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
 
             Button(
                 modifier = Modifier
-                    .width(MaterialTheme.sizes.buttonWidths.medium),
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
                 onClick = onTetrisSelected
             ) { Text(stringResource(Res.string.userflow_tetris)) }
         }
