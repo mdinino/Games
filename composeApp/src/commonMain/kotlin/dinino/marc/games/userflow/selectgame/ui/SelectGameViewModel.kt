@@ -2,8 +2,6 @@ package dinino.marc.games.userflow.selectgame.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import games.composeapp.generated.resources.Res
-import games.composeapp.generated.resources.userflow_tetris_not_available
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow

@@ -18,8 +18,7 @@ class TicTacToeGameViewModel(
         ::convertDataToState
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
         TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
-    newGame = newGame, repository = repository,
-    defaultGameData = defaultGameData, convertDataToState = convertDataToState
+    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
             
     override fun pause() =

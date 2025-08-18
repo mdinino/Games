@@ -33,15 +33,8 @@ sealed interface SerializableUserFlowRoute {
      */
     interface UserFlowScreenRoute: SerializableUserFlowRoute {
 
-        /**
-         * Possible dialogs that could pop up over this screen
-         */
-        val dialogs: List<UserFlowDialogRoute>
-
         @Composable
         fun Screen(modifier: Modifier, navHostController: NavHostController)
-
-
 
         /**
          * When navigating to UserFlowScreenRoutes that inherit from this market interface
@@ -49,14 +42,5 @@ sealed interface SerializableUserFlowRoute {
          * Parent nav graphs will be preserved
          */
         interface ClearUserFlowBackStack
-    }
-
-    /**
-     * A dialog that can pop up over a Screen
-     */
-    interface UserFlowDialogRoute: SerializableUserFlowRoute {
-
-        @Composable
-        fun Dialog()
     }
 }

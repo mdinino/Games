@@ -28,10 +28,10 @@ abstract class SelectNewOrResumeGameViewModel<
 
     fun selectNewGame() {
         viewModelScope.launch {
+            repository.clearEntries()
             _oneTimeEvents.send(SelectNewOrResumeGameOneTimeEvent.NewGameSelected)
         }
     }
-
 
     fun selectResumeGame() {
         viewModelScope.launch {

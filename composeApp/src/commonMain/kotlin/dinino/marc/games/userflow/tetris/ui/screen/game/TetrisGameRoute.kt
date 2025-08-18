@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data class TetrisGameRoute(override val newGame: Boolean = false) : ContentWithActionBarGameRoute() {
+data object TetrisGameRoute : ContentWithActionBarGameRoute() {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()
@@ -28,6 +28,6 @@ data class TetrisGameRoute(override val newGame: Boolean = false) : ContentWithA
         TetrisGameScreen(
             modifier = modifier,
             navHostController = navHostController,
-            menuSelectedOneTimeEvent = menuSelectedOneTimeEvent
+            menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         )
 }

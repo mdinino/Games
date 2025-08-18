@@ -22,9 +22,9 @@ fun TetrisSelectNewOrResumeGameScreen(
         oneTimeEventHandler = { navHostController, event ->
             when(event) {
                 SelectNewOrResumeGameOneTimeEvent.NewGameSelected ->
-                    navHostController.navigateForwardTo(route = TetrisGameRoute(newGame = true))
+                    navHostController.navigateForwardTo(route = TetrisGameRoute)
                 SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected ->
-                    navHostController.navigateForwardTo(route = TetrisGameRoute(newGame = false))
+                    navHostController.navigateForwardTo(route = TetrisGameRoute)
             }
         }
     )
