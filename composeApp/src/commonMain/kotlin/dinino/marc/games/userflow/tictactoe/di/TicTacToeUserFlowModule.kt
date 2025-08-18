@@ -1,21 +1,21 @@
 package dinino.marc.games.userflow.tictactoe.di
 
 import dinino.marc.games.userflow.tictactoe.ui.screen.game.TicTacToeGameViewModel
+import dinino.marc.games.userflow.tictactoe.ui.screen.game.dialog.TicTacToePauseGameViewModel
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverViewModel
 import dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame.TicTacToeSelectNewOrResumeGameViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatform
 
 val ticTacToeUserFlowModule = module {
     single { TicTacToeUserFlowProviders() }
-    viewModel { TicTacToeSelectNewOrResumeGameViewModel(repository) }
-    viewModel { TicTacToeGameViewModel(repository) }
-    viewModel { TicTacToeGameOverViewModel() }
+    viewModelOf(::TicTacToeSelectNewOrResumeGameViewModel)
+    viewModelOf(::TicTacToePauseGameViewModel)
+    viewModel { (newGame: Boolean) ->
+        TicTacToeGameViewModel(
+            newGame = newGame
+        )
+    }
+    viewModelOf(::TicTacToeGameOverViewModel)
 }
-
-private val repository
-    get() = KoinPlatform.getKoin()
-        .get<TicTacToeUserFlowProviders>()
-        .repositoryProvider
-        .provide()

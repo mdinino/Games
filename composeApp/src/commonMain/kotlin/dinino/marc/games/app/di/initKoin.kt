@@ -15,7 +15,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             appModule,
             selectGameUserFlowModule,
             ticTacToeUserFlowModule,
-            tetrisUserFlowModule,
+            tetrisUserFlowModule
         )
     }
 }

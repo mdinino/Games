@@ -11,6 +11,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import dinino.marc.games.userflow.common.di.UserFlowProviders
@@ -82,6 +83,10 @@ abstract class UserFlowNavGraphRoute(): SerializableUserFlowRoute.UserFlowNavGra
                         navHostController = navHostController,
                         route = route
                     )
+                is SerializableUserFlowRoute.UserFlowDialogRoute ->
+                    userFlowDialogRouteComposable<SerializableUserFlowRoute.UserFlowDialogRoute>(
+                        route = route
+                    )
                 is SerializableUserFlowRoute.UserFlowNavGraphRoute ->
                     userFlowNavGraphRouteComposable<SerializableUserFlowRoute.UserFlowNavGraphRoute>(
                         navHostController = navHostController,
@@ -120,8 +125,23 @@ abstract class UserFlowNavGraphRoute(): SerializableUserFlowRoute.UserFlowNavGra
             navHostController: NavHostController,
             route: T
         ) {
+            route.dialogs
+                .forEach {
+                    serializableUserFlowRouteComposable(
+                        navHostController = navHostController,
+                        route = it
+                    )
+                }
+
             composable(route = route::class) { backStackEntry ->
                 backStackEntry.toRoute<T>(route::class).Screen(Modifier.Companion, navHostController)
+            }
+        }
+
+        private fun <T: SerializableUserFlowRoute.UserFlowDialogRoute> NavGraphBuilder.
+                userFlowDialogRouteComposable(route: T) {
+            dialog(route = route::class) { backStackEntry ->
+                backStackEntry.toRoute<T>(route::class).Dialog()
             }
         }
     }

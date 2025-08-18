@@ -8,19 +8,10 @@ import androidx.navigation.NavHostController
  * ALl implementing classes should be marked with @Serializable
  */
 sealed interface SerializableUserFlowRoute {
-    interface UserFlowScreenRoute: SerializableUserFlowRoute {
 
-        @Composable
-        fun Screen(modifier: Modifier, navHostController: NavHostController)
-
-        /**
-         * When navigating to UserFlowScreenRoutes that inherit from this market interface
-         * all items in the current user flow will be cleared before navigating.
-         * Parent nav graphs will be preserved
-         */
-        interface ClearUserFlowBackStack
-    }
-
+    /**
+     * An entire user flow/nav graph
+     */
     interface UserFlowNavGraphRoute: SerializableUserFlowRoute {
 
         @Composable
@@ -35,5 +26,37 @@ sealed interface SerializableUserFlowRoute {
          * Other routes (either screen or NavGraphs) in the NavGraph
          */
         val otherRoutes: List<SerializableUserFlowRoute>
+    }
+
+    /**
+     * A single screen in a user flow
+     */
+    interface UserFlowScreenRoute: SerializableUserFlowRoute {
+
+        /**
+         * Possible dialogs that could pop up over this screen
+         */
+        val dialogs: List<UserFlowDialogRoute>
+
+        @Composable
+        fun Screen(modifier: Modifier, navHostController: NavHostController)
+
+
+
+        /**
+         * When navigating to UserFlowScreenRoutes that inherit from this market interface
+         * all items in the current user flow will be cleared before navigating.
+         * Parent nav graphs will be preserved
+         */
+        interface ClearUserFlowBackStack
+    }
+
+    /**
+     * A dialog that can pop up over a Screen
+     */
+    interface UserFlowDialogRoute: SerializableUserFlowRoute {
+
+        @Composable
+        fun Dialog()
     }
 }

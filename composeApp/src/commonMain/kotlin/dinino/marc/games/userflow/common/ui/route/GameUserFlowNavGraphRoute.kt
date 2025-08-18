@@ -17,7 +17,10 @@ abstract class GameUserFlowNavGraphRoute(): UserFlowNavGraphRoute() {
     interface SelectNewOrResumeGameRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
         SerializableUserFlowRoute.UserFlowScreenRoute.ClearUserFlowBackStack
 
-    interface GameRoute: SerializableUserFlowRoute.UserFlowScreenRoute
+    interface GameRoute: SerializableUserFlowRoute.UserFlowScreenRoute {
+        val newGame: Boolean
+        val pauseDialogRoute: SerializableUserFlowRoute.UserFlowDialogRoute
+    }
 
     interface GameOverRoute: SerializableUserFlowRoute.UserFlowScreenRoute
 }

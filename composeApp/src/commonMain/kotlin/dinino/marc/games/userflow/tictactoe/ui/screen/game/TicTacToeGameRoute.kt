@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarGameRoute
 import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
@@ -12,15 +13,11 @@ import kotlinx.serialization.Serializable
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TicTacToeGameRoute : ContentWithActionBarScreenRoute(),
-    GameUserFlowNavGraphRoute.GameRoute {
+data class TicTacToeGameRoute(override val newGame: Boolean = false) : ContentWithActionBarGameRoute() {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()
             .get<TicTacToeUserFlowProviders>().localizedNameProvider
-
-    override val showMenuIcon: Boolean
-        get() = true
 
     @Composable
     override fun Content(

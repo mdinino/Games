@@ -19,6 +19,9 @@ abstract class ContentWithActionBarScreenRoute() : SerializableUserFlowRoute.Use
     protected open val showMenuIcon: Boolean
         get() = false
 
+    override val dialogs: List<SerializableUserFlowRoute.UserFlowDialogRoute>
+        get() = emptyList()
+
     @Composable
     protected abstract fun Content(
         modifier: Modifier,

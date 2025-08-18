@@ -22,9 +22,9 @@ fun TicTacToeSelectNewOrResumeGameScreen(
         oneTimeEventHandler = { navHostController, event ->
             when(event) {
                 SelectNewOrResumeGameOneTimeEvent.NewGameSelected ->
-                    navHostController.navigateForwardTo(route = TicTacToeGameRoute)
+                    navHostController.navigateForwardTo(route = TicTacToeGameRoute(newGame = true))
                 SelectNewOrResumeGameOneTimeEvent.ResumeGameSelected ->
-                    navHostController.navigateForwardTo(route = TicTacToeGameRoute)
+                    navHostController.navigateForwardTo(route = TicTacToeGameRoute(newGame = false))
             }
         }
     )

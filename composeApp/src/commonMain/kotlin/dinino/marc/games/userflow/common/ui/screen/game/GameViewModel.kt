@@ -17,11 +17,17 @@ abstract class GameViewModel<
         GAME_DATA: GameData<GAME_OVER_DATA_DETAILS, *>,
         GAME_OVER_STATE_DETAILS: Any,
         out BOARD_STATE: Any>(
+    newGame: Boolean = false,
     private val _oneTimeEvents: Channel<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = Channel(),
     private val repository: Repository<GAME_DATA>,
     private val defaultGameData: ()->GAME_DATA,
     private val convertDataToState: (gameData: GAME_DATA)->GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
 ): ViewModel() {
+
+    init {
+        if (newGame)
+            revertToNewGame()
+    }
 
     val gameState: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>> =
         repository.lastestItem
@@ -50,10 +56,15 @@ abstract class GameViewModel<
             repository.upsertLatestItemIfDifferent(mutated)
         }
     }
+
+    fun revertToNewGame() {
+        viewModelScope.launch {
+            repository.clearEntries()
+        }
+    }
     
     abstract fun pause()
     abstract fun unPause()
     abstract fun togglePause()
     abstract fun userInitiatedGameOver()
-
 }

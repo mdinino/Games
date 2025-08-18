@@ -8,13 +8,15 @@ import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun TetrisGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
-    vm: TetrisGameViewModel = koinViewModel()
+    newGame: Boolean = false,
+    vm: TetrisGameViewModel = koinViewModel(parameters = { parametersOf(newGame) } )
 ) {
     GameScreen(
         modifier = modifier,

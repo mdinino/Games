@@ -1,20 +1,25 @@
 package dinino.marc.games.userflow.tetris.ui.screen.game
 
-import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
+import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
+import org.koin.mp.KoinPlatform
 
 class TetrisGameViewModel(
-    repository: Repository<TetrisGameData>,
+    newGame: Boolean =
+        false,
+    repository: Repository<TetrisGameData> =
+        defaultRepository,
     defaultGameData: ()->TetrisGameData =
         { TetrisGameData() },
     convertDataToState: (gameData: TetrisGameData)-> TetrisGameState =
         ::convertDataToState
 ): GameViewModel<Unit, TetrisGameData, Unit, TetrisBoardState>(
-    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState
+    newGame = newGame, repository = repository,
+    defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
 
     override fun pause() =
@@ -64,3 +69,9 @@ class TetrisGameViewModel(
     private fun TetrisGameData.mutateGameOver(details: Unit? = null) =
         copy(playData = GamePlayData.GameOver(details))
 }
+
+private val defaultRepository
+    get() = KoinPlatform.getKoin()
+        .get<TetrisUserFlowProviders>()
+        .repositoryProvider
+        .provide()
