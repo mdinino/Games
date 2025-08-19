@@ -17,6 +17,7 @@ import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import games.composeapp.generated.resources.Res
+import games.composeapp.generated.resources.game_hidden_while_paused
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
 import kotlinx.coroutines.CoroutineScope
@@ -72,7 +73,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         onMenuSelectedOneTimeEvent = {vm.togglePause() },
         viewModelOneTimeEvent = vm.oneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
-        onPauseDialogHidden = {vm.unPause() },
+        onPausePopupHidden = {vm.unPause() },
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = { vm.navigateToGameOverScreen(clearGame = true) },
         content = content
@@ -88,7 +89,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected) -> Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
-    onPauseDialogHidden: ()->Unit = {},
+    onPausePopupHidden: ()->Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
@@ -103,7 +104,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         onMenuSelectedOneTimeEvent = onMenuSelectedOneTimeEvent,
         viewModelOneTimeEvent = viewModelOneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
-        onPauseDialogHidden = onPauseDialogHidden,
+        onPausePopupHidden = onPausePopupHidden,
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = onGameOverAccepted,
         content = content
@@ -120,14 +121,20 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected) -> Unit = {},
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
-    onPauseDialogHidden: ()->Unit = {},
+    onPausePopupHidden: ()->Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
     content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
 ) {
-    val isPauseDialogVisible: MutableStateFlow<Boolean> = remember { MutableStateFlow(false) }
-    ScreenWithGamePausedDialog(isDialogVisible = isPauseDialogVisible) {
+    val isPausePopupVisible: MutableStateFlow<Boolean> =
+        remember {
+            MutableStateFlow(
+                value = state is GameState.Paused
+            )
+        }
+
+    ScreenWithGamePausedPopup(isPopupVisible = isPausePopupVisible) {
 
         ObserveOneTimeEventEffect(oneTimeEvents = menuSelectedOneTimeEvent) { oneTimeEvent ->
             onMenuSelectedOneTimeEvent(oneTimeEvent)
@@ -135,8 +142,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         ObserveOneTimeEventEffect(oneTimeEvents = viewModelOneTimeEvent) { oneTimeEvent ->
             onViewModelOneTimeEvent(oneTimeEvent)
         }
-        ObserveOneTimeEventEffect(oneTimeEvents = isPauseDialogVisible) { visible ->
-            if (!visible) onPauseDialogHidden()
+        ObserveOneTimeEventEffect(oneTimeEvents = isPausePopupVisible) { visible ->
+            if (!visible) onPausePopupHidden()
         }
 
         val gameScreenSnackbarHostState = remember { SnackbarHostState() }
@@ -148,15 +155,15 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         coroutineScope.launch {
             when(state) {
                 is GameState.Normal -> {
+                    isPausePopupVisible.value = false
                     gameScreenSnackbarHostState.dismissNotifications()
-                    isPauseDialogVisible.value = false
                 }
                 is GameState.Paused -> {
-                    gameScreenSnackbarHostState.dismissNotifications()
-                    isPauseDialogVisible.value = true
+                    isPausePopupVisible.value = true
+                    gameScreenSnackbarHostState.showGameHiddenWhilePausedNotification()
                 }
                 is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> -> {
-                    isPauseDialogVisible.value = false
+                    isPausePopupVisible.value = false
                     gameScreenSnackbarHostState.showGameOverNotification(
                         localizedMessage = { localizedGameOverMessage(state.details) },
                         onAction = { onGameOverAccepted(state.details) }
@@ -184,6 +191,18 @@ private suspend fun SnackbarHostState.showGameOverNotification(
 
     if (result == SnackbarResult.ActionPerformed)
         onAction()
+}
+
+private suspend fun SnackbarHostState.showGameHiddenWhilePausedNotification(
+    localizedMessage: suspend ()->String =
+        { getString(Res.string.game_hidden_while_paused) },
+) {
+    dismissNotifications()
+    showSnackbar(
+        message = localizedMessage(),
+        withDismissAction = false,
+        duration = SnackbarDuration.Indefinite
+    )
 }
 
 private fun SnackbarHostState.dismissNotifications() =

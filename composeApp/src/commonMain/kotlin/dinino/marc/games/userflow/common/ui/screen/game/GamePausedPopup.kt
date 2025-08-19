@@ -19,32 +19,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.PopupProperties
 import dinino.marc.games.app.ui.theme.sizes.sizes
+import dinino.marc.games.userflow.common.ui.screen.Popup
 import dinino.marc.games.userflow.common.ui.screen.Screen
-import dinino.marc.games.userflow.common.ui.screen.Dialog
-import dinino.marc.games.userflow.common.ui.screen.ScreenWithDialog
+import dinino.marc.games.userflow.common.ui.screen.ScreenWithPopup
 import games.composeapp.generated.resources.Res
-import games.composeapp.generated.resources.pause_dialog_end_game
-import games.composeapp.generated.resources.pause_dialog_restart_game
-import games.composeapp.generated.resources.pause_dialog_resume_game
-import games.composeapp.generated.resources.pause_dialog_title
+import games.composeapp.generated.resources.pause_popup_end_game
+import games.composeapp.generated.resources.pause_popup_restart_game
+import games.composeapp.generated.resources.pause_popup_resume_game
+import games.composeapp.generated.resources.pause_popup_title
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ScreenWithGamePausedDialog(
-    isDialogVisible: MutableStateFlow<Boolean>,
-    dialogProperties: DialogProperties = DialogProperties(),
+fun ScreenWithGamePausedPopup(
+    isPopupVisible: MutableStateFlow<Boolean>,
     screenContent: @Composable ()->Unit
-) = ScreenWithDialog(
+) = ScreenWithPopup(
         screen = Screen(screenContent),
-        dialog = Dialog(
-            properties = dialogProperties,
+        popup = Popup(
+            properties = PopupProperties(
+                focusable = true
+            ),
             content = { MinimalDialog() }
         ),
-        isDialogVisible = isDialogVisible
+        isPopupVisible = isPopupVisible
     )
 
 @Composable
@@ -62,7 +63,7 @@ fun GamePausedDialog(
     ) {
         Text(
             textAlign = TextAlign.Center,
-            text = stringResource(Res.string.pause_dialog_title)
+            text = stringResource(Res.string.pause_popup_title)
         )
 
         Spacer(
@@ -75,7 +76,7 @@ fun GamePausedDialog(
                 .height(MaterialTheme.sizes.buttons.medium.height),
             onClick = onResumeGameSelected
         ) {
-            Text(stringResource(Res.string.pause_dialog_resume_game))
+            Text(stringResource(Res.string.pause_popup_resume_game))
         }
 
         Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
@@ -86,7 +87,7 @@ fun GamePausedDialog(
                 .height(MaterialTheme.sizes.buttons.medium.height),
             onClick = onRestartGameSelected
         ) {
-            Text(stringResource(Res.string.pause_dialog_restart_game))
+            Text(stringResource(Res.string.pause_popup_restart_game))
         }
 
         Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
@@ -97,7 +98,7 @@ fun GamePausedDialog(
                 .height(MaterialTheme.sizes.buttons.medium.height),
             onClick = onEndGameSelected
         ) {
-            Text(stringResource(Res.string.pause_dialog_end_game))
+            Text(stringResource(Res.string.pause_popup_end_game))
         }
     }
 }
