@@ -73,7 +73,9 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         onMenuSelectedOneTimeEvent = {vm.togglePause() },
         viewModelOneTimeEvent = vm.oneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
-        onPausePopupHidden = {vm.unPause() },
+        onPausePopupHidden = { vm.unPause() },
+        onPausePopupRestartGameSelected = { vm.resetToNewGame() },
+        onPausePopupEndGameSelected = { vm.userInitiatedGameOver() },
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = { vm.navigateToGameOverScreen(clearGame = true) },
         content = content
@@ -90,6 +92,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     onPausePopupHidden: ()->Unit = {},
+    onPausePopupRestartGameSelected: ()->Unit = {},
+    onPausePopupEndGameSelected: ()->Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
@@ -105,6 +109,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         viewModelOneTimeEvent = viewModelOneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
         onPausePopupHidden = onPausePopupHidden,
+        onPausePopupRestartGameSelected = onPausePopupRestartGameSelected,
+        onPausePopupEndGameSelected = onPausePopupEndGameSelected,
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = onGameOverAccepted,
         content = content
@@ -122,6 +128,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
     onPausePopupHidden: ()->Unit = {},
+    onPausePopupRestartGameSelected: ()->Unit = {},
+    onPausePopupEndGameSelected: ()->Unit = {},
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
         { getString(Res.string.game_over) },
     onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
@@ -134,8 +142,11 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
             )
         }
 
-    ScreenWithGamePausedPopup(isPopupVisible = isPausePopupVisible) {
-
+    ScreenWithGamePausedPopup(
+        isPopupVisible = isPausePopupVisible,
+        onRestartGameSelected = onPausePopupRestartGameSelected,
+        onEndGameSelected = onPausePopupEndGameSelected
+    ) {
         ObserveOneTimeEventEffect(oneTimeEvents = menuSelectedOneTimeEvent) { oneTimeEvent ->
             onMenuSelectedOneTimeEvent(oneTimeEvent)
         }

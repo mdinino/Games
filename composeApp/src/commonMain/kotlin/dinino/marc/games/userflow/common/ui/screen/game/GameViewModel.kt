@@ -51,6 +51,12 @@ abstract class GameViewModel<
         }
     }
 
+    fun resetToNewGame() {
+        viewModelScope.launch {
+            repository.clearEntries()
+        }
+    }
+
     abstract fun pause()
     abstract fun unPause()
     abstract fun togglePause()

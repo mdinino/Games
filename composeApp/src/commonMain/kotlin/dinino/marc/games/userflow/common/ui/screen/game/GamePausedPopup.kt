@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +30,6 @@ import dinino.marc.games.userflow.common.ui.screen.ScreenWithPopup
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.pause_popup_end_game
 import games.composeapp.generated.resources.pause_popup_restart_game
-import games.composeapp.generated.resources.pause_popup_resume_game
 import games.composeapp.generated.resources.pause_popup_title
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
@@ -36,6 +38,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ScreenWithGamePausedPopup(
     isPopupVisible: MutableStateFlow<Boolean>,
+    onRestartGameSelected: ()->Unit = {},
+    onEndGameSelected: ()->Unit = {},
     screenContent: @Composable ()->Unit
 ) = ScreenWithPopup(
         screen = Screen(screenContent),
@@ -43,81 +47,56 @@ fun ScreenWithGamePausedPopup(
             properties = PopupProperties(
                 focusable = true
             ),
-            content = { MinimalDialog() }
+            content = {
+                GamePausedPopupLayout(
+                    onRestartGameSelected = onRestartGameSelected,
+                    onEndGameSelected = onEndGameSelected
+                )
+            }
         ),
         isPopupVisible = isPopupVisible
     )
 
 @Composable
 @Preview
-fun GamePausedDialog(
+fun GamePausedPopupLayout(
     modifier: Modifier = Modifier.wrapContentSize(),
-    onResumeGameSelected: ()->Unit = {},
     onRestartGameSelected: ()->Unit = {},
     onEndGameSelected: ()->Unit = {},
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    OutlinedCard(
+        elevation = CardDefaults.cardElevation(8.dp),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.padding(16.dp).wrapContentSize()
     ) {
-        Text(
-            textAlign = TextAlign.Center,
-            text = stringResource(Res.string.pause_popup_title)
-        )
+        Column(modifier = Modifier.padding(16.dp).wrapContentSize()) {
+            Text(
+                textAlign = TextAlign.Center,
+                text = stringResource(Res.string.pause_popup_title),
+                style = MaterialTheme.typography.titleMedium
+            )
 
-        Spacer(
-            modifier = Modifier.height(MaterialTheme.sizes.spacings.medium)
-        )
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.medium))
 
-        OutlinedButton(
-            modifier = Modifier
-                .width(MaterialTheme.sizes.buttons.medium.width)
-                .height(MaterialTheme.sizes.buttons.medium.height),
-            onClick = onResumeGameSelected
-        ) {
-            Text(stringResource(Res.string.pause_popup_resume_game))
+            OutlinedButton(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
+                onClick = onRestartGameSelected
+            ) {
+                Text(stringResource(Res.string.pause_popup_restart_game))
+            }
+
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
+
+            OutlinedButton(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
+                onClick = onEndGameSelected
+            ) {
+                Text(stringResource(Res.string.pause_popup_end_game))
+            }
         }
-
-        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
-
-        OutlinedButton(
-            modifier = Modifier
-                .width(MaterialTheme.sizes.buttons.medium.width)
-                .height(MaterialTheme.sizes.buttons.medium.height),
-            onClick = onRestartGameSelected
-        ) {
-            Text(stringResource(Res.string.pause_popup_restart_game))
-        }
-
-        Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
-
-        OutlinedButton(
-            modifier = Modifier
-                .width(MaterialTheme.sizes.buttons.medium.width)
-                .height(MaterialTheme.sizes.buttons.medium.height),
-            onClick = onEndGameSelected
-        ) {
-            Text(stringResource(Res.string.pause_popup_end_game))
-        }
-    }
-}
-
-@Composable
-fun MinimalDialog() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Text(
-            text = "This is a minimal dialog",
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center),
-            textAlign = TextAlign.Center,
-        )
     }
 }
