@@ -6,14 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventLayout
@@ -73,7 +71,7 @@ private fun SelectGameScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = CenterHorizontally
         ) {
-            Button(
+            OutlinedButton(
                 modifier = Modifier
                     .width(MaterialTheme.sizes.buttons.medium.width)
                     .height(MaterialTheme.sizes.buttons.medium.height),
@@ -82,7 +80,7 @@ private fun SelectGameScreen(
 
             Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
 
-            Button(
+            OutlinedButton(
                 modifier = Modifier
                     .width(MaterialTheme.sizes.buttons.medium.width)
                     .height(MaterialTheme.sizes.buttons.medium.height),
