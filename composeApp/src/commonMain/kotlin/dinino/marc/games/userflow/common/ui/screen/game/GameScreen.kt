@@ -172,9 +172,11 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
                 is GameState.Paused -> {
                     isPausePopupVisible.value = true
                     gameScreenSnackbarHostState.showGameHiddenWhilePausedNotification()
+
                 }
                 is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> -> {
                     isPausePopupVisible.value = false
+                    gameScreenSnackbarHostState.dismissNotifications()
                     gameScreenSnackbarHostState.showGameOverNotification(
                         localizedMessage = { localizedGameOverMessage(state.details) },
                         onAction = { onGameOverAccepted(state.details) }
