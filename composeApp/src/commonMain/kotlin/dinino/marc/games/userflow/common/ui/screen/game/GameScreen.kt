@@ -237,12 +237,11 @@ private fun GamePausedLayout(
     ) {
         Column(
             modifier = Modifier.padding(16.dp).wrapContentSize(),
-           horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 textAlign = TextAlign.Center,
                 text = stringResource(Res.string.pause_popup_title),
-                style = MaterialTheme.typography.titleMedium
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.medium))
@@ -308,11 +307,6 @@ private fun SnackbarHostState.ShowGameHiddenWhilePausedNotification(
 }
 
 @Composable
-private fun SnackbarHostState.DismissNotifications(
-    on: CoroutineScope = rememberCoroutineScope(),
-) {
-    on.launch {
-        currentSnackbarData?.dismiss()
-    }
-}
+private fun SnackbarHostState.DismissNotifications() =
+    currentSnackbarData?.dismiss()
 
