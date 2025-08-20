@@ -16,6 +16,7 @@ abstract class SelectNewOrResumeGameViewModel<
         out STATE: SelectNewOrResumeGameState>(
     private val repository: Repository<GAME>,
     private val _oneTimeEvents: Channel<SelectNewOrResumeGameOneTimeEvent> = Channel(),
+    private val newGameFactory: ()->GAME,
     private val stateFactory: (isResumeAvailable: Boolean)->STATE,
 ): ViewModel() {
 
@@ -28,7 +29,7 @@ abstract class SelectNewOrResumeGameViewModel<
 
     fun selectNewGame() {
         viewModelScope.launch {
-            repository.clearEntries()
+            repository.upsertLatestItemIfDifferent(newGameFactory())
             _oneTimeEvents.send(SelectNewOrResumeGameOneTimeEvent.NewGameSelected)
         }
     }
