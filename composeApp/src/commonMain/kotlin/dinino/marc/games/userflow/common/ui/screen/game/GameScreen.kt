@@ -235,7 +235,10 @@ private fun GamePausedLayout(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.padding(16.dp).wrapContentSize()
     ) {
-        Column(modifier = Modifier.padding(16.dp).wrapContentSize()) {
+        Column(
+            modifier = Modifier.padding(16.dp).wrapContentSize(),
+           horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 textAlign = TextAlign.Center,
                 text = stringResource(Res.string.pause_popup_title),
