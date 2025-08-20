@@ -1,5 +1,6 @@
 package dinino.marc.games.userflow.common.ui.screen.game
 
+import androidx.annotation.RestrictTo
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -56,6 +56,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    snackbarCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
@@ -64,6 +65,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 ) = GameScreen(
         vm = vm,
         modifier = modifier,
+        snackbarCoroutineScope = snackbarCoroutineScope,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         onPausedPopupOneTimeEvent = { event ->
             when(event) {
@@ -89,6 +91,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier,
+    snackbarCoroutineScope: CoroutineScope,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>)->Unit,
@@ -97,6 +100,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 ) = GameScreen(
         state = vm.gameState,
         modifier = modifier,
+        snackbarCoroutineScope = snackbarCoroutineScope,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         onMenuSelectedOneTimeEvent = { vm.togglePause() },
         onPausedPopupOneTimeEvent = onPausedPopupOneTimeEvent,
@@ -112,6 +116,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
     modifier: Modifier,
+    snackbarCoroutineScope: CoroutineScope,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
     onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit ,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
@@ -125,6 +130,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     GameScreen(
         state = currentState.value,
         modifier = modifier,
+        snackbarCoroutineScope = snackbarCoroutineScope,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         onMenuSelectedOneTimeEvent = onMenuSelectedOneTimeEvent,
         onPausedPopupOneTimeEvent = onPausedPopupOneTimeEvent,
@@ -141,6 +147,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier,
+    snackbarCoroutineScope: CoroutineScope,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
     onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
@@ -163,18 +170,19 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         snackbarHost = { SnackbarHost(hostState = gameScreenSnackbarHostState) }
     ) { innerPadding -> content(innerPadding, state.board) }
 
-
     when(state) {
         is GameState.Normal -> {
-            gameScreenSnackbarHostState.DismissNotifications()
+            gameScreenSnackbarHostState.dismissNotifications()
         }
         is GameState.Paused -> {
-            gameScreenSnackbarHostState.ShowGameHiddenWhilePausedNotification()
+            gameScreenSnackbarHostState.showGameHiddenWhilePausedNotification(
+                on = snackbarCoroutineScope
+            )
             ShowGamePausedPopup(onEvent = onPausedPopupOneTimeEvent)
         }
         is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> -> {
-            gameScreenSnackbarHostState.DismissNotifications()
-            gameScreenSnackbarHostState.ShowGameOverNotification(
+            gameScreenSnackbarHostState.showGameOverNotification(
+                on = snackbarCoroutineScope,
                 localizedMessage = { localizedGameOverMessage(state.details) },
                 onAction = { onGameOverAccepted(state.details) }
             )
@@ -269,10 +277,8 @@ private fun GamePausedLayout(
     }
 }
 
-@Composable
-private fun SnackbarHostState.ShowGameOverNotification(
-    on: CoroutineScope =
-        rememberCoroutineScope(),
+private fun SnackbarHostState.showGameOverNotification(
+    on: CoroutineScope,
     localizedMessage: suspend ()->String =
         { getString(Res.string.game_over) },
     localizedActionLabel: suspend ()->String =
@@ -280,6 +286,7 @@ private fun SnackbarHostState.ShowGameOverNotification(
     onAction: ()->Unit
 ) {
     on.launch {
+        dismissNotifications()
         val result = showSnackbar(
             message = localizedMessage(),
             withDismissAction = false,
@@ -292,21 +299,22 @@ private fun SnackbarHostState.ShowGameOverNotification(
     }
 }
 
-@Composable
-private fun SnackbarHostState.ShowGameHiddenWhilePausedNotification(
-    on: CoroutineScope = rememberCoroutineScope(),
-    localizedMessage: String = stringResource(Res.string.game_hidden_while_paused)
+private fun SnackbarHostState.showGameHiddenWhilePausedNotification(
+    on: CoroutineScope,
+    localizedMessage: suspend ()->String = {
+        getString(Res.string.game_hidden_while_paused)
+    }
 ) {
     on.launch {
+        dismissNotifications()
         showSnackbar(
-            message = localizedMessage,
+            message = localizedMessage(),
             withDismissAction = false,
             duration = SnackbarDuration.Indefinite
         )
     }
 }
 
-@Composable
-private fun SnackbarHostState.DismissNotifications() =
+private fun SnackbarHostState.dismissNotifications() =
     currentSnackbarData?.dismiss()
 
