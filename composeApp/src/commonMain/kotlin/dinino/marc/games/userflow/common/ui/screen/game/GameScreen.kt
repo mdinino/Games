@@ -41,7 +41,6 @@ import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
 import games.composeapp.generated.resources.pause_popup_end_game
 import games.composeapp.generated.resources.pause_popup_restart_game
-import games.composeapp.generated.resources.pause_popup_resume_game
 import games.composeapp.generated.resources.pause_popup_title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -68,7 +67,6 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         onPausedPopupOneTimeEvent = { event ->
             when(event) {
-                GamePausedPopupOneTimeEvent.ResumeGameSelected -> vm.unPause()
                 GamePausedPopupOneTimeEvent.RestartGameSelected -> vm.resetToNewGame()
                 GamePausedPopupOneTimeEvent.EndGameSelected -> vm.userInitiatedGameOver()
                 GamePausedPopupOneTimeEvent.PopupDismissed -> vm.unPause()
@@ -186,11 +184,6 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 
 private sealed interface GamePausedPopupOneTimeEvent {
     /**
-     * User clicked on Resume Game button
-     */
-    object ResumeGameSelected: GamePausedPopupOneTimeEvent
-
-    /**
      * User clicked on Restart Game button
      */
     object RestartGameSelected: GamePausedPopupOneTimeEvent
@@ -210,7 +203,11 @@ private sealed interface GamePausedPopupOneTimeEvent {
 private fun ShowGamePausedPopup(
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
-    properties: PopupProperties = PopupProperties(dismissOnClickOutside = false),
+    properties: PopupProperties = PopupProperties(
+        focusable = true,
+        dismissOnClickOutside = true,
+        dismissOnBackPress = true
+    ),
     onEvent: (event: GamePausedPopupOneTimeEvent)->Unit
 ) {
     Popup(
@@ -220,7 +217,6 @@ private fun ShowGamePausedPopup(
     ) {
         GamePausedLayout(
             modifier = modifier,
-            onResumeGameSelected = { onEvent(GamePausedPopupOneTimeEvent.ResumeGameSelected) },
             onRestartGameSelected = { onEvent(GamePausedPopupOneTimeEvent.RestartGameSelected) },
             onEndGameSelected = { onEvent(GamePausedPopupOneTimeEvent.EndGameSelected) }
         )
@@ -231,7 +227,6 @@ private fun ShowGamePausedPopup(
 @Preview
 private fun GamePausedLayout(
     modifier: Modifier = Modifier,
-    onResumeGameSelected: ()->Unit = {},
     onRestartGameSelected: ()->Unit = {},
     onEndGameSelected: ()->Unit = {},
 ) {
@@ -248,17 +243,6 @@ private fun GamePausedLayout(
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.medium))
-
-            OutlinedButton(
-                modifier = Modifier
-                    .width(MaterialTheme.sizes.buttons.medium.width)
-                    .height(MaterialTheme.sizes.buttons.medium.height),
-                onClick = onResumeGameSelected
-            ) {
-                Text(stringResource(Res.string.pause_popup_resume_game))
-            }
-
-            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
 
             Button(
                 modifier = Modifier
