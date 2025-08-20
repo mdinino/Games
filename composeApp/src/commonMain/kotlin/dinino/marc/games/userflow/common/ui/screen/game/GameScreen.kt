@@ -1,17 +1,36 @@
 package dinino.marc.games.userflow.common.ui.screen.game
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
@@ -20,13 +39,17 @@ import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_hidden_while_paused
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.ok
+import games.composeapp.generated.resources.pause_popup_end_game
+import games.composeapp.generated.resources.pause_popup_restart_game
+import games.composeapp.generated.resources.pause_popup_resume_game
+import games.composeapp.generated.resources.pause_popup_title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
@@ -38,11 +61,19 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit
 ) = GameScreen(
         vm = vm,
         modifier = modifier,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
+        onPausedPopupOneTimeEvent = { event ->
+            when(event) {
+                GamePausedPopupOneTimeEvent.ResumeGameSelected -> vm.unPause()
+                GamePausedPopupOneTimeEvent.RestartGameSelected -> vm.resetToNewGame()
+                GamePausedPopupOneTimeEvent.EndGameSelected -> vm.userInitiatedGameOver()
+                GamePausedPopupOneTimeEvent.PopupDismissed -> vm.unPause()
+            }
+        },
         onViewModelOneTimeEvent = { event ->
             when(event) {
                 is GameOneTimeEvent.NavigateToGameOverScreen<GAME_OVER_STATE_DETAILS> ->
@@ -59,23 +90,20 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
-    modifier: Modifier = Modifier,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected> = emptyFlow(),
-    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
-    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
-        = { getString(Res.string.game_over) },
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
+    modifier: Modifier,
+    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>)->Unit,
+    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?)->String,
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE)->Unit
 ) = GameScreen(
         state = vm.gameState,
-        coroutineScope = rememberCoroutineScope(),
         modifier = modifier,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
-        onMenuSelectedOneTimeEvent = {vm.togglePause() },
+        onMenuSelectedOneTimeEvent = { vm.togglePause() },
+        onPausedPopupOneTimeEvent = onPausedPopupOneTimeEvent,
         viewModelOneTimeEvent = vm.oneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
-        onPausePopupHidden = { vm.unPause() },
-        onPausePopupRestartGameSelected = { vm.resetToNewGame() },
-        onPausePopupEndGameSelected = { vm.userInitiatedGameOver() },
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = { vm.navigateToGameOverScreen(clearGame = true) },
         content = content
@@ -85,32 +113,25 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    modifier: Modifier = Modifier,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected> = emptyFlow(),
-    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected) -> Unit = {},
-    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
-    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
-    onPausePopupHidden: ()->Unit = {},
-    onPausePopupRestartGameSelected: ()->Unit = {},
-    onPausePopupEndGameSelected: ()->Unit = {},
-    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
-        { getString(Res.string.game_over) },
-    onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
+    modifier: Modifier,
+    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit ,
+    onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
+    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>,
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>)->Unit,
+    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?)->String,
+    onGameOverAccepted: (gameOVerDetails: GAME_OVER_STATE_DETAILS?)->Unit,
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE)->Unit
 ) {
     val currentState = state.collectAsStateWithLifecycle()
     GameScreen(
         state = currentState.value,
-        coroutineScope = coroutineScope,
         modifier = modifier,
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         onMenuSelectedOneTimeEvent = onMenuSelectedOneTimeEvent,
+        onPausedPopupOneTimeEvent = onPausedPopupOneTimeEvent,
         viewModelOneTimeEvent = viewModelOneTimeEvent,
         onViewModelOneTimeEvent = onViewModelOneTimeEvent,
-        onPausePopupHidden = onPausePopupHidden,
-        onPausePopupRestartGameSelected = onPausePopupRestartGameSelected,
-        onPausePopupEndGameSelected = onPausePopupEndGameSelected,
         localizedGameOverMessage = localizedGameOverMessage,
         onGameOverAccepted = onGameOverAccepted,
         content = content
@@ -121,102 +142,190 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
 private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
         GameScreen(
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    modifier: Modifier = Modifier,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected> = emptyFlow(),
-    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected) -> Unit = {},
-    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = emptyFlow(),
-    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit = {},
-    onPausePopupHidden: ()->Unit = {},
-    onPausePopupRestartGameSelected: ()->Unit = {},
-    onPausePopupEndGameSelected: ()->Unit = {},
-    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String =
-        { getString(Res.string.game_over) },
-    onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit = {},
-    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE) -> Unit = { _, _ -> }
+    modifier: Modifier,
+    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit,
+    onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
+    viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>,
+    onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit,
+    localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String,
+    onGameOverAccepted: (gameOverDetails: GAME_OVER_STATE_DETAILS?)->Unit,
+    content: @Composable (innerPadding: PaddingValues, board: BOARD_STATE)->Unit
 ) {
-    val isPausePopupVisible: MutableStateFlow<Boolean> =
-        remember {
-            MutableStateFlow(
-                value = state is GameState.Paused
+    ObserveOneTimeEventEffect(oneTimeEvents = viewModelOneTimeEvent) { oneTimeEvent ->
+        onViewModelOneTimeEvent(oneTimeEvent)
+    }
+    ObserveOneTimeEventEffect(oneTimeEvents = menuSelectedOneTimeEvent) { oneTimeEvent ->
+        onMenuSelectedOneTimeEvent(oneTimeEvent)
+    }
+
+    val gameScreenSnackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = gameScreenSnackbarHostState) }
+    ) { innerPadding -> content(innerPadding, state.board) }
+
+
+    when(state) {
+        is GameState.Normal -> {
+            gameScreenSnackbarHostState.DismissNotifications()
+        }
+        is GameState.Paused -> {
+            gameScreenSnackbarHostState.ShowGameHiddenWhilePausedNotification()
+            ShowGamePausedPopup(onEvent = onPausedPopupOneTimeEvent)
+        }
+        is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> -> {
+            gameScreenSnackbarHostState.DismissNotifications()
+            gameScreenSnackbarHostState.ShowGameOverNotification(
+                localizedMessage = { localizedGameOverMessage(state.details) },
+                onAction = { onGameOverAccepted(state.details) }
             )
         }
+    }
+}
 
-    ScreenWithGamePausedPopup(
-        isPopupVisible = isPausePopupVisible,
-        onRestartGameSelected = onPausePopupRestartGameSelected,
-        onEndGameSelected = onPausePopupEndGameSelected
+private sealed interface GamePausedPopupOneTimeEvent {
+    /**
+     * User clicked on Resume Game button
+     */
+    object ResumeGameSelected: GamePausedPopupOneTimeEvent
+
+    /**
+     * User clicked on Restart Game button
+     */
+    object RestartGameSelected: GamePausedPopupOneTimeEvent
+
+    /**
+     * User clicked on End Game button
+     */
+    object EndGameSelected: GamePausedPopupOneTimeEvent
+
+    /**
+     * User dismissed popup. Only called if done by the user.
+     */
+    object PopupDismissed: GamePausedPopupOneTimeEvent
+}
+
+@Composable
+private fun ShowGamePausedPopup(
+    modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.Center,
+    properties: PopupProperties = PopupProperties(dismissOnClickOutside = false),
+    onEvent: (event: GamePausedPopupOneTimeEvent)->Unit
+) {
+    Popup(
+        onDismissRequest = { onEvent(GamePausedPopupOneTimeEvent.PopupDismissed) },
+        alignment = alignment,
+        properties = properties,
     ) {
-        ObserveOneTimeEventEffect(oneTimeEvents = menuSelectedOneTimeEvent) { oneTimeEvent ->
-            onMenuSelectedOneTimeEvent(oneTimeEvent)
-        }
-        ObserveOneTimeEventEffect(oneTimeEvents = viewModelOneTimeEvent) { oneTimeEvent ->
-            onViewModelOneTimeEvent(oneTimeEvent)
-        }
-        ObserveOneTimeEventEffect(oneTimeEvents = isPausePopupVisible) { visible ->
-            if (!visible) onPausePopupHidden()
-        }
-
-        val gameScreenSnackbarHostState = remember { SnackbarHostState() }
-        Scaffold(
+        GamePausedLayout(
             modifier = modifier,
-            snackbarHost = { SnackbarHost(hostState = gameScreenSnackbarHostState) },
-        ) { innerPadding -> content(innerPadding, state.board) }
+            onResumeGameSelected = { onEvent(GamePausedPopupOneTimeEvent.ResumeGameSelected) },
+            onRestartGameSelected = { onEvent(GamePausedPopupOneTimeEvent.RestartGameSelected) },
+            onEndGameSelected = { onEvent(GamePausedPopupOneTimeEvent.EndGameSelected) }
+        )
+    }
+}
 
-        coroutineScope.launch {
-            when(state) {
-                is GameState.Normal -> {
-                    isPausePopupVisible.value = false
-                    gameScreenSnackbarHostState.dismissNotifications()
-                }
-                is GameState.Paused -> {
-                    isPausePopupVisible.value = true
-                    gameScreenSnackbarHostState.showGameHiddenWhilePausedNotification()
+@Composable
+@Preview
+private fun GamePausedLayout(
+    modifier: Modifier = Modifier,
+    onResumeGameSelected: ()->Unit = {},
+    onRestartGameSelected: ()->Unit = {},
+    onEndGameSelected: ()->Unit = {},
+) {
+    OutlinedCard(
+        elevation = CardDefaults.cardElevation(8.dp),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.padding(16.dp).wrapContentSize()
+    ) {
+        Column(modifier = Modifier.padding(16.dp).wrapContentSize()) {
+            Text(
+                textAlign = TextAlign.Center,
+                text = stringResource(Res.string.pause_popup_title),
+                style = MaterialTheme.typography.titleMedium
+            )
 
-                }
-                is GameState.GameOver<GAME_OVER_STATE_DETAILS, BOARD_STATE> -> {
-                    isPausePopupVisible.value = false
-                    gameScreenSnackbarHostState.dismissNotifications()
-                    gameScreenSnackbarHostState.showGameOverNotification(
-                        localizedMessage = { localizedGameOverMessage(state.details) },
-                        onAction = { onGameOverAccepted(state.details) }
-                    )
-                }
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.medium))
+
+            OutlinedButton(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
+                onClick = onResumeGameSelected
+            ) {
+                Text(stringResource(Res.string.pause_popup_resume_game))
+            }
+
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
+
+            Button(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
+                onClick = onRestartGameSelected
+            ) {
+                Text(stringResource(Res.string.pause_popup_restart_game))
+            }
+
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
+
+            Button(
+                modifier = Modifier
+                    .width(MaterialTheme.sizes.buttons.medium.width)
+                    .height(MaterialTheme.sizes.buttons.medium.height),
+                onClick = onEndGameSelected
+            ) {
+                Text(stringResource(Res.string.pause_popup_end_game))
             }
         }
     }
 }
 
-private suspend fun SnackbarHostState.showGameOverNotification(
+@Composable
+private fun SnackbarHostState.ShowGameOverNotification(
+    on: CoroutineScope =
+        rememberCoroutineScope(),
     localizedMessage: suspend ()->String =
         { getString(Res.string.game_over) },
     localizedActionLabel: suspend ()->String =
         { getString(Res.string.ok) },
     onAction: ()->Unit
 ) {
-    dismissNotifications()
-    val result = showSnackbar(
-        message = localizedMessage(),
-        withDismissAction = false,
-        actionLabel = localizedActionLabel(),
-        duration = SnackbarDuration.Indefinite
-    )
+    on.launch {
+        val result = showSnackbar(
+            message = localizedMessage(),
+            withDismissAction = false,
+            actionLabel = localizedActionLabel(),
+            duration = SnackbarDuration.Indefinite
+        )
 
-    if (result == SnackbarResult.ActionPerformed)
-        onAction()
+        if (result == SnackbarResult.ActionPerformed)
+            onAction()
+    }
 }
 
-private suspend fun SnackbarHostState.showGameHiddenWhilePausedNotification(
-    localizedMessage: suspend ()->String =
-        { getString(Res.string.game_hidden_while_paused) },
+@Composable
+private fun SnackbarHostState.ShowGameHiddenWhilePausedNotification(
+    on: CoroutineScope = rememberCoroutineScope(),
+    localizedMessage: String = stringResource(Res.string.game_hidden_while_paused)
 ) {
-    dismissNotifications()
-    showSnackbar(
-        message = localizedMessage(),
-        withDismissAction = false,
-        duration = SnackbarDuration.Indefinite
-    )
+    on.launch {
+        showSnackbar(
+            message = localizedMessage,
+            withDismissAction = false,
+            duration = SnackbarDuration.Indefinite
+        )
+    }
 }
 
-private fun SnackbarHostState.dismissNotifications() =
-    currentSnackbarData?.dismiss()
+@Composable
+private fun SnackbarHostState.DismissNotifications(
+    on: CoroutineScope = rememberCoroutineScope(),
+) {
+    on.launch {
+        currentSnackbarData?.dismiss()
+    }
+}
+

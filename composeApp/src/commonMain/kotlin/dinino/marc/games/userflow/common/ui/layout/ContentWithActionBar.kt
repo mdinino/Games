@@ -91,8 +91,10 @@ private fun ContentWithActionBar(
         actionBarOneTimeEvent: Flow<ActionBarOneTimeEvent>
     ) -> Unit
 ) {
-    val actionBarOneTimeEvents by remember { mutableStateOf(Channel<ActionBarOneTimeEvent>()) }
-    val actionBarOntTimeEventsFlow by remember { mutableStateOf(actionBarOneTimeEvents.receiveAsFlow()) }
+    val actionBarOneTimeEvents by
+        remember { mutableStateOf(Channel<ActionBarOneTimeEvent>()) }
+    val actionBarOneTimeEventsFlow by
+        remember { mutableStateOf(actionBarOneTimeEvents.receiveAsFlow()) }
 
     Scaffold(
         modifier = modifier,
@@ -106,11 +108,10 @@ private fun ContentWithActionBar(
             )
         },
         content = { innerPadding ->
-            content(innerPadding, actionBarOntTimeEventsFlow)
+            content(innerPadding, actionBarOneTimeEventsFlow)
         }
     )
 }
-
 
 private data class SplitFlows(
     val backSelected: Flow<ActionBarOneTimeEvent.BackSelected>,

@@ -22,7 +22,7 @@ fun TicTacToeGameScreen(
     navHostController: NavHostController,
     menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
     newGame: Boolean = false,
-    vm: TicTacToeGameViewModel =  koinViewModel(parameters = { parametersOf(newGame) } )
+    vm: TicTacToeGameViewModel = koinViewModel(parameters = { parametersOf(newGame) } )
 ) {
     GameScreen(
         modifier = modifier,
@@ -39,5 +39,7 @@ fun TicTacToeGameScreen(
             )
         },
         gameOverRoute = { TicTacToeGameOverRoute }
-    )
+    ) { innerPadding, board ->
+        // TODO
+    }
 }
