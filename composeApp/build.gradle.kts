@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.sqldelight.android)
         }
         commonMain.dependencies {
+            implementation(compose.material3)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

@@ -1,6 +1,5 @@
 package dinino.marc.games.userflow.common.ui.screen.game
 
-import androidx.annotation.RestrictTo
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
