@@ -5,6 +5,8 @@ Supports light and dar mode.
 
 NOTE: WasmJs will crash for now util SQLDelight supports a driver for that build.
 
+Unit test to come after games are implemented.
+
 Make sure to install the [Kotlin Multiplatform Plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform) in Android Studio.
 
 Known issue: when screens are being transitioned in when animation, button clicks are not available
