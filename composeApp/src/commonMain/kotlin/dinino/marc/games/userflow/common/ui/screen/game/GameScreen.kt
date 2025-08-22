@@ -233,7 +233,7 @@ private fun ShowGamePausedPopup(
 @Composable
 @Preview
 private fun GamePausedLayout(
-    modifier: Modifier = Modifier.padding(MaterialTheme.sizes.spacings.large),
+    modifier: Modifier = Modifier.padding(MaterialTheme.sizes.spacings.medium),
     onRestartGameSelected: ()->Unit = {},
     onEndGameSelected: ()->Unit = {},
 ) {
