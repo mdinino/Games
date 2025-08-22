@@ -13,9 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import dinino.marc.games.platform.PlatformManager
@@ -42,27 +39,16 @@ data object ShownDisabled: Shown
 
 /**
  * A top bar inspired by the traditional Android action bar, with a back button, title, and menu button.
- * @param localizedTitle: Title string or null if should not be shown.
- * @param showBackIcon: Set to true if a an auto-mirrored back icon should be shown at the start of the bar.
- * @param showMenuIcon: Set to true if an auto-mirrored menu icon should be shown at the end of the bar.
- * @param actionBarOneTimeEvents: ActionBarEvents are sent here
- *  @see ActionBarOneTimeEvent
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun ActionBar(
-    modifier: Modifier =
-        Modifier,
-    localizedTitle: String? =
-        "Lorem Ipsum",
-    showBackIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
-    showMenuIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
-    sendEventScope: CoroutineScope =
-        rememberCoroutineScope(),
-    actionBarOneTimeEvents: Channel<ActionBarOneTimeEvent> =
-        Channel()
+    modifier: Modifier = Modifier,
+    localizedTitle: String? = "Lorem Ipsum",
+    showBackIcon: ShowIconState = ShownEnabled,
+    showMenuIcon: ShowIconState = ShownEnabled,
+    sendEventScope: CoroutineScope = rememberCoroutineScope(),
+    actionBarOneTimeEvents: Channel<ActionBarOneTimeEvent> = Channel()
 ) {
     fun sendActionBarEvent(event: ActionBarOneTimeEvent) {
         sendEventScope.launch {
@@ -71,21 +57,21 @@ fun ActionBar(
     }
 
     fun sendOnBackSelected() {
-        if (showBackIcon.value is ShownEnabled) {
+        if (showBackIcon is ShownEnabled) {
             sendActionBarEvent(BackSelected)
         }
     }
 
     fun sendOnMenuSelected() {
-        if (showMenuIcon.value is ShownEnabled) {
+        if (showMenuIcon is ShownEnabled) {
             sendActionBarEvent(MenuSelected)
         }
     }
 
     val navigationIcon: @Composable ()->Unit = {
-        when(showBackIcon.value) {
+        when(showBackIcon) {
             is NotShown -> {}
-            is Shown -> {
+            is ShownDisabled -> {
                 IconButton(
                     onClick = { },
                     enabled = false
@@ -111,7 +97,7 @@ fun ActionBar(
     }
 
     val menuIcon: @Composable RowScope.()->Unit = {
-        when(showMenuIcon.value) {
+        when(showMenuIcon) {
             is NotShown -> {}
             is ShownDisabled -> {
                 IconButton(

@@ -9,7 +9,6 @@ import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
 
 class TicTacToeGameViewModel(
-    newGame: Boolean = false,
     repository: Repository<TicTacToeGameData> =
         defaultRepository,
     defaultGameData: ()->TicTacToeGameData =

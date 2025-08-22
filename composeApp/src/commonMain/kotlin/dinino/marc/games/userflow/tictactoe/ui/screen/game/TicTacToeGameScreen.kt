@@ -15,15 +15,13 @@ import games.composeapp.generated.resources.player_x_wins
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     menuSelectedOneTimeEvent: Flow<MenuSelected>,
-    newGame: Boolean = false,
-    vm: TicTacToeGameViewModel = koinViewModel(parameters = { parametersOf(newGame) } )
+    vm: TicTacToeGameViewModel = koinViewModel()
 ) {
     GameScreen(
         modifier = modifier,

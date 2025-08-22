@@ -3,20 +3,39 @@ package dinino.marc.games.userflow.tetris.ui.screen.game
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.stateflow.mapStateFlow
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
-import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarGameRoute
+import dinino.marc.games.userflow.common.ui.layout.ShownDisabled
+import dinino.marc.games.userflow.common.ui.layout.ShownEnabled
+import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarScreenRoute
+import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
+import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
 import kotlinx.coroutines.flow.Flow
+
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TetrisGameRoute : ContentWithActionBarGameRoute() {
+data object TetrisGameRoute : ContentWithActionBarScreenRoute(), GameUserFlowNavGraphRoute.GameRoute {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()
                 .get<TetrisUserFlowProviders>()
                 .localizedNameProvider
+
+    @Composable
+    override fun showMenuIconFlowFactory() =
+        koinViewModel<TetrisGameViewModel>()
+            .gameState
+            .mapStateFlow {
+                when(it) {
+                    is GameState.Normal -> ShownEnabled
+                    is GameState.Paused -> ShownEnabled
+                    is GameState.GameOver -> ShownDisabled
+                }
+            }
 
 
     @Composable

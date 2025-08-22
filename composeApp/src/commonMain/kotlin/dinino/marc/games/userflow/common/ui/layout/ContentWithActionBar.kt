@@ -3,7 +3,6 @@ package dinino.marc.games.userflow.common.ui.layout
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,22 +22,18 @@ import kotlinx.coroutines.flow.transform
 fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showMenuIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
+    showMenuIcon: ShowIconState = ShownEnabled,
     navHostController: NavHostController,
     content: @Composable (
         innerPadding: PaddingValues,
         menuSelectedEvent: Flow<MenuSelected>,
     ) -> Unit
 ) {
-    val showBackIcon = remember {
-        mutableStateOf( value =
-            when(navHostController.previousBackStackEntry != null) {
-                true -> ShownEnabled
-                false -> NotShown
-            }
-        )
-    }
+    val showBackIcon =
+        when(navHostController.previousBackStackEntry != null) {
+            true -> ShownEnabled
+            false -> NotShown
+        }
 
     ContentWithActionBar(
         modifier = modifier,
@@ -47,10 +42,10 @@ fun ContentWithActionBar(
         showMenuIcon = showMenuIcon
     ) { innerPadding, backSelectedEvent, menuSelectedEvent ->
         ObserveOneTimeEventEffect(oneTimeEvents = backSelectedEvent) { event ->
-            when(showBackIcon.value is Shown) {
+            when(showBackIcon is Shown) {
                 false -> {}
                 true -> {
-                    if (showBackIcon.value is ShownEnabled)
+                    if (showBackIcon is ShownEnabled)
                         navHostController.popBackStack()
                 }
             }
@@ -63,10 +58,8 @@ fun ContentWithActionBar(
 private fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showBackIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
-    showMenuIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
+    showBackIcon: ShowIconState = ShownEnabled,
+    showMenuIcon: ShowIconState = ShownEnabled,
     content: @Composable (
         innerPadding: PaddingValues,
         backSelectedEvent: Flow<BackSelected>,
@@ -94,10 +87,8 @@ private fun ContentWithActionBar(
 private fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showBackIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
-    showMenuIcon: MutableState<ShowIconState> =
-        remember { mutableStateOf(ShownEnabled) },
+    showBackIcon: ShowIconState = ShownEnabled,
+    showMenuIcon: ShowIconState = ShownEnabled,
     content: @Composable (
         innerPadding: PaddingValues,
         actionBarOneTimeEvent: Flow<ActionBarOneTimeEvent>
