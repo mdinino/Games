@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute
 import dinino.marc.games.userflow.selectgame.di.SelectGameUserFlowProviders
@@ -24,7 +24,7 @@ data object SelectGameScreenRoute : ContentWithActionBarScreenRoute(),
     override fun Content(
         modifier: Modifier,
         navHostController: NavHostController,
-        menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>
+        menuSelectedOneTimeEvent: Flow<MenuSelected>
     ) = SelectGameScreen(
             modifier = modifier,
             navHostController = navHostController

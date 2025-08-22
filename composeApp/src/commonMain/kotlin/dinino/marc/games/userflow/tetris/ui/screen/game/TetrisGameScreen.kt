@@ -3,7 +3,7 @@ package dinino.marc.games.userflow.tetris.ui.screen.game
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +13,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun TetrisGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
     vm: TetrisGameViewModel = koinViewModel()
 ) {
     GameScreen(

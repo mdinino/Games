@@ -32,96 +32,94 @@ abstract class UserFlowNavGraphRoute(): SerializableUserFlowRoute.UserFlowNavGra
             navHostController = navHostController
         )
     }
+}
 
-    companion object Companion {
-        @Composable
-        private fun NavGraphWithSnackbarController(
-            modifier: Modifier = Modifier,
-            landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
-            otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
-            snackbarController: SnackbarController,
-            navHostController: NavHostController
+@Composable
+private fun NavGraphWithSnackbarController(
+    modifier: Modifier = Modifier,
+    landingScreenRoute: SerializableUserFlowRoute.UserFlowScreenRoute,
+    otherRoutes: List<SerializableUserFlowRoute> = emptyList(),
+    snackbarController: SnackbarController,
+    navHostController: NavHostController
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    snackbarController.events.ObserveEffect(snackbarHostState = snackbarHostState)
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+    ) { innerPadding ->
+        NavHost(
+            navController = navHostController,
+            startDestination = landingScreenRoute,
+            modifier = Modifier.padding(innerPadding),
         ) {
-            val snackbarHostState = remember { SnackbarHostState() }
-            snackbarController.events.ObserveEffect(snackbarHostState = snackbarHostState)
+            serializableUserFlowRouteComposable(
+                navHostController = navHostController,
+                route = landingScreenRoute
+            )
 
-            Scaffold(
-                modifier = modifier,
-                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            ) { innerPadding ->
-                NavHost(
-                    navController = navHostController,
-                    startDestination = landingScreenRoute,
-                    modifier = Modifier.padding(innerPadding),
-                ) {
+            otherRoutes
+                .forEach { route: SerializableUserFlowRoute ->
                     serializableUserFlowRouteComposable(
                         navHostController = navHostController,
-                        route = landingScreenRoute
+                        route = route
                     )
-
-                    otherRoutes
-                        .forEach { route: SerializableUserFlowRoute ->
-                            serializableUserFlowRouteComposable(
-                                navHostController = navHostController,
-                                route = route
-                            )
-                        }
                 }
-            }
         }
+    }
+}
 
 
-        private fun <T: SerializableUserFlowRoute> NavGraphBuilder.
-            serializableUserFlowRouteComposable(
-            navHostController: NavHostController,
-            route: T
-        ) {
-            when(route) {
-                is SerializableUserFlowRoute.UserFlowScreenRoute ->
-                    userFlowScreenRouteComposable<SerializableUserFlowRoute.UserFlowScreenRoute>(
-                        navHostController = navHostController,
-                        route = route
-                    )
-                is SerializableUserFlowRoute.UserFlowNavGraphRoute ->
-                    userFlowNavGraphRouteComposable<SerializableUserFlowRoute.UserFlowNavGraphRoute>(
-                        navHostController = navHostController,
-                        route = route
-                    )
-            }
-        }
+private fun <T: SerializableUserFlowRoute> NavGraphBuilder.
+        serializableUserFlowRouteComposable(
+    navHostController: NavHostController,
+    route: T
+) {
+    when(route) {
+        is SerializableUserFlowRoute.UserFlowScreenRoute ->
+            userFlowScreenRouteComposable<SerializableUserFlowRoute.UserFlowScreenRoute>(
+                navHostController = navHostController,
+                route = route
+            )
+        is SerializableUserFlowRoute.UserFlowNavGraphRoute ->
+            userFlowNavGraphRouteComposable<SerializableUserFlowRoute.UserFlowNavGraphRoute>(
+                navHostController = navHostController,
+                route = route
+            )
+    }
+}
 
-        private fun <T: SerializableUserFlowRoute.UserFlowNavGraphRoute> NavGraphBuilder.
-            userFlowNavGraphRouteComposable(
-            navHostController: NavHostController,
-            route: T
-        ) {
-            navigation(
-                route = route::class,
-                startDestination = route.landingScreenRoute::class
-            ) {
+private fun <T: SerializableUserFlowRoute.UserFlowNavGraphRoute> NavGraphBuilder.
+        userFlowNavGraphRouteComposable(
+    navHostController: NavHostController,
+    route: T
+) {
+    navigation(
+        route = route::class,
+        startDestination = route.landingScreenRoute::class
+    ) {
+        serializableUserFlowRouteComposable(
+            navHostController = navHostController,
+            route = route.landingScreenRoute
+        )
+
+        route.otherRoutes
+            .forEach {
                 serializableUserFlowRouteComposable(
                     navHostController = navHostController,
-                    route = route.landingScreenRoute
+                    route = it
                 )
-
-                route.otherRoutes
-                    .forEach {
-                        serializableUserFlowRouteComposable(
-                            navHostController = navHostController,
-                            route = it
-                        )
-                    }
             }
-        }
+    }
+}
 
-        private fun <T: SerializableUserFlowRoute.UserFlowScreenRoute> NavGraphBuilder.
-            userFlowScreenRouteComposable(
-            navHostController: NavHostController,
-            route: T
-        ) {
-            composable(route = route::class) { backStackEntry ->
-                backStackEntry.toRoute<T>(route::class).Screen(Modifier.Companion, navHostController)
-            }
-        }
+private fun <T: SerializableUserFlowRoute.UserFlowScreenRoute> NavGraphBuilder.
+        userFlowScreenRouteComposable(
+    navHostController: NavHostController,
+    route: T
+) {
+    composable(route = route::class) { backStackEntry ->
+        backStackEntry.toRoute<T>(route::class).Screen(Modifier.Companion, navHostController)
     }
 }

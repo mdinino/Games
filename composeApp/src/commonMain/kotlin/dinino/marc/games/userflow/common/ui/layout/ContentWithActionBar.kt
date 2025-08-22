@@ -3,6 +3,7 @@ package dinino.marc.games.userflow.common.ui.layout
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,14 +23,22 @@ import kotlinx.coroutines.flow.transform
 fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showMenuIcon: Boolean = true,
+    showMenuIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
     navHostController: NavHostController,
     content: @Composable (
         innerPadding: PaddingValues,
-        menuSelectedEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+        menuSelectedEvent: Flow<MenuSelected>,
     ) -> Unit
 ) {
-    val showBackIcon = navHostController.previousBackStackEntry != null
+    val showBackIcon = remember {
+        mutableStateOf( value =
+            when(navHostController.previousBackStackEntry != null) {
+                true -> ShownEnabled
+                false -> NotShown
+            }
+        )
+    }
 
     ContentWithActionBar(
         modifier = modifier,
@@ -38,12 +47,11 @@ fun ContentWithActionBar(
         showMenuIcon = showMenuIcon
     ) { innerPadding, backSelectedEvent, menuSelectedEvent ->
         ObserveOneTimeEventEffect(oneTimeEvents = backSelectedEvent) { event ->
-            when(showBackIcon) {
+            when(showBackIcon.value is Shown) {
                 false -> {}
                 true -> {
-                    if (showBackIcon) {
+                    if (showBackIcon.value is ShownEnabled)
                         navHostController.popBackStack()
-                    }
                 }
             }
         }
@@ -55,12 +63,14 @@ fun ContentWithActionBar(
 private fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showBackIcon: Boolean = true,
-    showMenuIcon: Boolean = true,
+    showBackIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
+    showMenuIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
     content: @Composable (
         innerPadding: PaddingValues,
-        backSelectedEvent: Flow<ActionBarOneTimeEvent.BackSelected>,
-        menuSelectedEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+        backSelectedEvent: Flow<BackSelected>,
+        menuSelectedEvent: Flow<MenuSelected>,
     ) -> Unit
 ) = ContentWithActionBar(
     modifier = modifier,
@@ -84,8 +94,10 @@ private fun ContentWithActionBar(
 private fun ContentWithActionBar(
     modifier: Modifier = Modifier,
     localizedTitle: String? = null,
-    showBackIcon: Boolean = true,
-    showMenuIcon: Boolean = true,
+    showBackIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
+    showMenuIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
     content: @Composable (
         innerPadding: PaddingValues,
         actionBarOneTimeEvent: Flow<ActionBarOneTimeEvent>
@@ -114,8 +126,8 @@ private fun ContentWithActionBar(
 }
 
 private data class SplitFlows(
-    val backSelected: Flow<ActionBarOneTimeEvent.BackSelected>,
-    val menuSelected: Flow<ActionBarOneTimeEvent.MenuSelected>
+    val backSelected: Flow<BackSelected>,
+    val menuSelected: Flow<MenuSelected>
 )
 
 private fun Flow<ActionBarOneTimeEvent>.split(
@@ -129,14 +141,14 @@ private fun Flow<ActionBarOneTimeEvent>.split(
             )
         }
 
-private fun Flow<ActionBarOneTimeEvent>.transformBackSelected(): Flow<ActionBarOneTimeEvent.BackSelected> =
+private fun Flow<ActionBarOneTimeEvent>.transformBackSelected(): Flow<BackSelected> =
     transform { event ->
-        if (event is ActionBarOneTimeEvent.BackSelected)
+        if (event is BackSelected)
             emit(event)
     }
 
-private fun Flow<ActionBarOneTimeEvent>.transformMenuSelected(): Flow<ActionBarOneTimeEvent.MenuSelected> =
+private fun Flow<ActionBarOneTimeEvent>.transformMenuSelected(): Flow<MenuSelected> =
     transform { event ->
-        if (event is ActionBarOneTimeEvent.MenuSelected)
+        if (event is MenuSelected)
             emit(event)
     }

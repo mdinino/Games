@@ -3,7 +3,7 @@ package dinino.marc.games.userflow.tetris.ui.screen.game
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarGameRoute
 import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ data object TetrisGameRoute : ContentWithActionBarGameRoute() {
     override fun Content(
         modifier: Modifier,
         navHostController: NavHostController,
-        menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>
+        menuSelectedOneTimeEvent: Flow<MenuSelected>
     ) =
         TetrisGameScreen(
             modifier = modifier,

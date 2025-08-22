@@ -13,6 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import dinino.marc.games.platform.PlatformManager
@@ -26,10 +29,16 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-sealed interface ActionBarOneTimeEvent {
-    data object BackSelected: ActionBarOneTimeEvent
-    data object MenuSelected: ActionBarOneTimeEvent
-}
+sealed interface ActionBarOneTimeEvent
+data object BackSelected: ActionBarOneTimeEvent
+data object MenuSelected: ActionBarOneTimeEvent
+
+sealed interface ShowIconState
+data object NotShown: ShowIconState
+
+sealed interface Shown: ShowIconState
+data object ShownEnabled: Shown
+data object ShownDisabled: Shown
 
 /**
  * A top bar inspired by the traditional Android action bar, with a back button, title, and menu button.
@@ -42,12 +51,18 @@ sealed interface ActionBarOneTimeEvent {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun ActionBar(
-    modifier: Modifier = Modifier,
-    localizedTitle: String? = "Lorem Ipsum",
-    showBackIcon: Boolean = true,
-    showMenuIcon: Boolean = true,
-    sendEventScope: CoroutineScope = rememberCoroutineScope(),
-    actionBarOneTimeEvents: Channel<ActionBarOneTimeEvent> = Channel()
+    modifier: Modifier =
+        Modifier,
+    localizedTitle: String? =
+        "Lorem Ipsum",
+    showBackIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
+    showMenuIcon: MutableState<ShowIconState> =
+        remember { mutableStateOf(ShownEnabled) },
+    sendEventScope: CoroutineScope =
+        rememberCoroutineScope(),
+    actionBarOneTimeEvents: Channel<ActionBarOneTimeEvent> =
+        Channel()
 ) {
     fun sendActionBarEvent(event: ActionBarOneTimeEvent) {
         sendEventScope.launch {
@@ -56,22 +71,36 @@ fun ActionBar(
     }
 
     fun sendOnBackSelected() {
-        if (showBackIcon) {
-            sendActionBarEvent(ActionBarOneTimeEvent.BackSelected)
+        if (showBackIcon.value is ShownEnabled) {
+            sendActionBarEvent(BackSelected)
         }
     }
 
     fun sendOnMenuSelected() {
-        if (showMenuIcon) {
-            sendActionBarEvent(ActionBarOneTimeEvent.MenuSelected)
+        if (showMenuIcon.value is ShownEnabled) {
+            sendActionBarEvent(MenuSelected)
         }
     }
 
     val navigationIcon: @Composable ()->Unit = {
-        when(showBackIcon) {
-            false -> {}
-            true -> {
-                IconButton(onClick = { sendOnBackSelected() } ) {
+        when(showBackIcon.value) {
+            is NotShown -> {}
+            is Shown -> {
+                IconButton(
+                    onClick = { },
+                    enabled = false
+                ) {
+                    Icon(
+                        imageVector = platformSpecificNavigationVector(),
+                        contentDescription = stringResource(Res.string.back_button)
+                    )
+                }
+            }
+            is ShownEnabled -> {
+                IconButton(
+                    onClick = { sendOnBackSelected() },
+                    enabled = true,
+                ) {
                     Icon(
                         imageVector = platformSpecificNavigationVector(),
                         contentDescription = stringResource(Res.string.back_button)
@@ -82,10 +111,24 @@ fun ActionBar(
     }
 
     val menuIcon: @Composable RowScope.()->Unit = {
-        when(showMenuIcon) {
-            false -> {}
-            true -> {
-                IconButton(onClick = { sendOnMenuSelected() } ) {
+        when(showMenuIcon.value) {
+            is NotShown -> {}
+            is ShownDisabled -> {
+                IconButton(
+                    onClick = { },
+                    enabled = false
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = stringResource(Res.string.menu)
+                    )
+                }
+            }
+            is ShownEnabled -> {
+                IconButton(
+                    onClick = { sendOnMenuSelected() },
+                    enabled = true
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = stringResource(Res.string.menu)

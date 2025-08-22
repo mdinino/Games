@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
 import games.composeapp.generated.resources.Res
@@ -56,7 +56,7 @@ fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     snackbarCoroutineScope: CoroutineScope = rememberCoroutineScope(),
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
     gameOverRoute: (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> GameUserFlowNavGraphRoute.GameOverRoute,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?) -> String
         = { getString(Res.string.game_over) },
@@ -91,7 +91,7 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     vm: GameViewModel<*, *, GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier,
     snackbarCoroutineScope: CoroutineScope,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>)->Unit,
     localizedGameOverMessage: suspend (gameOverDetails: GAME_OVER_STATE_DETAILS?)->String,
@@ -116,8 +116,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>>,
     modifier: Modifier,
     snackbarCoroutineScope: CoroutineScope,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
-    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit ,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
+    onMenuSelectedOneTimeEvent: (event: MenuSelected)->Unit ,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>,
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>)->Unit,
@@ -147,8 +147,8 @@ private fun <GAME_OVER_STATE_DETAILS: Any, BOARD_STATE: Any>
     state: GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>,
     modifier: Modifier,
     snackbarCoroutineScope: CoroutineScope,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
-    onMenuSelectedOneTimeEvent: (event: ActionBarOneTimeEvent.MenuSelected)->Unit,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
+    onMenuSelectedOneTimeEvent: (event: MenuSelected)->Unit,
     onPausedPopupOneTimeEvent: (event: GamePausedPopupOneTimeEvent)->Unit,
     viewModelOneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>,
     onViewModelOneTimeEvent: (event: GameOneTimeEvent<GAME_OVER_STATE_DETAILS>) -> Unit,

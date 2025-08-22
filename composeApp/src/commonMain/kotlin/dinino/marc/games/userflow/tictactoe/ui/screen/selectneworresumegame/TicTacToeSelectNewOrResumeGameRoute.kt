@@ -3,7 +3,7 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.selectneworresumegame
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarScreenRoute
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
@@ -23,7 +23,7 @@ data object TicTacToeSelectNewOrResumeGameRoute : ContentWithActionBarScreenRout
     override fun Content(
         modifier: Modifier,
         navHostController: NavHostController,
-        menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>
+        menuSelectedOneTimeEvent: Flow<MenuSelected>
     ) = TicTacToeSelectNewOrResumeGameScreen(
             modifier = modifier,
             navHostController = navHostController

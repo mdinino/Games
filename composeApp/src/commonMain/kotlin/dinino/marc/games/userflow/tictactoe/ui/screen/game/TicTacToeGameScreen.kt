@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
+import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
@@ -20,7 +21,7 @@ import org.koin.core.parameter.parametersOf
 fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
-    menuSelectedOneTimeEvent: Flow<ActionBarOneTimeEvent.MenuSelected>,
+    menuSelectedOneTimeEvent: Flow<MenuSelected>,
     newGame: Boolean = false,
     vm: TicTacToeGameViewModel = koinViewModel(parameters = { parametersOf(newGame) } )
 ) {
