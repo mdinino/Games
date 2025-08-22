@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -238,9 +239,8 @@ private fun GamePausedLayout(
     onEndGameSelected: ()->Unit = {},
 ) {
     OutlinedCard(
-        elevation = CardDefaults.cardElevation(8.dp),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.padding(16.dp).wrapContentSize()
+        //elevation = CardDefaults.cardElevation(8.dp),
+        //modifier = Modifier.padding(16.dp).wrapContentSize()
     ) {
         Column(
             modifier = Modifier.padding(16.dp).wrapContentSize(),
