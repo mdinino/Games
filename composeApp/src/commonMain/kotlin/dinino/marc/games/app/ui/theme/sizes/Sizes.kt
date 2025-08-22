@@ -14,5 +14,6 @@ val LocalSizes = compositionLocalOf { Sizes() }
 
 data class Sizes(
     val buttons: ButtonSizes = ButtonSizes(),
+    val paddings: Paddings = Paddings(),
     val spacings: Spacings = Spacings()
 )

@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -32,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
+import dinino.marc.games.userflow.common.ui.layout.ElevatedOutlinedCard
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
@@ -209,7 +208,7 @@ private sealed interface GamePausedPopupOneTimeEvent {
 
 @Composable
 private fun ShowGamePausedPopup(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.padding(MaterialTheme.sizes.spacings.large),
     alignment: Alignment = Alignment.Center,
     properties: PopupProperties = PopupProperties(
         focusable = true,
@@ -234,17 +233,14 @@ private fun ShowGamePausedPopup(
 @Composable
 @Preview
 private fun GamePausedLayout(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.padding(MaterialTheme.sizes.spacings.large),
     onRestartGameSelected: ()->Unit = {},
     onEndGameSelected: ()->Unit = {},
 ) {
-    OutlinedCard(
-        //elevation = CardDefaults.cardElevation(8.dp),
-        //modifier = Modifier.padding(16.dp).wrapContentSize()
-    ) {
+    ElevatedOutlinedCard {
         Column(
-            modifier = Modifier.padding(16.dp).wrapContentSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
         ) {
             Text(
                 textAlign = TextAlign.Center,
