@@ -20,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,6 +27,7 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
 import dinino.marc.games.userflow.common.ui.layout.ElevatedOutlinedCard
+import dinino.marc.games.userflow.common.ui.layout.FilledTonalButtonWithConfirmation
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.route.GameUserFlowNavGraphRoute
 import dinino.marc.games.userflow.common.ui.route.navigateForwardTo
@@ -246,22 +246,22 @@ private fun GamePausedLayout(
 
             Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.medium))
 
-            FilledTonalButton(
+            FilledTonalButtonWithConfirmation(
                 modifier = Modifier
                     .width(MaterialTheme.sizes.buttons.medium.width)
                     .height(MaterialTheme.sizes.buttons.medium.height),
-                onClick = onRestartGameSelected
+                onConfirmed = onRestartGameSelected
             ) {
-                Text(stringResource(Res.string.pause_popup_restart_game))
+                Text(text = stringResource(Res.string.pause_popup_restart_game),)
             }
 
             Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
 
-            FilledTonalButton(
+            FilledTonalButtonWithConfirmation(
                 modifier = Modifier
                     .width(MaterialTheme.sizes.buttons.medium.width)
                     .height(MaterialTheme.sizes.buttons.medium.height),
-                onClick = onEndGameSelected
+                onConfirmed = onEndGameSelected
             ) {
                 Text(stringResource(Res.string.pause_popup_end_game))
             }
