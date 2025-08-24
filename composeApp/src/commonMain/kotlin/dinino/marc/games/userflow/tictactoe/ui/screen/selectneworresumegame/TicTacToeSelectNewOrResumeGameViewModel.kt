@@ -11,7 +11,6 @@ class TicTacToeSelectNewOrResumeGameViewModel(
 ): SelectNewOrResumeGameViewModel
 <TicTacToeGameData, TicTacToeSelectNewOrResumeGameState>(
     repository = repository,
-    newGameFactory = { TicTacToeGameData() },
     stateFactory = { TicTacToeSelectNewOrResumeGameState(isSelectResumeGameAvailable = it) },
 )
 

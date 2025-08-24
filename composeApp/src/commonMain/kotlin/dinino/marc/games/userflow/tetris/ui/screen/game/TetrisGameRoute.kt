@@ -15,10 +15,12 @@ import kotlinx.coroutines.flow.Flow
 
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TetrisGameRoute : ContentWithActionBarScreenRoute(), GameUserFlowNavGraphRoute.GameRoute {
+data class TetrisGameRoute(val newGame: Boolean = false) :
+    ContentWithActionBarScreenRoute(), GameUserFlowNavGraphRoute.GameRoute {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()
@@ -27,8 +29,7 @@ data object TetrisGameRoute : ContentWithActionBarScreenRoute(), GameUserFlowNav
 
     @Composable
     override fun showMenuIconFlowFactory() =
-        koinViewModel<TetrisGameViewModel>()
-            .gameState
+        viewModel.gameState
             .mapStateFlow {
                 when(it) {
                     is GameState.Normal -> ShownEnabled
@@ -48,5 +49,12 @@ data object TetrisGameRoute : ContentWithActionBarScreenRoute(), GameUserFlowNav
             modifier = modifier,
             navHostController = navHostController,
             menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
+            vm = viewModel
+        )
+
+    @get:Composable
+    private val viewModel
+        get() = koinViewModel<TetrisGameViewModel>(
+            parameters = { parametersOf(newGame) }
         )
 }

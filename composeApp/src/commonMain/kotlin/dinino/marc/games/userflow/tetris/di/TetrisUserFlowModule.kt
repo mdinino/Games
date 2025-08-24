@@ -9,6 +9,6 @@ import org.koin.dsl.module
 val tetrisUserFlowModule = module {
     single { TetrisUserFlowProviders() }
     viewModel { TetrisSelectNewOrResumeGameViewModel() }
-    viewModel { TetrisGameViewModel() }
+    viewModel { (newGame: Boolean) -> TetrisGameViewModel(newGame = newGame) }
     viewModel { TetrisGameOverViewModel() }
 }

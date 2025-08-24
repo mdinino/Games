@@ -9,6 +9,7 @@ import dinino.marc.games.userflow.tetris.di.TetrisUserFlowProviders
 import org.koin.mp.KoinPlatform
 
 class TetrisGameViewModel(
+    newGame: Boolean = false,
     repository: Repository<TetrisGameData> =
         defaultRepository,
     defaultGameData: ()->TetrisGameData =
@@ -16,7 +17,8 @@ class TetrisGameViewModel(
     convertDataToState: (gameData: TetrisGameData)-> TetrisGameState =
         ::convertDataToState
 ): GameViewModel<Unit, TetrisGameData, Unit, TetrisBoardState>(
-    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState
+    newGame = newGame, repository = repository,
+    defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
 
     override fun pause() =

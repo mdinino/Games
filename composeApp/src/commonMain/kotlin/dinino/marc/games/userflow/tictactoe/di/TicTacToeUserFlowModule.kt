@@ -9,6 +9,6 @@ import org.koin.dsl.module
 val ticTacToeUserFlowModule = module {
     single { TicTacToeUserFlowProviders() }
     viewModel { TicTacToeSelectNewOrResumeGameViewModel() }
-    viewModel { TicTacToeGameViewModel() }
+    viewModel { (newGame: Boolean) -> TicTacToeGameViewModel(newGame = newGame) }
     viewModel { TicTacToeGameOverViewModel() }
 }

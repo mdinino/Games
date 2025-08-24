@@ -11,7 +11,6 @@ class TetrisSelectNewOrResumeGameViewModel(
 ): SelectNewOrResumeGameViewModel
     <TetrisGameData, TetrisSelectNewOrResumeGameState>(
     repository = repository,
-    newGameFactory = { TetrisGameData() },
     stateFactory = { TetrisSelectNewOrResumeGameState(isSelectResumeGameAvailable = it) },
 )
 

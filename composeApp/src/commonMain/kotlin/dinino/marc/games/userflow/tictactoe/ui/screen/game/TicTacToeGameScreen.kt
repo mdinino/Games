@@ -3,7 +3,6 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import dinino.marc.games.userflow.common.ui.layout.ActionBarOneTimeEvent
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
@@ -14,14 +13,13 @@ import games.composeapp.generated.resources.player_o_wins
 import games.composeapp.generated.resources.player_x_wins
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getString
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TicTacToeGameScreen(
     modifier: Modifier,
     navHostController: NavHostController,
     menuSelectedOneTimeEvent: Flow<MenuSelected>,
-    vm: TicTacToeGameViewModel = koinViewModel()
+    vm: TicTacToeGameViewModel
 ) {
     GameScreen(
         modifier = modifier,

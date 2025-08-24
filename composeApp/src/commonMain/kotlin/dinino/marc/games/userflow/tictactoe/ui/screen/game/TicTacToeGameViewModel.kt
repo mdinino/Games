@@ -9,6 +9,7 @@ import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
 
 class TicTacToeGameViewModel(
+    newGame: Boolean = false,
     repository: Repository<TicTacToeGameData> =
         defaultRepository,
     defaultGameData: ()->TicTacToeGameData =
@@ -17,9 +18,9 @@ class TicTacToeGameViewModel(
         ::convertDataToState
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
         TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
-    repository = repository, defaultGameData = defaultGameData, convertDataToState = convertDataToState
+    newGame = newGame, repository = repository,
+    defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
-            
     override fun pause() =
         mutateGameData { mutatePaused(paused = true) }
 

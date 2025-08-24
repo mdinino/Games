@@ -1,14 +1,11 @@
 package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import dinino.marc.games.stateflow.mapStateFlow
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
-import dinino.marc.games.userflow.common.ui.layout.ShowIconState
 import dinino.marc.games.userflow.common.ui.layout.ShownDisabled
 import dinino.marc.games.userflow.common.ui.layout.ShownEnabled
 import dinino.marc.games.userflow.common.ui.route.ContentWithActionBarScreenRoute
@@ -18,10 +15,12 @@ import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
 @Serializable
-data object TicTacToeGameRoute : ContentWithActionBarScreenRoute(), GameUserFlowNavGraphRoute.GameRoute {
+data class TicTacToeGameRoute(val newGame: Boolean = false) :
+    ContentWithActionBarScreenRoute(), GameUserFlowNavGraphRoute.GameRoute {
 
     override val localizedTitleProvider
         get() = KoinPlatform.getKoin()
@@ -29,8 +28,7 @@ data object TicTacToeGameRoute : ContentWithActionBarScreenRoute(), GameUserFlow
 
     @Composable
     override fun showMenuIconFlowFactory() =
-        koinViewModel<TicTacToeGameViewModel>()
-            .gameState
+        viewModel.gameState
             .mapStateFlow {
                 when(it) {
                     is GameState.Normal -> ShownEnabled
@@ -44,10 +42,16 @@ data object TicTacToeGameRoute : ContentWithActionBarScreenRoute(), GameUserFlow
         modifier: Modifier,
         navHostController: NavHostController,
         menuSelectedOneTimeEvent: Flow<MenuSelected>
-    ) =
-        TicTacToeGameScreen(
+    ) = TicTacToeGameScreen(
             modifier = modifier,
             navHostController = navHostController,
             menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
+            vm = viewModel
+        )
+
+    @get:Composable
+    private val viewModel
+        get() = koinViewModel<TicTacToeGameViewModel>(
+            parameters = { parametersOf(newGame) }
         )
 }

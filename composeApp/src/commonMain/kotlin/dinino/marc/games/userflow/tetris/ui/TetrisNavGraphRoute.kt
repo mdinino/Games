@@ -12,7 +12,7 @@ import org.koin.mp.KoinPlatform
 @Serializable
 data object TetrisNavGraphRoute : GameUserFlowNavGraphRoute() {
     override val selectNewOrResumeGameRoute = TetrisSelectNewOrResumeGameRoute
-    override val gameRoute = TetrisGameRoute
+    override val gameRoute = TetrisGameRoute()
     override val gameOverRoute = TetrisGameOverRoute
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider
         get() = KoinPlatform.getKoin()
