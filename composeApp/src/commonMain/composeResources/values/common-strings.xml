@@ -3,6 +3,7 @@
     <string name="back_button">Back</string>
     <string name="menu">Menu</string>
     <string name="ok">OK</string>
+    <string name="confirm">Confirm</string>
     <string name="game_over">Game Over</string>
     <string name="game_hidden_while_paused">Game hidden while paused</string>
     <string name="pause_popup_title">Game Paused</string>
