@@ -255,7 +255,7 @@ private fun GamePausedLayout(
                 Text(text = stringResource(Res.string.pause_popup_restart_game),)
             }
 
-            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.extraSmall))
+            Spacer(modifier = Modifier.height(MaterialTheme.sizes.spacings.small))
 
             FilledTonalButtonWithConfirmation(
                 modifier = Modifier

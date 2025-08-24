@@ -7,8 +7,8 @@
     <string name="game_over">Game Over</string>
     <string name="game_hidden_while_paused">Game hidden while paused</string>
     <string name="pause_popup_title">Game Paused</string>
-    <string name="pause_popup_restart_game">Restart Game</string>
-    <string name="pause_popup_end_game">End Game</string>
+    <string name="pause_popup_restart_game">Restart</string>
+    <string name="pause_popup_end_game">End</string>
     <string name="select_new_or_resume_game_screen_new_game">New Game</string>
     <string name="select_new_or_resume_game_screen_resume_game">Resume Game</string>
     <string name="game_over_screen_subtitle">Game Over</string>

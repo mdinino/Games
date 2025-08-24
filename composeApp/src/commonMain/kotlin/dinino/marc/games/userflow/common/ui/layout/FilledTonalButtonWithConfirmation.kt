@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,14 +18,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.dp
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.confirm
 import org.jetbrains.compose.resources.stringResource
@@ -47,6 +43,7 @@ fun FilledTonalButtonWithConfirmation(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.filledTonalShape,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
     var readyForConfirmation by rememberSaveable { mutableStateOf(false) }
@@ -56,18 +53,18 @@ fun FilledTonalButtonWithConfirmation(
             .defaultMinSize(
                 minWidth = ButtonDefaults.MinWidth,
                 minHeight = ButtonDefaults.MinHeight
-            ).clip(shape),
+            )
+            .clip(shape),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         FilledTonalButton(
             onClick = { readyForConfirmation = true },
             modifier = Modifier
-                .padding(0.dp)
                 .fillMaxHeight()
                 .weight(1f, fill = true),
             shape = RectangleShape,
-            contentPadding = PaddingValues(all = 0.dp),
+            contentPadding = contentPadding,
             elevation = null,
             enabled = enabled,
             content = content
@@ -76,17 +73,15 @@ fun FilledTonalButtonWithConfirmation(
         FilledTonalButton(
             onClick = { onConfirmed() },
             modifier = Modifier
-                .padding(0.dp)
                 .fillMaxHeight()
                 .wrapContentWidth(),
             shape = RectangleShape,
-            contentPadding = PaddingValues(all = 0.dp),
+            contentPadding = contentPadding,
             elevation = null,
             enabled = enabled && readyForConfirmation,
         ) {
             Icon(
                 modifier = Modifier
-                    .padding(0.dp)
                     .wrapContentWidth()
                     .fillMaxHeight(),
                 imageVector = Icons.Default.Check,
