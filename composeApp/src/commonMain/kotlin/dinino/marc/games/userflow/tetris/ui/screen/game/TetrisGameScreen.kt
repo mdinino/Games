@@ -27,7 +27,7 @@ fun TetrisGameScreen(
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         vm = vm,
         gameOverRoute = { TetrisGameOverRoute }
-    ) { innerPadding, board ->
+    ) { _, board ->
         DoNotMirrorForRTL {
             Column(
                 modifier = Modifier.fillMaxSize(),

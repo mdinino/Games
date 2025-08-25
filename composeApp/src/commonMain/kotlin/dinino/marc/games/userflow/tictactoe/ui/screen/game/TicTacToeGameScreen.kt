@@ -42,7 +42,7 @@ fun TicTacToeGameScreen(
             )
         },
         gameOverRoute = { TicTacToeGameOverRoute }
-    ) { innerPadding, board ->
+    ) { _, board ->
         DoNotMirrorForRTL {
             Column(
                 modifier = Modifier.fillMaxSize(),
