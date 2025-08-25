@@ -1,8 +1,14 @@
 package dinino.marc.games.userflow.tetris.ui.screen.game
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import dinino.marc.games.userflow.common.ui.layout.DoNotMirrorForRTL
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tetris.ui.screen.gameover.TetrisGameOverRoute
@@ -21,7 +27,15 @@ fun TetrisGameScreen(
         menuSelectedOneTimeEvent = menuSelectedOneTimeEvent,
         vm = vm,
         gameOverRoute = { TetrisGameOverRoute }
-    ) { innerPadding, board ->
-        // TODO
+    ) { _, board ->
+        DoNotMirrorForRTL {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Under Construction")
+            }
+        }
     }
 }
