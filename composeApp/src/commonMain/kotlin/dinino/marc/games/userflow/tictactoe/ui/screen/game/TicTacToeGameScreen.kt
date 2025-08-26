@@ -4,6 +4,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +17,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
@@ -66,11 +71,15 @@ fun TicTacToeGrid(
         .fillMaxHeight(),
     rowCount: UInt = 3u,
     columnCount: UInt = 3u,
+    imageVector: (row: UInt, column: UInt)-> ImageVector? = { _, _, -> Icons.Default.Close },
+    onClick: (row: UInt, column: UInt) -> Unit = { _, _, -> },
     cellContent: TicTacToeCellContent = {
         row, column, showTopBorder, showStartBorder, showBottomBorder, showEndBorder ->
         TicTacToeCell(
             row = row,
             column = column,
+            imageVector = imageVector,
+            onClick = onClick,
             showTopBorder = showTopBorder,
             showStartBorder = showStartBorder,
             showBottomBorder = showBottomBorder,
@@ -112,12 +121,31 @@ private typealias TicTacToeCellContent =
 
 @Composable
 private fun TicTacToeCell(
-    row: UInt = 0u,
-    column: UInt = 0u,
-    showTopBorder: Boolean = true,
-    showStartBorder: Boolean = true,
-    showBottomBorder: Boolean = true,
-    showEndBorder: Boolean = true,
+    row: UInt,
+    column: UInt,
+    imageVector: (row: UInt, column: UInt)-> ImageVector?,
+    onClick: (row: UInt, column: UInt) -> Unit,
+    showTopBorder: Boolean,
+    showStartBorder: Boolean,
+    showBottomBorder: Boolean,
+    showEndBorder: Boolean,
+) = TicTacToeCell(
+    imageVector = imageVector(row, column),
+    onClick = { onClick(row, column) },
+    showTopBorder = showTopBorder,
+    showStartBorder = showStartBorder,
+    showBottomBorder = showBottomBorder,
+    showEndBorder = showEndBorder
+)
+
+@Composable
+private fun TicTacToeCell(
+    imageVector: ImageVector?,
+    onClick: () -> Unit,
+    showTopBorder: Boolean,
+    showStartBorder: Boolean,
+    showBottomBorder: Boolean,
+    showEndBorder: Boolean,
 ) {
     BoxWithDifferentBorders(
         showTopBorder = showTopBorder,
@@ -125,10 +153,16 @@ private fun TicTacToeCell(
         showStartBorder = showStartBorder,
         showEndBorder = showEndBorder
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-        ) {
-            //Text("test")
+        IconButton (
+            onClick = onClick
+        ){
+            imageVector?.let {
+                Icon(
+                    modifier = Modifier.fillMaxSize(),
+                    imageVector = it,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
