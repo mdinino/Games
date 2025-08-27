@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +22,8 @@ import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
+import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterO
+import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterX
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
@@ -150,7 +150,7 @@ data class TicTacToeCellEntry(val image: TicTacToeCellImage? = null, val enabled
 
 @Composable
 fun ticTacToeCellImage(
-    vector: ImageVector = Icons.Default.Close,
+    vector: ImageVector = LetterO,
     tint: Color = MaterialTheme.colorScheme.secondary
 ) = TicTacToeCellImage(vector = vector, tint = tint)
 
@@ -179,14 +179,16 @@ fun TicTacToeCell(
             enabled = ticTacToeCellEntry.enabled,
             onClick = onClick,
         ) {
-            ticTacToeCellEntry.image?.let {
-                Icon(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    imageVector = it.vector,
-                    tint = it.tint,
-                    contentDescription = null
-                )
+
+            ticTacToeCellEntry.image
+                ?.let {
+                    Icon(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        imageVector = it.vector,
+                        tint = it.tint,
+                        contentDescription = null
+                    )
             }
         }
     }
