@@ -150,7 +150,7 @@ data class TicTacToeCellEntry(val image: TicTacToeCellImage? = null, val enabled
 
 @Composable
 fun ticTacToeCellImage(
-    vector: ImageVector = LetterO,
+    vector: ImageVector = LetterX,
     tint: Color = MaterialTheme.colorScheme.secondary
 ) = TicTacToeCellImage(vector = vector, tint = tint)
 
