@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
@@ -27,10 +28,15 @@ import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterX
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
-import games.composeapp.generated.resources.player_o_wins
-import games.composeapp.generated.resources.player_x_wins
+import games.composeapp.generated.resources.userflow_tictactoe_player_o_content_description
+import games.composeapp.generated.resources.userflow_tictactoe_player_o_wins
+import games.composeapp.generated.resources.userflow_tictactoe_player_x_content_description
+import games.composeapp.generated.resources.userflow_tictactoe_player_x_wins
+import games.composeapp.generated.resources.userflow_tictactoe_turn
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TicTacToeGameScreen(
@@ -38,8 +44,7 @@ fun TicTacToeGameScreen(
     navHostController: NavHostController,
     menuSelectedOneTimeEvent: Flow<MenuSelected>,
     vm: TicTacToeGameViewModel
-) {
-    GameScreen(
+) = GameScreen(
         modifier = modifier,
         navHostController = navHostController,
         vm = vm,
@@ -47,29 +52,57 @@ fun TicTacToeGameScreen(
         localizedGameOverMessage = {
             getString( resource =
                 when(it) {
-                    is TicTacToeGameData.GameOverDetails.OWins -> Res.string.player_o_wins
-                    is TicTacToeGameData.GameOverDetails.XWins -> Res.string.player_x_wins
-                    null -> Res.string.game_over
+                    is TicTacToeGameData.GameOverDetails.OWins ->
+                        Res.string.userflow_tictactoe_player_o_wins
+                    is TicTacToeGameData.GameOverDetails.XWins ->
+                        Res.string.userflow_tictactoe_player_x_wins
+                    null ->
+                        Res.string.game_over
                 }
             )
         },
         gameOverRoute = { TicTacToeGameOverRoute }
     ) { _, board ->
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TicTacToeGrid()
-        }
+        TicTacToeAdaptiveContent()
+    }
+
+@Composable
+@Preview
+private fun TicTacToeAdaptiveContent(
+) = BoxWithConstraints {
+    when(maxHeight > maxWidth) {
+        true -> TicTacToeColumn()
+        else -> TicTacToeRow()
     }
 }
 
 @Composable
-private fun TicTacToeGrid(
-    modifier: Modifier = Modifier
-        .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true)
-        .fillMaxHeight(),
+private fun TicTacToeRow(
+    modifier: Modifier = Modifier.fillMaxSize()
+) = Row (
+    modifier = modifier,
+    horizontalArrangement = Arrangement.SpaceEvenly,
+    verticalAlignment = Alignment.CenterVertically
+) {
+    Grid()
+    Turn()
+}
+
+@Composable
+private fun TicTacToeColumn(
+    modifier: Modifier = Modifier.fillMaxSize()
+) = Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Grid()
+        Turn()
+    }
+
+@Composable
+private fun Grid(
+    modifier: Modifier = Modifier.aspectRatio(1f),
     rowCount: UInt = 3u,
     columnCount: UInt = 3u,
     entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry = { _, _ -> TicTacToeCellEntry() },
@@ -88,11 +121,10 @@ private fun TicTacToeGrid(
         )
     }
 ) = LazyVerticalGrid(
-    columns = GridCells.Fixed(count = columnCount.toInt()),
     modifier = modifier,
+    columns = GridCells.Fixed(count = columnCount.toInt()),
     verticalArrangement = Arrangement.Center,
     horizontalArrangement = Arrangement.Center,
-
 ) {
     for (row in 0u until rowCount) {
         for (column in 0u until columnCount) {
@@ -122,6 +154,7 @@ private typealias TicTacToeCellContent =
 
 @Composable
 private fun TicTacToeCell(
+    modifier: Modifier = Modifier.aspectRatio(ratio = 1f),
     row: UInt,
     column: UInt,
     entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry,
@@ -131,6 +164,7 @@ private fun TicTacToeCell(
     showBottomBorder: Boolean,
     showEndBorder: Boolean,
 ) = TicTacToeCell(
+    modifier = modifier,
     ticTacToeCellEntry = entry(row, column),
     onClick = { onClick(row, column) },
     showTopBorder = showTopBorder,
@@ -142,6 +176,7 @@ private fun TicTacToeCell(
 
 @Composable
 private fun TicTacToeCell(
+    modifier: Modifier = Modifier,
     ticTacToeCellEntry: TicTacToeCellEntry = TicTacToeCellEntry(),
     onClick: () -> Unit = {},
     showTopBorder: Boolean = true,
@@ -150,6 +185,7 @@ private fun TicTacToeCell(
     showEndBorder: Boolean = true
 ) {
     BoxWithDifferentBorders(
+        modifier = modifier,
         showTopBorder = showTopBorder,
         showBottomBorder = showBottomBorder,
         showStartBorder = showStartBorder,
@@ -162,33 +198,21 @@ private fun TicTacToeCell(
             enabled = ticTacToeCellEntry.enabled,
             onClick = onClick,
         ) {
-
-            ticTacToeCellEntry.image
+            ticTacToeCellEntry.playerIcon
                 ?.let {
                     Icon(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         imageVector = it.vector,
                         tint = it.tint,
-                        contentDescription = null
+                        contentDescription = it.contentDescription
                     )
             }
         }
     }
 }
-
-@get:Composable
-private val defaultCellBorderStroke
-    get() = BorderStroke(
-        width = MaterialTheme.sizes.ticTacToeCellBorder.default,
-        brush = SolidColor(value = MaterialTheme.colorScheme.outline)
-    )
-
 @Composable
 fun BoxWithDifferentBorders(
-    modifier: Modifier = Modifier
-        .aspectRatio(ratio = 1f, matchHeightConstraintsFirst = true).
-        fillMaxSize(),
+    modifier: Modifier = Modifier,
     borderStroke: BorderStroke = defaultCellBorderStroke,
     showTopBorder: Boolean = true,
     showBottomBorder: Boolean = true,
@@ -203,16 +227,6 @@ fun BoxWithDifferentBorders(
         endBorder = borderStroke.showOrHide(showEndBorder),
         content = content
 )
-
-@Composable
-private fun BorderStroke.showOrHide(show: Boolean) =
-    when(show) {
-        true -> this
-        else -> toTransparent()
-    }
-@Composable
-private fun BorderStroke.toTransparent() =
-    copy(brush = SolidColor(value = Transparent))
 
 @Composable
 private fun BoxWithDifferentBorders(
@@ -271,41 +285,93 @@ private fun BoxWithDifferentBorders(
     ) { content() }
 }
 
+@Composable
+private fun BorderStroke.showOrHide(show: Boolean) =
+    when(show) {
+        true -> this
+        else -> toTransparent()
+    }
+@Composable
+private fun BorderStroke.toTransparent() =
+    copy(brush = SolidColor(value = Transparent))
+
+
+@get:Composable
+private val defaultCellBorderStroke
+    get() = BorderStroke(
+        width = MaterialTheme.sizes.ticTacToeCellBorder.default,
+        brush = SolidColor(value = MaterialTheme.colorScheme.outline)
+    )
+
+@Composable
+private fun Turn(
+    modifier: Modifier = Modifier.wrapContentSize(),
+    playerIcon: PlayerIcon.Style.Normal = PlayerXNormal
+) = Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically
+) {
+    Text(stringResource(Res.string.userflow_tictactoe_turn))
+    Spacer(Modifier.width(MaterialTheme.sizes.spacings.tiny))
+    Icon(
+        modifier = Modifier
+            .width(MaterialTheme.sizes.icons.default.width)
+            .height(MaterialTheme.sizes.icons.default.height),
+        imageVector = playerIcon.vector,
+        tint = playerIcon.tint,
+        contentDescription = playerIcon.contentDescription
+    )
+}
+
 @Immutable
 private data class TicTacToeCellEntry(
-    val image: TicTacToeCellImage? = PlayerXNormal,
+    val playerIcon: PlayerIcon? = PlayerXNormal,
     val enabled : Boolean = true
 )
 
-private interface TicTacToeCellImage {
+private interface PlayerIcon {
     @get:Composable
     val vector: ImageVector
 
     @get:Composable
     val tint: Color
 
-    sealed interface Player : TicTacToeCellImage {
+    @get:Composable
+    val contentDescription: String
+
+    sealed interface Player : PlayerIcon {
         interface X : Player
         interface O : Player
     }
 
-    sealed interface Style : TicTacToeCellImage {
+    sealed interface Style : PlayerIcon {
         interface Normal : Style
     }
 }
 
-private object PlayerXNormal: TicTacToeCellImage.Player.X, TicTacToeCellImage.Style.Normal {
+@Immutable
+private object PlayerXNormal: PlayerIcon.Player.X, PlayerIcon.Style.Normal {
     @get:Composable
     override val vector get() =  LetterX
 
     @get:Composable
     override val tint get() = MaterialTheme.colorScheme.secondary
+
+    @get:Composable
+    override val contentDescription
+        get() = stringResource(Res.string.userflow_tictactoe_player_x_content_description)
 }
 
-private object PlayerONormal: TicTacToeCellImage.Player.O, TicTacToeCellImage.Style.Normal {
+@Immutable
+private object PlayerONormal: PlayerIcon.Player.O, PlayerIcon.Style.Normal {
     @get:Composable
     override val vector get() =  LetterO
 
     @get:Composable
     override val tint get() = MaterialTheme.colorScheme.secondary
+
+    @get:Composable
+    override val contentDescription
+        get() = stringResource(Res.string.userflow_tictactoe_player_o_content_description)
 }
