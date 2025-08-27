@@ -72,8 +72,8 @@ private fun TicTacToeGrid(
         .fillMaxHeight(),
     rowCount: UInt = 3u,
     columnCount: UInt = 3u,
-    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry = { _, _ -> ticTacToeCellEntry() },
-    onClick: (row: UInt, column: UInt) -> Unit = { _, _, -> },
+    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry = { _, _ -> TicTacToeCellEntry() },
+    onClick: (row: UInt, column: UInt) -> Unit = { _, _ -> },
     cellContent: TicTacToeCellContent = {
         row, column, showTopBorder, showStartBorder, showBottomBorder, showEndBorder ->
         TicTacToeCell(
@@ -139,27 +139,10 @@ private fun TicTacToeCell(
     showEndBorder = showEndBorder
 )
 
-@Composable
-fun ticTacToeCellEntry(
-    image: TicTacToeCellImage? = ticTacToeCellImage(),
-    enabled : Boolean = true
-) = TicTacToeCellEntry(image = image, enabled = enabled)
-
-@Immutable
-data class TicTacToeCellEntry(val image: TicTacToeCellImage? = null, val enabled : Boolean)
 
 @Composable
-fun ticTacToeCellImage(
-    vector: ImageVector = LetterX,
-    tint: Color = MaterialTheme.colorScheme.secondary
-) = TicTacToeCellImage(vector = vector, tint = tint)
-
-@Immutable
-data class TicTacToeCellImage(val vector: ImageVector, val tint: Color)
-
-@Composable
-fun TicTacToeCell(
-    ticTacToeCellEntry: TicTacToeCellEntry = ticTacToeCellEntry(),
+private fun TicTacToeCell(
+    ticTacToeCellEntry: TicTacToeCellEntry = TicTacToeCellEntry(),
     onClick: () -> Unit = {},
     showTopBorder: Boolean = true,
     showStartBorder: Boolean = true,
@@ -286,4 +269,43 @@ private fun BoxWithDifferentBorders(
             }
         }
     ) { content() }
+}
+
+@Immutable
+private data class TicTacToeCellEntry(
+    val image: TicTacToeCellImage? = PlayerXNormal,
+    val enabled : Boolean = true
+)
+
+private interface TicTacToeCellImage {
+    @get:Composable
+    val vector: ImageVector
+
+    @get:Composable
+    val tint: Color
+
+    sealed interface Player : TicTacToeCellImage {
+        interface X : Player
+        interface O : Player
+    }
+
+    sealed interface Style : TicTacToeCellImage {
+        interface Normal : Style
+    }
+}
+
+private object PlayerXNormal: TicTacToeCellImage.Player.X, TicTacToeCellImage.Style.Normal {
+    @get:Composable
+    override val vector get() =  LetterX
+
+    @get:Composable
+    override val tint get() = MaterialTheme.colorScheme.secondary
+}
+
+private object PlayerONormal: TicTacToeCellImage.Player.O, TicTacToeCellImage.Style.Normal {
+    @get:Composable
+    override val vector get() =  LetterO
+
+    @get:Composable
+    override val tint get() = MaterialTheme.colorScheme.secondary
 }
