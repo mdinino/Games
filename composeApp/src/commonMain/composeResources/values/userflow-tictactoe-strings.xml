@@ -3,6 +3,7 @@
     <string name="userflow-tictactoe-not-available">Tic Tac Toe is not available at this time</string>
     <string name="userflow-tictactoe-player-x-wins">Player X Wins</string>
     <string name="userflow-tictactoe-player-o-wins">Player O Wins</string>
+    <string name="userflow-tictactoe-draw">Draw</string>
     <string name="userflow-tictactoe-player-x-content-description">Player X</string>
     <string name="userflow-tictactoe-player-o-content-description">Player O</string>
     <string name="userflow-tictactoe-turn">Turn :</string>

@@ -28,6 +28,7 @@ import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterX
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
+import games.composeapp.generated.resources.userflow_tictactoe_draw
 import games.composeapp.generated.resources.userflow_tictactoe_player_o_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_o_wins
 import games.composeapp.generated.resources.userflow_tictactoe_player_x_content_description
@@ -56,6 +57,8 @@ fun TicTacToeGameScreen(
                         Res.string.userflow_tictactoe_player_o_wins
                     is TicTacToeGameData.GameOverDetails.XWins ->
                         Res.string.userflow_tictactoe_player_x_wins
+                    is TicTacToeGameData.GameOverDetails.Draw ->
+                        Res.string.userflow_tictactoe_draw
                     null ->
                         Res.string.game_over
                 }
@@ -315,7 +318,9 @@ private fun Turn(
     Text(stringResource(Res.string.userflow_tictactoe_turn))
     Spacer(Modifier.width(MaterialTheme.sizes.spacings.tiny))
     Icon(
-        modifier = Modifier.aspectRatio(1f),
+        modifier = Modifier
+            .width(MaterialTheme.sizes.icons.default.width)
+            .height(MaterialTheme.sizes.icons.default.height),
         imageVector = playerIcon.vector,
         tint = playerIcon.tint,
         contentDescription = playerIcon.contentDescription
@@ -345,11 +350,25 @@ private interface PlayerIcon {
 
     sealed interface Style : PlayerIcon {
         interface Normal : Style
+        interface Winner : Style
     }
 }
 
 @Immutable
 private object PlayerXNormal: PlayerIcon.Player.X, PlayerIcon.Style.Normal {
+    @get:Composable
+    override val vector get() = LetterX
+
+    @get:Composable
+    override val tint get() = MaterialTheme.colorScheme.secondary
+
+    @get:Composable
+    override val contentDescription
+        get() = stringResource(Res.string.userflow_tictactoe_player_x_content_description)
+}
+
+@Immutable
+private object PlayerXWinner: PlayerIcon.Player.X, PlayerIcon.Style.Winner {
     @get:Composable
     override val vector get() =  LetterX
 
@@ -363,6 +382,19 @@ private object PlayerXNormal: PlayerIcon.Player.X, PlayerIcon.Style.Normal {
 
 @Immutable
 private object PlayerONormal: PlayerIcon.Player.O, PlayerIcon.Style.Normal {
+    @get:Composable
+    override val vector get() =  LetterO
+
+    @get:Composable
+    override val tint get() = MaterialTheme.colorScheme.secondary
+
+    @get:Composable
+    override val contentDescription
+        get() = stringResource(Res.string.userflow_tictactoe_player_o_content_description)
+}
+
+@Immutable
+private object PlayerOWinner: PlayerIcon.Player.O, PlayerIcon.Style.Winner {
     @get:Composable
     override val vector get() =  LetterO
 

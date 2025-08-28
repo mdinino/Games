@@ -44,10 +44,9 @@ class TicTacToeGameViewModel(
     override fun userInitiatedGameOver() =
         mutateGameData { mutateGameOver() }
 
-    fun play(row: UInt, column: UInt) =
-        mutateGameData {
+    fun play(row: UInt, column: UInt) {
 
-        }
+    }
 
     private fun TicTacToeGameData.setMove(row: UInt, column: UInt, entry: Entry) =
         when {
