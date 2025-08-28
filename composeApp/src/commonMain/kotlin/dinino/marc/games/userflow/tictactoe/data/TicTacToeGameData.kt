@@ -6,7 +6,6 @@ import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Gri
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Cell.Companion.to
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Companion.copy
 import kotlinx.serialization.Serializable
-import kotlin.text.get
 
 @Serializable
 data class TicTacToeGameData(
@@ -77,15 +76,15 @@ data class TicTacToeGameData(
                 fun Map<Cell, Entry?>.toGrid(): Grid =
                     let { map ->
                         Grid(
-                            `0x0` = map.get(0u to 0u),
-                            `0x1` = map.get(0u to 1u),
-                            `0x2` = map.get(0u to 2u),
-                            `1x0` = map.get(1u to 0u),
-                            `1x1` = map.get(1u to 1u),
-                            `1x2` = map.get(1u to 2u),
-                            `2x0` = map.get(2u to 0u),
-                            `2x1` = map.get(2u to 1u),
-                            `2x2` = map.get(2u to 2u)
+                            `0x0` = map[0u to 0u],
+                            `0x1` = map[0u to 1u],
+                            `0x2` = map[0u to 2u],
+                            `1x0` = map[1u to 0u],
+                            `1x1` = map[1u to 1u],
+                            `1x2` = map[1u to 2u],
+                            `2x0` = map[2u to 0u],
+                            `2x1` = map[2u to 1u],
+                            `2x2` = map[2u to 2u]
                         )
                     }
 
