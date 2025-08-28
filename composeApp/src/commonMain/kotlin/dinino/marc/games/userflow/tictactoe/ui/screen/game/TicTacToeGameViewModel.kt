@@ -8,7 +8,6 @@ import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.calculateGameOverDetails
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.copy
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Entry
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Companion.copy
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Cell.Companion.to
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
@@ -44,11 +43,27 @@ class TicTacToeGameViewModel(
     override fun userInitiatedGameOver() =
         mutateGameData { mutateGameOver() }
 
-    fun play(row: UInt, column: UInt) {
+    fun play(row: UInt, column: UInt) =
+        mutateGameData {
+            when(playData) {
+                is GamePlayData.GameOver ->
+                    this
+                is GamePlayData.Paused ->
+                    this
+                is GamePlayData.Normal ->
+                    setMove(row, column, boardData.turn)
+                        .run {
+                            val gameOverDetails = calculateGameOverDetails(boardData.turn)
+                            when(gameOverDetails) {
+                                null -> setTurn(boardData.turn.toggle())
+                                else -> setGameOver(gameOverDetails)
+                            }
+                        }
+            }
 
-    }
+        }
 
-    private fun TicTacToeGameData.setMove(row: UInt, column: UInt, entry: Entry) =
+    private fun TicTacToeGameData.setMove(row: UInt, column: UInt, player: Entry) =
         when {
             playData !is GamePlayData.Normal ->
                 this
@@ -56,7 +71,7 @@ class TicTacToeGameViewModel(
                 this
             else ->
                 copy(boardData = boardData
-                    .copy { this[row to column] = entry })
+                    .copy { this[row to column] = player } )
         }
 
 
@@ -70,6 +85,9 @@ class TicTacToeGameViewModel(
             is GamePlayData.Paused -> this
             is GamePlayData.Normal -> copy(playData = GamePlayData.GameOver(details))
         }
+
+    private fun TicTacToeGameData.calculateGameOverDetails(player: Entry) =
+        this.boardData.calculateGameOverDetails(player)
 
     private fun Entry.toggle() =
         when(this) {
