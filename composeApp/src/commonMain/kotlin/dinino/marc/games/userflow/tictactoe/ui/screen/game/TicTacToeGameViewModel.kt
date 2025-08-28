@@ -17,7 +17,7 @@ class TicTacToeGameViewModel(
     convertDataToState: (gameData: TicTacToeGameData)->TicTacToeGameState =
         ::convertDataToState
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
-        TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
+        TicTacToeGameData.GameOverDetails, TicTacToeGameData.BoardData>(
     newGame = newGame, repository = repository,
     defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {

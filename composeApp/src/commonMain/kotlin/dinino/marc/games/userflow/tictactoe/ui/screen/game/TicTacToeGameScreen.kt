@@ -315,9 +315,7 @@ private fun Turn(
     Text(stringResource(Res.string.userflow_tictactoe_turn))
     Spacer(Modifier.width(MaterialTheme.sizes.spacings.tiny))
     Icon(
-        modifier = Modifier
-            .width(MaterialTheme.sizes.icons.default.width)
-            .height(MaterialTheme.sizes.icons.default.height),
+        modifier = Modifier.aspectRatio(1f),
         imageVector = playerIcon.vector,
         tint = playerIcon.tint,
         contentDescription = playerIcon.contentDescription

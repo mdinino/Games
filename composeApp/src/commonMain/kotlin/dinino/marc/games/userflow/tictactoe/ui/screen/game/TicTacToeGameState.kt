@@ -3,10 +3,8 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 
-typealias TicTacToeGameState = GameState<TicTacToeGameData.GameOverDetails, TicTacToeBoardState>
+typealias TicTacToeGameState = GameState<TicTacToeGameData.GameOverDetails, TicTacToeGameData.BoardData>
 
-val defaultTicTacToeBoardState = TicTacToeBoardState()
+val defaultTicTacToeBoardState = TicTacToeGameData.BoardData()
 
-val hiddenTicTacToeBoardState = TicTacToeBoardState()
-
-data class TicTacToeBoardState(val test: String = "")
+val hiddenTicTacToeBoardState = TicTacToeGameData.BoardData()
