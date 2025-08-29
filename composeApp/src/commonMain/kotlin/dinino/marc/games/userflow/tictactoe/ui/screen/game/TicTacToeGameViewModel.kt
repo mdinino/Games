@@ -8,7 +8,6 @@ import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.calculateGameOverDetails
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.copy
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Entry
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Cell.Companion.to
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
 
