@@ -2,9 +2,8 @@ package dinino.marc.games.userflow.tictactoe.data
 
 import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.GamePlayData
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Cell
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Cell.Companion.to
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Companion.copy
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,10 +15,10 @@ data class TicTacToeGameData(
     @Serializable
     sealed interface GameOverDetails {
         @Serializable
-        data class XWins(val winningCells: Set<Cell>) : GameOverDetails
+        data class XWins(val winningCells: Set<TicTacToeCell>) : GameOverDetails
 
         @Serializable
-        data class OWins(val winningCells: Set<Cell>) : GameOverDetails
+        data class OWins(val winningCells: Set<TicTacToeCell>) : GameOverDetails
 
         @Serializable
         data object Draw : GameOverDetails
@@ -43,7 +42,7 @@ data class TicTacToeGameData(
             val `2x1`: Entry? = null,
             val `2x2`: Entry? = null
         ) {
-            val entries: Map<Cell, Entry?>
+            val entries: Map<TicTacToeCell, Entry?>
                 by lazy {
                     mapOf (
                         0u to 0u to `0x0`,
@@ -58,22 +57,9 @@ data class TicTacToeGameData(
                     )
                 }
 
-            @Serializable
-            data class Cell(val row: UInt, val column: UInt) {
-                init {
-                    require(row in 0u..2u && column in 0u..2u) {
-                        "Row and column must be between 0 and 2"
-                    }
-                }
-
-                companion object {
-                    infix fun UInt.to(column: UInt) =
-                        Cell(row = this,  column = column)
-                }
-            }
 
             companion object {
-                fun Map<Cell, Entry?>.toGrid(): Grid =
+                fun Map<TicTacToeCell, Entry?>.toGrid(): Grid =
                     let { map ->
                         Grid(
                             `0x0` = map[0u to 0u],
@@ -88,7 +74,7 @@ data class TicTacToeGameData(
                         )
                     }
 
-                fun Grid.copy(mutator: MutableMap<Cell, Entry?>.() -> Unit): Grid =
+                fun Grid.copy(mutator: MutableMap<TicTacToeCell, Entry?>.() -> Unit): Grid =
                     entries.toMutableMap()
                         .apply(mutator)
                         .toGrid()
@@ -107,7 +93,7 @@ data class TicTacToeGameData(
         companion object {
             fun BoardData.copy(
                 turn: Entry = this.turn,
-                gridMutator: MutableMap<Cell, Entry?>.()->Unit = {}
+                gridMutator: MutableMap<TicTacToeCell, Entry?>.()->Unit = {}
             ) = BoardData(
                     turn = turn,
                     grid = grid.copy(mutator = gridMutator)
@@ -131,13 +117,13 @@ data class TicTacToeGameData(
             private val BoardData.areAllCellsFilled: Boolean
                 get() = grid.entries.all { (_, entry) -> entry != null }
 
-            private fun BoardData.calculateWin(player: Entry): Set<Set<Cell>> =
+            private fun BoardData.calculateWin(player: Entry): Set<Set<TicTacToeCell>> =
                 rowsColumnAndDiagonals.filter {
                     it.checkWin(player)
                 }.toSet()
 
             context(boardData: BoardData)
-            private fun Set<Cell>.checkWin(player: Entry): Boolean =
+            private fun Set<TicTacToeCell>.checkWin(player: Entry): Boolean =
                 all { cell ->
                     boardData.grid.entries[cell] == player
                 }
@@ -145,49 +131,49 @@ data class TicTacToeGameData(
     }
 }
 
-private val topRow = setOf<Cell>(
+private val topRow = setOf<TicTacToeCell>(
     0u to 0u,
     0u to 1u,
     0u to 2u
 )
 
-private val middleRow = setOf<Cell>(
+private val middleRow = setOf<TicTacToeCell>(
     1u to 0u,
     1u to 1u,
     1u to 2u
 )
 
-private val bottomRow = setOf<Cell>(
+private val bottomRow = setOf<TicTacToeCell>(
     2u to 0u,
     2u to 1u,
     2u to 2u
 )
 
-private val leftColumn = setOf<Cell>(
+private val leftColumn = setOf<TicTacToeCell>(
     0u to 0u,
     1u to 0u,
     2u to 0u
 )
 
-private val middleColumn = setOf<Cell>(
+private val middleColumn = setOf<TicTacToeCell>(
     0u to 1u,
     1u to 1u,
     2u to 1u
 )
 
-private val rightColumn = setOf<Cell>(
+private val rightColumn = setOf<TicTacToeCell>(
     0u to 2u,
     1u to 2u,
     2u to 2u
 )
 
-private val topLeftToBottomRightDiagonal = setOf<Cell>(
+private val topLeftToBottomRightDiagonal = setOf<TicTacToeCell>(
     0u to 0u,
     1u to 1u,
     2u to 2u
 )
 
-private val topRightToBottomLeftDiagonal = setOf<Cell>(
+private val topRightToBottomLeftDiagonal = setOf<TicTacToeCell>(
     0u to 2u,
     1u to 1u,
     2u to 0u
