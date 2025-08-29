@@ -1,15 +1,72 @@
 package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
+import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.ui.screen.game.TicTacToeBoardState.Entry
 
 typealias TicTacToeGameState = GameState<TicTacToeGameOverState, TicTacToeBoardState>
 
+fun TicTacToeGameData.toGameState(): TicTacToeGameState =
+    when(playData) {
+        is GamePlayData.Normal ->
+            TicTacToeNormalState(turn = turn) { cell ->
+                boardData.grid.entries[cell]?.toVariant()
+            }
+        is GamePlayData.Paused ->
+            TicTacToePausedState(lastTurn = turn)
+        is GamePlayData.GameOver ->
+            when(playData.details) {
+                is TicTacToeGameData.GameOverDetails.XWins ->
+                    TicTacToeGameOverPlayerXWonState(
+                        winningCells = playData.details.winningCells,
+                        gridBuilder = { cell ->
+                            boardData.grid.entries[cell]!!.toVariant()
+                        }
+                    )
+                is TicTacToeGameData.GameOverDetails.OWins ->
+                    TicTacToeGameOverPlayerOWonState(
+                        winningCells = playData.details.winningCells,
+                        gridBuilder = { cell ->
+                            boardData.grid.entries[cell]!!.toVariant()
+                        }
+                    )
+                is TicTacToeGameData.GameOverDetails.Draw ->
+                    TicTacToeGameOverDrawState(
+                        lastTurn = turn,
+                        gridBuilder = { cell ->
+                            boardData.grid.entries[cell]!!.toVariant()
+                        }
+                    )
+                null -> TicTacToeUserInitiatedGameOverState(
+                    lastTurn = turn,
+                    gridBuilder = { cell ->
+                        boardData.grid.entries[cell]?.toVariant()
+                    }
+                )
+
+            }
+    }
+
+private val TicTacToeGameData.turn: Entry.Variant.Normal
+    get() = when(boardData.turn) {
+        TicTacToeGameData.BoardData.Entry.PlayerX -> Entry.PlayerXNormal
+        TicTacToeGameData.BoardData.Entry.PlayerO -> Entry.PlayerONormal
+    }
+
+private fun TicTacToeGameData.BoardData.Entry.toVariant(): Entry.Variant.Normal =
+    when(this) {
+        TicTacToeGameData.BoardData.Entry.PlayerX -> Entry.PlayerXNormal
+        TicTacToeGameData.BoardData.Entry.PlayerO -> Entry.PlayerONormal
+    }
+
 @Suppress("FunctionName")
-fun TicTacToeNormalState(turn: Entry.Variant.Normal, gridBuilder: (TicTacToeCell) -> Entry.Player?) =
-    GameState.Normal<TicTacToeGameOverState, TicTacToeBoardState>(
+fun TicTacToeNormalState(
+    turn: Entry.Variant.Normal,
+    gridBuilder: (TicTacToeCell) -> Entry.Variant.Normal?
+) = GameState.Normal<TicTacToeGameOverState, TicTacToeBoardState>(
         board = TicTacToeBoardState(
             turn = turn,
             gridBuilder = gridBuilder
@@ -28,7 +85,7 @@ fun TicTacToePausedState(lastTurn: Entry.Variant.Normal) =
 @Suppress("FunctionName")
 fun TicTacToeGameOverDrawState(
     lastTurn: Entry.Variant.Normal,
-    gridBuilder: (TicTacToeCell) -> Entry.Player?
+    gridBuilder: (TicTacToeCell) -> Entry.Variant.Normal
 ) = GameState.GameOver(
     details = TicTacToeGameOverState.Draw,
     board = TicTacToeBoardState(
@@ -40,41 +97,47 @@ fun TicTacToeGameOverDrawState(
 @Suppress("FunctionName")
 fun TicTacToeGameOverPlayerXWonState(
     winningCells: Set<TicTacToeCell>,
-    gridBuilder: (TicTacToeCell) -> Entry.Player?
-) = ticTacToeGameOverPlayerWonState(
-    turnEntry = Entry.PlayerXNormal,
-    winningEntry = Entry.PlayerXWinner,
-    winningCells = winningCells,
-    gridBuilder = gridBuilder
+    gridBuilder: (TicTacToeCell) -> Entry.Variant.Normal
+) = GameState.GameOver(
+    details = TicTacToeGameOverState.PlayerXWon,
+    board = TicTacToeBoardState(
+        turn = Entry.PlayerXNormal,
+        gridBuilder =  { cell ->
+            when(cell in winningCells) {
+                true ->  Entry.PlayerXWinner
+                false -> gridBuilder(cell)
+            }
+        }
+    )
 )
 
 
 @Suppress("FunctionName")
 fun TicTacToeGameOverPlayerOWonState(
     winningCells: Set<TicTacToeCell>,
-    gridBuilder: (TicTacToeCell) -> Entry.Player?
-) = ticTacToeGameOverPlayerWonState(
-    turnEntry = Entry.PlayerONormal,
-    winningEntry = Entry.PlayerOWinner,
-    winningCells = winningCells,
-    gridBuilder = gridBuilder
-)
-
-private fun ticTacToeGameOverPlayerWonState(
-    turnEntry: Entry.Variant.Normal,
-    winningEntry: Entry.Variant.Winner,
-    winningCells: Set<TicTacToeCell>,
-    gridBuilder: (TicTacToeCell) -> Entry.Player?
+    gridBuilder: (TicTacToeCell) -> Entry.Variant.Normal
 ) = GameState.GameOver(
-    details = TicTacToeGameOverState.PlayerXWon,
+    details = TicTacToeGameOverState.PlayerOWon,
     board = TicTacToeBoardState(
-        turn = turnEntry,
+        turn = Entry.PlayerONormal,
         gridBuilder =  { cell ->
             when(cell in winningCells) {
-                true ->  winningEntry
+                true ->  Entry.PlayerOWinner
                 false -> gridBuilder(cell)
             }
         }
+    )
+)
+
+@Suppress("FunctionName")
+fun TicTacToeUserInitiatedGameOverState(
+    lastTurn: Entry.Variant.Normal,
+    gridBuilder: (TicTacToeCell) -> Entry.Variant.Normal?
+) = GameState.GameOver(
+    details = null,
+    board = TicTacToeBoardState(
+        turn = lastTurn,
+        gridBuilder = gridBuilder
     )
 )
 
