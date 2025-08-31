@@ -11,6 +11,9 @@ data class TicTacToeCell(val row: UInt, val column: UInt) {
     }
 
     companion object Companion {
+        const val ROW_COUNT = 3u
+        const val COLUMN_COUNT = 3u
+
         infix fun UInt.to(column: UInt) =
             TicTacToeCell(row = this,  column = column)
     }

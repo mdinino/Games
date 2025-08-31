@@ -4,7 +4,9 @@
     <string name="userflow-tictactoe-player-x-wins">Player X Wins</string>
     <string name="userflow-tictactoe-player-o-wins">Player O Wins</string>
     <string name="userflow-tictactoe-draw">Draw</string>
-    <string name="userflow-tictactoe-player-x-content-description">Player X</string>
-    <string name="userflow-tictactoe-player-o-content-description">Player O</string>
+    <string name="userflow-tictactoe-player-x-normal-content-description">X</string>
+    <string name="userflow-tictactoe-player-o-normal-content-description">O</string>
+    <string name="userflow-tictactoe-player-x-winner-content-description">X winner</string>
+    <string name="userflow-tictactoe-player-o-winner-content-description">O winner</string>
     <string name="userflow-tictactoe-turn">Turn :</string>
 </resources>

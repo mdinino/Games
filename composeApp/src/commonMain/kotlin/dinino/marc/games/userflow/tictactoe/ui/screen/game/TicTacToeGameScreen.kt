@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -18,26 +19,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterO
 import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterX
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.game_over
 import games.composeapp.generated.resources.userflow_tictactoe_draw
-import games.composeapp.generated.resources.userflow_tictactoe_player_o_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_o_wins
-import games.composeapp.generated.resources.userflow_tictactoe_player_x_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_x_wins
 import games.composeapp.generated.resources.userflow_tictactoe_turn
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.ROW_COUNT
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.COLUMN_COUNT
+import games.composeapp.generated.resources.userflow_tictactoe_player_o_normal_content_description
+import games.composeapp.generated.resources.userflow_tictactoe_player_o_winner_content_description
+import games.composeapp.generated.resources.userflow_tictactoe_player_x_normal_content_description
+import games.composeapp.generated.resources.userflow_tictactoe_player_x_winner_content_description
 
 @Composable
 fun TicTacToeGameScreen(
@@ -53,12 +58,12 @@ fun TicTacToeGameScreen(
         localizedGameOverMessage = {
             getString( resource =
                 when(it) {
-                    is TicTacToeGameData.GameOverDetails.OWins ->
-                        Res.string.userflow_tictactoe_player_o_wins
-                    is TicTacToeGameData.GameOverDetails.XWins ->
-                        Res.string.userflow_tictactoe_player_x_wins
-                    is TicTacToeGameData.GameOverDetails.Draw ->
+                    TicTacToeGameOverState.Draw ->
                         Res.string.userflow_tictactoe_draw
+                    TicTacToeGameOverState.PlayerXWon ->
+                        Res.string.userflow_tictactoe_player_x_wins
+                    TicTacToeGameOverState.PlayerOWon ->
+                        Res.string.userflow_tictactoe_player_o_wins
                     null ->
                         Res.string.game_over
                 }
@@ -66,50 +71,66 @@ fun TicTacToeGameScreen(
         },
         gameOverRoute = { TicTacToeGameOverRoute }
     ) { _, board ->
-        TicTacToeAdaptiveContent()
+        TicTacToeAdaptiveContent(viewModel = vm)
     }
 
 @Composable
-@Preview
 private fun TicTacToeAdaptiveContent(
+    viewModel: TicTacToeGameViewModel
 ) = BoxWithConstraints {
+    val state by viewModel.gameState.collectAsStateWithLifecycle()
+    val onClick: (row: UInt, column: UInt) -> Unit = { row, column -> viewModel.play(row, column) }
+
     when(maxHeight > maxWidth) {
-        true -> TicTacToeColumn()
-        else -> TicTacToeRow()
+        true -> TicTacToeColumn(state = state.board, onClick = onClick)
+        else -> TicTacToeRow(state = state.board, onClick = onClick)
     }
 }
 
 @Composable
 private fun TicTacToeRow(
-    modifier: Modifier = Modifier.fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize(),
+    state: TicTacToeBoardState,
+    onClick: (row: UInt, column: UInt) -> Unit
 ) = Row (
     modifier = modifier,
     horizontalArrangement = Arrangement.SpaceEvenly,
     verticalAlignment = Alignment.CenterVertically
 ) {
-    Grid()
-    Turn()
+    Grid(state = state, onClick = onClick)
+    Turn(state = state)
 }
 
 @Composable
 private fun TicTacToeColumn(
-    modifier: Modifier = Modifier.fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize(),
+    state: TicTacToeBoardState,
+    onClick: (row: UInt, column: UInt) -> Unit
 ) = Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Grid()
-        Turn()
+        Grid(state = state, onClick = onClick)
+        Turn(state = state)
     }
 
 @Composable
 private fun Grid(
+    state: TicTacToeBoardState,
+    onClick: (row: UInt, column: UInt) -> Unit,
+) = Grid(
+    entry = { row, column -> state.grid[row to column].toTicTacToeCellEntry() },
+    onClick = { row, column -> onClick(row, column) }
+)
+
+@Composable
+private fun Grid(
     modifier: Modifier = Modifier.aspectRatio(1f),
-    rowCount: UInt = 3u,
-    columnCount: UInt = 3u,
-    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry = { _, _ -> TicTacToeCellEntry() },
-    onClick: (row: UInt, column: UInt) -> Unit = { _, _ -> },
+    rowCount: UInt = ROW_COUNT,
+    columnCount: UInt = COLUMN_COUNT,
+    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry,
+    onClick: (row: UInt, column: UInt) -> Unit,
     cellContent: TicTacToeCellContent = {
         row, column, showTopBorder, showStartBorder, showBottomBorder, showEndBorder ->
         TicTacToeCell(
@@ -180,7 +201,7 @@ private fun TicTacToeCell(
 @Composable
 private fun TicTacToeCell(
     modifier: Modifier = Modifier,
-    ticTacToeCellEntry: TicTacToeCellEntry = TicTacToeCellEntry(),
+    ticTacToeCellEntry: TicTacToeCellEntry,
     onClick: () -> Unit = {},
     showTopBorder: Boolean = true,
     showStartBorder: Boolean = true,
@@ -309,7 +330,25 @@ private val defaultCellBorderStroke
 @Composable
 private fun Turn(
     modifier: Modifier = Modifier.wrapContentSize(),
-    playerIcon: PlayerIcon.Style.Normal = PlayerXNormal
+    state: TicTacToeBoardState
+) = Turn(
+    modifier = modifier,
+    turnState = state.turn
+)
+
+@Composable
+private fun Turn(
+    modifier: Modifier = Modifier.wrapContentSize(),
+    turnState: Entry.Normal
+) = Turn(
+    modifier = modifier,
+    playerIcon = turnState.toPlayerIcon()
+)
+
+@Composable
+private fun Turn(
+    modifier: Modifier = Modifier.wrapContentSize(),
+    playerIcon: PlayerIcon
 ) = Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.Center,
@@ -329,79 +368,72 @@ private fun Turn(
 
 @Immutable
 private data class TicTacToeCellEntry(
-    val playerIcon: PlayerIcon? = PlayerXNormal,
-    val enabled : Boolean = true
+    val playerIcon: PlayerIcon?,
+    val enabled : Boolean
 )
 
-private interface PlayerIcon {
-    @get:Composable
-    val vector: ImageVector
+@Composable
+private fun Entry?.toTicTacToeCellEntry() =
+    when(this) {
+        null -> TicTacToeCellEntry(
+            playerIcon = null,
+            enabled = true
+        )
+        else -> TicTacToeCellEntry(
+            playerIcon = toPlayerIcon(),
+            enabled = false
+        )
+    }
 
-    @get:Composable
-    val tint: Color
-
-    @get:Composable
+@Immutable
+private data class PlayerIcon(
+    val vector: ImageVector,
+    val tint: Color,
     val contentDescription: String
+)
 
-    sealed interface Player : PlayerIcon {
-        interface X : Player
-        interface O : Player
+@Composable
+private fun Entry.toPlayerIcon() =
+    when(this) {
+        is Entry.Normal.PlayerXNormal ->
+            PlayerIcon(
+                vector =
+                    LetterX,
+                contentDescription =
+                    stringResource(Res.string.userflow_tictactoe_player_x_normal_content_description),
+                tint =
+                    MaterialTheme.colorScheme.secondary
+            )
+
+        is Entry.Normal.PlayerONormal ->
+            PlayerIcon(
+                vector =
+                    LetterO,
+                contentDescription =
+                    stringResource(Res.string.userflow_tictactoe_player_o_normal_content_description),
+                tint =
+                    MaterialTheme.colorScheme.secondary
+            )
+
+
+        is Entry.Winner.PlayerXWinner ->
+            PlayerIcon(
+                vector =
+                    LetterX,
+                contentDescription =
+                    stringResource(Res.string.userflow_tictactoe_player_x_winner_content_description),
+                tint =
+                    MaterialTheme.colorScheme.primary
+            )
+
+        is Entry.Winner.PlayerOWinner ->
+            PlayerIcon(
+                vector =
+                    LetterO,
+                contentDescription =
+                    stringResource(Res.string.userflow_tictactoe_player_o_winner_content_description),
+                tint =
+                    MaterialTheme.colorScheme.primary
+            )
+
     }
-
-    sealed interface Style : PlayerIcon {
-        interface Normal : Style
-        interface Winner : Style
-    }
-}
-
-@Immutable
-private object PlayerXNormal: PlayerIcon.Player.X, PlayerIcon.Style.Normal {
-    @get:Composable
-    override val vector get() = LetterX
-
-    @get:Composable
-    override val tint get() = MaterialTheme.colorScheme.secondary
-
-    @get:Composable
-    override val contentDescription
-        get() = stringResource(Res.string.userflow_tictactoe_player_x_content_description)
-}
-
-@Immutable
-private object PlayerXWinner: PlayerIcon.Player.X, PlayerIcon.Style.Winner {
-    @get:Composable
-    override val vector get() =  LetterX
-
-    @get:Composable
-    override val tint get() = MaterialTheme.colorScheme.secondary
-
-    @get:Composable
-    override val contentDescription
-        get() = stringResource(Res.string.userflow_tictactoe_player_x_content_description)
-}
-
-@Immutable
-private object PlayerONormal: PlayerIcon.Player.O, PlayerIcon.Style.Normal {
-    @get:Composable
-    override val vector get() =  LetterO
-
-    @get:Composable
-    override val tint get() = MaterialTheme.colorScheme.secondary
-
-    @get:Composable
-    override val contentDescription
-        get() = stringResource(Res.string.userflow_tictactoe_player_o_content_description)
-}
-
-@Immutable
-private object PlayerOWinner: PlayerIcon.Player.O, PlayerIcon.Style.Winner {
-    @get:Composable
-    override val vector get() =  LetterO
-
-    @get:Composable
-    override val tint get() = MaterialTheme.colorScheme.secondary
-
-    @get:Composable
-    override val contentDescription
-        get() = stringResource(Res.string.userflow_tictactoe_player_o_content_description)
-}
