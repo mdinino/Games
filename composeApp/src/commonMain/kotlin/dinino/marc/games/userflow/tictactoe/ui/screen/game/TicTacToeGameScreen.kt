@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.layout.MenuSelected
 import dinino.marc.games.userflow.common.ui.screen.game.GameScreen
+import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterO
 import dinino.marc.games.userflow.tictactoe.ui.imageVectors.LetterX
 import dinino.marc.games.userflow.tictactoe.ui.screen.gameover.TicTacToeGameOverRoute
@@ -82,47 +83,58 @@ private fun TicTacToeAdaptiveContent(
     val onClick: (row: UInt, column: UInt) -> Unit = { row, column -> viewModel.play(row, column) }
 
     when(maxHeight > maxWidth) {
-        true -> TicTacToeColumn(state = state.board, onClick = onClick)
-        else -> TicTacToeRow(state = state.board, onClick = onClick)
+        true -> TicTacToeColumn(gameState = state, onClick = onClick)
+        else -> TicTacToeRow(gameState = state, onClick = onClick)
     }
 }
 
 @Composable
 private fun TicTacToeRow(
     modifier: Modifier = Modifier.fillMaxSize(),
-    state: TicTacToeBoardState,
+    gameState: TicTacToeGameState,
     onClick: (row: UInt, column: UInt) -> Unit
 ) = Row (
     modifier = modifier,
     horizontalArrangement = Arrangement.SpaceEvenly,
     verticalAlignment = Alignment.CenterVertically
 ) {
-    Grid(state = state, onClick = onClick)
-    Turn(state = state)
+    Grid(gameState = gameState, onClick = onClick)
+    Turn(gameState = gameState)
 }
 
 @Composable
 private fun TicTacToeColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
-    state: TicTacToeBoardState,
+    gameState: TicTacToeGameState,
     onClick: (row: UInt, column: UInt) -> Unit
 ) = Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Grid(state = state, onClick = onClick)
-        Turn(state = state)
+        Grid(gameState = gameState, onClick = onClick)
+        Turn(gameState = gameState)
     }
 
 @Composable
 private fun Grid(
-    state: TicTacToeBoardState,
+    gameState: TicTacToeGameState,
     onClick: (row: UInt, column: UInt) -> Unit,
 ) = Grid(
-    entry = { row, column -> state.grid[row to column].toTicTacToeCellEntry() },
+    entry = { row, column ->
+        gameState.board.grid[row to column].toTicTacToeCellEntry(
+            forceDisabled = gameState.shouldForceDiable
+        )
+    },
     onClick = { row, column -> onClick(row, column) }
 )
+
+private val TicTacToeGameState.shouldForceDiable
+    get() = when(this) {
+        is GameState.GameOver -> true
+        is GameState.Paused<*, *> -> true
+        is GameState.Normal -> false
+    }
 
 @Composable
 private fun Grid(
@@ -330,10 +342,10 @@ private val defaultCellBorderStroke
 @Composable
 private fun Turn(
     modifier: Modifier = Modifier.wrapContentSize(),
-    state: TicTacToeBoardState
+    gameState: TicTacToeGameState
 ) = Turn(
     modifier = modifier,
-    turnState = state.turn
+    turnState = gameState.board.turn
 )
 
 @Composable
@@ -373,11 +385,11 @@ private data class TicTacToeCellEntry(
 )
 
 @Composable
-private fun Entry?.toTicTacToeCellEntry() =
+private fun Entry?.toTicTacToeCellEntry(forceDisabled : Boolean) =
     when(this) {
         null -> TicTacToeCellEntry(
             playerIcon = null,
-            enabled = true
+            enabled = !forceDisabled
         )
         else -> TicTacToeCellEntry(
             playerIcon = toPlayerIcon(),

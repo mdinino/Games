@@ -46,7 +46,7 @@ fun TicTacToeGameOverDrawState(
 @Suppress("FunctionName")
 fun  TicTacToeGameOverPlayerXWonState(
     winningCells: Set<TicTacToeCell>,
-    gridBuilder: (TicTacToeCell) -> Entry.Normal
+    gridBuilder: (TicTacToeCell) -> Entry.Normal?
 )  = GameState.GameOver(
         details = TicTacToeGameOverState.PlayerXWon,
         board = TicTacToeBoardState(
@@ -63,7 +63,7 @@ fun  TicTacToeGameOverPlayerXWonState(
 @Suppress("FunctionName")
 fun TicTacToeGameOverPlayerOWonState(
     winningCells: Set<TicTacToeCell>,
-    gridBuilder: (TicTacToeCell) -> Entry.Normal
+    gridBuilder: (TicTacToeCell) -> Entry.Normal?
 ) = GameState.GameOver(
         details = TicTacToeGameOverState.PlayerOWon,
         board = TicTacToeBoardState(
@@ -142,14 +142,14 @@ fun TicTacToeGameData.toGameState(): TicTacToeGameState =
                         TicTacToeGameOverPlayerXWonState(
                             winningCells = playData.details.winningCells,
                             gridBuilder = { cell ->
-                                boardData.grid.entries[cell].toNormalState()!!
+                                boardData.grid.entries[cell].toNormalState()
                             }
                         )
                     is TicTacToeGameData.GameOverDetails.OWins ->
                         TicTacToeGameOverPlayerOWonState(
                             winningCells = playData.details.winningCells,
                             gridBuilder = { cell ->
-                                boardData.grid.entries[cell].toNormalState()!!
+                                boardData.grid.entries[cell].toNormalState()
                             }
                         )
                     is TicTacToeGameData.GameOverDetails.Draw ->
