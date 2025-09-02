@@ -2,7 +2,6 @@ package dinino.marc.games.userflow.tictactoe.data
 
 import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.GamePlayData
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Grid.Companion.copy
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
 import kotlinx.serialization.Serializable
 
@@ -25,59 +24,44 @@ data class TicTacToeGameData(
     }
 
     @Serializable
-    data class BoardData(
+    data class  BoardData(
         val turn: Entry = Entry.PlayerX,
         val grid: Grid = Grid()
     )  {
-        @Suppress("PropertyName")
+        fun copy(
+            turn : Entry = this.turn,
+            gridMutator: HashMap<TicTacToeCell, Entry?>.()->Unit
+        ) = BoardData(
+            turn = turn,
+            grid = grid.copy(gridMutator)
+        )
+
         @Serializable
-        data class Grid(
-            val `0x0`: Entry? = null,
-            val `0x1`: Entry? = null,
-            val `0x2`: Entry? = null,
-            val `1x0`: Entry? = null,
-            val `1x1`: Entry? = null,
-            val `1x2`: Entry? = null,
-            val `2x0`: Entry? = null,
-            val `2x1`: Entry? = null,
-            val `2x2`: Entry? = null
+        data class Grid private constructor(
+            /*
+             * Must be this signature in order for serializer to work
+             */
+            private val _entries: List<List<Entry?>>
         ) {
-            val entries: Map<TicTacToeCell, Entry?>
-                by lazy {
-                    mapOf (
-                        0u to 0u to `0x0`,
-                        0u to 1u to `0x1`,
-                        0u to 2u to `0x2`,
-                        1u to 0u to `1x0`,
-                        1u to 1u to `1x1`,
-                        1u to 2u to `1x2`,
-                        2u to 0u to `2x0`,
-                        2u to 1u to `2x1`,
-                        2u to 2u to `2x2`
-                    )
+            constructor(
+                builder: (TicTacToeCell)-> Entry? = { null }
+            ) : this(
+                _entries = buildEntries(builder)
+                    .toListOfLists()
+            )
+
+            val entries: Map<TicTacToeCell, Entry?> by
+                lazy {
+                    _entries
+                        .toHashMap()
+                        .toMap()
                 }
 
+            fun copy(mutator: HashMap<TicTacToeCell, Entry?>.()->Unit): Grid {
+                val copied = HashMap(entries)
+                copied.mutator()
 
-            companion object {
-                fun Map<TicTacToeCell, Entry?>.toGrid(): Grid =
-                    let { map ->
-                        Grid(
-                            `0x0` = map[0u to 0u],
-                            `0x1` = map[0u to 1u],
-                            `0x2` = map[0u to 2u],
-                            `1x0` = map[1u to 0u],
-                            `1x1` = map[1u to 1u],
-                            `1x2` = map[1u to 2u],
-                            `2x0` = map[2u to 0u],
-                            `2x1` = map[2u to 1u],
-                            `2x2` = map[2u to 2u]
-                        )
-                    }
-
-                fun Grid.copy(mutator: MutableMap<TicTacToeCell, Entry?>.() -> Unit): Grid =
-                    entries.toMutableMap()
-                        .apply(mutator)
-                        .toGrid()
+                return Grid(_entries = copied.toListOfLists())
             }
         }
 
@@ -91,13 +75,50 @@ data class TicTacToeGameData(
         }
 
         companion object {
-            fun BoardData.copy(
-                turn: Entry = this.turn,
-                gridMutator: MutableMap<TicTacToeCell, Entry?>.()->Unit = {}
-            ) = BoardData(
-                    turn = turn,
-                    grid = grid.copy(mutator = gridMutator)
-            )
+            private fun Map<TicTacToeCell, Entry?>.toListOfLists(): List<List<Entry?>> =
+                buildList {
+                    for (row in TicTacToeCell.rowRange) {
+                        val rowList = buildList {
+                            for (column in TicTacToeCell.columnRange) {
+                                val cell: TicTacToeCell = row to column
+                                add(this@toListOfLists[cell])
+                            }
+                        }
+                        add(rowList)
+                    }
+                }
+
+
+            private fun List<List<Entry?>>.toHashMap(): HashMap<TicTacToeCell, Entry?> =
+                HashMap<TicTacToeCell, Entry?>()
+                    .apply {
+                        for (row in TicTacToeCell.rowRange) {
+                            for (column in TicTacToeCell.columnRange) {
+                                val cell: TicTacToeCell = row to column
+                                this[cell] = getEntry(row, column)
+                            }
+                        }
+                    }
+
+            private fun List<List<Entry?>>.getEntry(
+                row: Int,
+                column: Int,
+                lenient: Boolean = true,
+            ): Entry? = when(lenient) {
+                true -> getOrNull(row)?.getOrNull(column)
+                false -> this[row][column]
+            }
+
+            fun buildEntries(builder: (TicTacToeCell)-> Entry?): HashMap<TicTacToeCell, Entry?> =
+                HashMap<TicTacToeCell, Entry?>()
+                    .apply {
+                        for (row in TicTacToeCell.rowRange) {
+                            for (column in TicTacToeCell.columnRange) {
+                                val cell: TicTacToeCell = row to column
+                                this[cell] = builder(cell)
+                            }
+                        }
+                    }
 
             fun BoardData.calculateGameOverDetails(player: Entry): GameOverDetails? {
                 val winningCells = calculateWin(player)
@@ -132,51 +153,51 @@ data class TicTacToeGameData(
 }
 
 private val topRow = setOf<TicTacToeCell>(
-    0u to 0u,
-    0u to 1u,
-    0u to 2u
+    0 to 0,
+    0 to 1,
+    0 to 2
 )
 
 private val middleRow = setOf<TicTacToeCell>(
-    1u to 0u,
-    1u to 1u,
-    1u to 2u
+    1 to 0,
+    1 to 1,
+    1 to 2
 )
 
 private val bottomRow = setOf<TicTacToeCell>(
-    2u to 0u,
-    2u to 1u,
-    2u to 2u
+    2 to 0,
+    2 to 1,
+    2 to 2
 )
 
 private val leftColumn = setOf<TicTacToeCell>(
-    0u to 0u,
-    1u to 0u,
-    2u to 0u
+    0 to 0,
+    1 to 0,
+    2 to 0
 )
 
 private val middleColumn = setOf<TicTacToeCell>(
-    0u to 1u,
-    1u to 1u,
-    2u to 1u
+    0 to 1,
+    1 to 1,
+    2 to 1
 )
 
 private val rightColumn = setOf<TicTacToeCell>(
-    0u to 2u,
-    1u to 2u,
-    2u to 2u
+    0 to 2,
+    1 to 2,
+    2 to 2
 )
 
 private val topLeftToBottomRightDiagonal = setOf<TicTacToeCell>(
-    0u to 0u,
-    1u to 1u,
-    2u to 2u
+    0 to 0,
+    1 to 1,
+    2 to 2
 )
 
 private val topRightToBottomLeftDiagonal = setOf<TicTacToeCell>(
-    0u to 2u,
-    1u to 1u,
-    2u to 0u
+    0 to 2,
+    1 to 1,
+    2 to 0
 )
 
 private val rowsColumnAndDiagonals = setOf(

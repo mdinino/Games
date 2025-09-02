@@ -1,5 +1,13 @@
 package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.InfiniteTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -37,13 +46,15 @@ import games.composeapp.generated.resources.userflow_tictactoe_turn
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.rowRange
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.columnRange
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.ROW_COUNT
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.COLUMN_COUNT
 import games.composeapp.generated.resources.userflow_tictactoe_player_o_normal_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_o_winner_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_x_normal_content_description
 import games.composeapp.generated.resources.userflow_tictactoe_player_x_winner_content_description
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun TicTacToeGameScreen(
@@ -80,7 +91,7 @@ private fun TicTacToeAdaptiveContent(
     viewModel: TicTacToeGameViewModel
 ) = BoxWithConstraints {
     val state by viewModel.gameState.collectAsStateWithLifecycle()
-    val onClick: (row: UInt, column: UInt) -> Unit = { row, column -> viewModel.play(row, column) }
+    val onClick: (row: Int, column: Int) -> Unit = { row, column -> viewModel.play(row, column) }
 
     when(maxHeight > maxWidth) {
         true -> TicTacToeColumn(gameState = state, onClick = onClick)
@@ -92,7 +103,7 @@ private fun TicTacToeAdaptiveContent(
 private fun TicTacToeRow(
     modifier: Modifier = Modifier.fillMaxSize(),
     gameState: TicTacToeGameState,
-    onClick: (row: UInt, column: UInt) -> Unit
+    onClick: (row: Int, column: Int) -> Unit
 ) = Row (
     modifier = modifier,
     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -106,7 +117,7 @@ private fun TicTacToeRow(
 private fun TicTacToeColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
     gameState: TicTacToeGameState,
-    onClick: (row: UInt, column: UInt) -> Unit
+    onClick: (row: Int, column: Int) -> Unit
 ) = Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -119,7 +130,7 @@ private fun TicTacToeColumn(
 @Composable
 private fun Grid(
     gameState: TicTacToeGameState,
-    onClick: (row: UInt, column: UInt) -> Unit,
+    onClick: (row: Int, column: Int) -> Unit,
 ) = Grid(
     entry = { row, column ->
         gameState.board.grid[row to column].toTicTacToeCellEntry(
@@ -139,10 +150,10 @@ private val TicTacToeGameState.shouldForceDiable
 @Composable
 private fun Grid(
     modifier: Modifier = Modifier.aspectRatio(1f),
-    rowCount: UInt = ROW_COUNT,
-    columnCount: UInt = COLUMN_COUNT,
-    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry,
-    onClick: (row: UInt, column: UInt) -> Unit,
+    rowCount: Int = rowRange.count(),
+    columnCount: Int = columnRange.count(),
+    entry: @Composable (row: Int, column: Int)-> TicTacToeCellEntry,
+    onClick: (row: Int, column: Int) -> Unit,
     cellContent: TicTacToeCellContent = {
         row, column, showTopBorder, showStartBorder, showBottomBorder, showEndBorder ->
         TicTacToeCell(
@@ -158,20 +169,20 @@ private fun Grid(
     }
 ) = LazyVerticalGrid(
     modifier = modifier,
-    columns = GridCells.Fixed(count = columnCount.toInt()),
+    columns = GridCells.Fixed(count = columnCount),
     verticalArrangement = Arrangement.Center,
     horizontalArrangement = Arrangement.Center,
 ) {
-    for (row in 0u until rowCount) {
-        for (column in 0u until columnCount) {
+    for (row in rowRange) {
+        for (column in columnRange) {
             item {
                 cellContent(
                     row,
                     column,
-                    row > 0u, /* showTopBorder */
-                    column > 0u,  /* showStartBorder */
-                    row < rowCount - 1u,  /* showBottomBorder */
-                    column < columnCount - 1u /* showEndBorder */
+                    row > 0, /* showTopBorder */
+                    column > 0,  /* showStartBorder */
+                    row < rowCount - 1,  /* showBottomBorder */
+                    column < columnCount - 1 /* showEndBorder */
                 )
             }
         }
@@ -180,8 +191,8 @@ private fun Grid(
 
 private typealias TicTacToeCellContent =
         @Composable (
-            row: UInt,
-            column: UInt,
+            row: Int,
+            column: Int,
             showTopBorder: Boolean,
             showStartBorder: Boolean,
             showBottomBorder: Boolean,
@@ -191,10 +202,10 @@ private typealias TicTacToeCellContent =
 @Composable
 private fun TicTacToeCell(
     modifier: Modifier = Modifier.aspectRatio(ratio = 1f),
-    row: UInt,
-    column: UInt,
-    entry: @Composable (row: UInt, column: UInt)-> TicTacToeCellEntry,
-    onClick: (row: UInt, column: UInt) -> Unit,
+    row: Int,
+    column: Int,
+    entry: @Composable (row: Int, column: Int)-> TicTacToeCellEntry,
+    onClick: (row: Int, column: Int) -> Unit,
     showTopBorder: Boolean,
     showStartBorder: Boolean,
     showBottomBorder: Boolean,
@@ -234,15 +245,9 @@ private fun TicTacToeCell(
             enabled = ticTacToeCellEntry.enabled,
             onClick = onClick,
         ) {
-            ticTacToeCellEntry.playerIcon
-                ?.let {
-                    Icon(
-                        modifier = Modifier.fillMaxSize(),
-                        imageVector = it.vector,
-                        tint = it.tint,
-                        contentDescription = it.contentDescription
-                    )
-            }
+            ticTacToeCellEntry.playerIcon?.Content(
+                modifier = modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -368,15 +373,14 @@ private fun Turn(
 ) {
     Text(stringResource(Res.string.userflow_tictactoe_turn))
     Spacer(Modifier.width(MaterialTheme.sizes.spacings.tiny))
-    Icon(
+    playerIcon.Content(
         modifier = Modifier
             .width(MaterialTheme.sizes.icons.default.width)
-            .height(MaterialTheme.sizes.icons.default.height),
-        imageVector = playerIcon.vector,
-        tint = playerIcon.tint,
-        contentDescription = playerIcon.contentDescription
+            .height(MaterialTheme.sizes.icons.default.height)
     )
 }
+
+
 
 @Immutable
 private data class TicTacToeCellEntry(
@@ -397,55 +401,123 @@ private fun Entry?.toTicTacToeCellEntry(forceDisabled : Boolean) =
         )
     }
 
-@Immutable
-private data class PlayerIcon(
-    val vector: ImageVector,
-    val tint: Color,
+
+private interface PlayerIcon {
+    val vector: ImageVector
     val contentDescription: String
-)
+    val tint: Color
+
+    @Composable
+    fun Content(modifier: Modifier)
+
+    @Immutable
+    data class Standard(
+        override val vector: ImageVector,
+        override val contentDescription: String,
+        override val tint: Color
+    ) : PlayerIcon {
+
+        @Composable
+        override fun Content(modifier: Modifier) =
+            Icon(
+                modifier = modifier,
+                imageVector = vector,
+                tint = tint,
+                contentDescription = contentDescription
+            )
+    }
+
+    @Immutable
+    data class Pulsating(
+        override val vector: ImageVector,
+        override val contentDescription: String,
+        override val tint: Color,
+        val initialScale: Float = 1.0f,
+        val endScale: Float = 0.7f,
+        val pulseDuration : Duration = 1.seconds,
+        val easing: Easing = LinearEasing
+
+    ) : PlayerIcon {
+
+        @Composable
+        override fun Content(modifier: Modifier) =
+            Content(
+                modifier = modifier,
+                infiniteTransition =
+                    rememberInfiniteTransition(label = "player_icon_pulsating_transition")
+            )
+
+        @Composable
+        fun Content(
+            modifier: Modifier,
+            infiniteTransition: InfiniteTransition
+        ) {
+            val pulsateScale by infiniteTransition.animateFloat(
+                initialValue = initialScale,
+                targetValue = endScale,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = pulseDuration.inWholeMilliseconds.toInt(),
+                        easing = LinearEasing
+                    ),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "pulsate_scale"
+            )
+
+            Icon(
+                modifier = modifier.scale(pulsateScale),
+                imageVector = vector,
+                tint = tint,
+                contentDescription = contentDescription
+            )
+        }
+
+    }
+}
 
 @Composable
 private fun Entry.toPlayerIcon() =
     when(this) {
         is Entry.Normal.PlayerXNormal ->
-            PlayerIcon(
+            PlayerIcon.Standard(
                 vector =
                     LetterX,
+                tint =
+                    MaterialTheme.colorScheme.secondary,
                 contentDescription =
                     stringResource(Res.string.userflow_tictactoe_player_x_normal_content_description),
-                tint =
-                    MaterialTheme.colorScheme.secondary
             )
 
         is Entry.Normal.PlayerONormal ->
-            PlayerIcon(
+            PlayerIcon.Standard(
                 vector =
                     LetterO,
+                tint =
+                    MaterialTheme.colorScheme.secondary,
                 contentDescription =
                     stringResource(Res.string.userflow_tictactoe_player_o_normal_content_description),
-                tint =
-                    MaterialTheme.colorScheme.secondary
             )
 
 
         is Entry.Winner.PlayerXWinner ->
-            PlayerIcon(
+            PlayerIcon.Pulsating(
                 vector =
                     LetterX,
+                tint =
+                    MaterialTheme.colorScheme.secondary,
                 contentDescription =
                     stringResource(Res.string.userflow_tictactoe_player_x_winner_content_description),
-                tint =
-                    MaterialTheme.colorScheme.primary
             )
 
         is Entry.Winner.PlayerOWinner ->
-            PlayerIcon(
+            PlayerIcon.Pulsating(
                 vector =
                     LetterO,
+                tint =
+                    MaterialTheme.colorScheme.secondary,
                 contentDescription =
                     stringResource(Res.string.userflow_tictactoe_player_o_winner_content_description),
-                tint =
-                    MaterialTheme.colorScheme.primary
             )
 
     }

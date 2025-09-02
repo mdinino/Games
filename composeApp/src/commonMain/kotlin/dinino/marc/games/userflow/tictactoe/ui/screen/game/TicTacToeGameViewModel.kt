@@ -6,7 +6,6 @@ import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.calculateGameOverDetails
-import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.copy
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Entry
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
@@ -42,7 +41,7 @@ class TicTacToeGameViewModel(
     override fun userInitiatedGameOver() =
         mutateGameData { mutateGameOver() }
 
-    fun play(row: UInt, column: UInt) =
+    fun play(row: Int, column: Int) =
         mutateGameData {
             when(playData) {
                 is GamePlayData.GameOver ->
@@ -62,15 +61,18 @@ class TicTacToeGameViewModel(
 
         }
 
-    private fun TicTacToeGameData.setMove(row: UInt, column: UInt, player: Entry) =
+    private fun TicTacToeGameData.setMove(row: Int, column: Int, player: Entry) =
         when {
             playData !is GamePlayData.Normal ->
                 this
             boardData.grid.entries[row to column] != null ->
                 this
             else ->
-                copy(boardData = boardData
-                    .copy { this[row to column] = player } )
+                copy(boardData =
+                    boardData.copy {
+                        this[row to column] = player
+                    }
+                )
         }
 
     private fun TicTacToeGameData.setTurn(player: Entry) =

@@ -8,8 +8,6 @@ import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 
 typealias TicTacToeGameState = GameState<TicTacToeGameOverState, TicTacToeBoardState>
 
-
-
 @Suppress("FunctionName")
 fun TicTacToeNormalState(
     turn: Entry.Normal,
@@ -118,8 +116,8 @@ data class TicTacToeBoardState private constructor(
     ) : this(
         turn = turn,
         grid = buildMap {
-            for (row in 0u..<TicTacToeCell.ROW_COUNT) {
-                for (column in 0u..<TicTacToeCell.COLUMN_COUNT) {
+            for (row in TicTacToeCell.rowRange) {
+                for (column in TicTacToeCell.columnRange) {
                     val cell: TicTacToeCell = row to column
                     this[cell] = gridBuilder(cell)
                 }
