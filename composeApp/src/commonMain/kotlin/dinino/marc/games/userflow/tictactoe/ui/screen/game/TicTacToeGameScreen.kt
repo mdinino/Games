@@ -82,26 +82,32 @@ fun TicTacToeGameScreen(
             )
         },
         gameOverRoute = { TicTacToeGameOverRoute }
-    ) { _, board ->
-        TicTacToeAdaptiveContent(viewModel = vm)
+    ) { innerPadding, board ->
+        TicTacToeAdaptiveContent(
+            modifier = modifier.
+                padding(innerPadding).
+                fillMaxSize(),
+            viewModel = vm
+        )
     }
 
 @Composable
 private fun TicTacToeAdaptiveContent(
+    modifier: Modifier = Modifier,
     viewModel: TicTacToeGameViewModel
 ) = BoxWithConstraints {
     val state by viewModel.gameState.collectAsStateWithLifecycle()
     val onClick: (row: Int, column: Int) -> Unit = { row, column -> viewModel.play(row, column) }
 
     when(maxHeight > maxWidth) {
-        true -> TicTacToeColumn(gameState = state, onClick = onClick)
-        else -> TicTacToeRow(gameState = state, onClick = onClick)
+        true -> TicTacToeColumn(modifier = modifier, gameState = state, onClick = onClick)
+        else -> TicTacToeRow(modifier = modifier, gameState = state, onClick = onClick)
     }
 }
 
 @Composable
 private fun TicTacToeRow(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier,
     gameState: TicTacToeGameState,
     onClick: (row: Int, column: Int) -> Unit
 ) = Row (
@@ -115,7 +121,7 @@ private fun TicTacToeRow(
 
 @Composable
 private fun TicTacToeColumn(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier,
     gameState: TicTacToeGameState,
     onClick: (row: Int, column: Int) -> Unit
 ) = Column(
