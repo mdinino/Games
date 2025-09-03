@@ -5,7 +5,7 @@ import dinino.marc.games.userflow.common.data.RepositoryEntry
 import dinino.marc.games.userflow.common.data.SyncStatus
 import kotlinx.coroutines.flow.StateFlow
 
-interface RepositoryUseCases<in REPOSITORY: Repository<T>, T: Any> {
+interface GameUseCases<in REPOSITORY: Repository<T>, T: Any> {
     val hasEntry: HasEntry<REPOSITORY, T>
     val getLatestStatus: GetLatestStatus<REPOSITORY, T>
     val getStatus: GetStatus<REPOSITORY, T>

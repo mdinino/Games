@@ -4,13 +4,13 @@ import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.data.Repository.Companion.hasEntry
 import dinino.marc.games.userflow.common.data.Repository.Companion.lastestItem
 
-class RepositoryUseCasesImpl<in REPOSITORY: Repository<T>, T: Any>(
-    override val hasEntry: RepositoryUseCases.HasEntry<REPOSITORY, T>,
-    override val clearEntries: RepositoryUseCases.ClearEntries<REPOSITORY, T>,
-    override val getLatestStatus: RepositoryUseCases.GetLatestStatus<REPOSITORY, T>,
-    override val getStatus: RepositoryUseCases.GetStatus<REPOSITORY, T>,
-    override val upsertLatestItemIfDifferent: RepositoryUseCases.UpsertLatestItemIfDifferent<REPOSITORY, T>
-): RepositoryUseCases<REPOSITORY, T> {
+class GameUseCasesImpl<in REPOSITORY: Repository<T>, T: Any>(
+    override val hasEntry: GameUseCases.HasEntry<REPOSITORY, T>,
+    override val clearEntries: GameUseCases.ClearEntries<REPOSITORY, T>,
+    override val getLatestStatus: GameUseCases.GetLatestStatus<REPOSITORY, T>,
+    override val getStatus: GameUseCases.GetStatus<REPOSITORY, T>,
+    override val upsertLatestItemIfDifferent: GameUseCases.UpsertLatestItemIfDifferent<REPOSITORY, T>
+): GameUseCases<REPOSITORY, T> {
 
     constructor(repository: REPOSITORY)
             : this(
@@ -24,31 +24,31 @@ class RepositoryUseCasesImpl<in REPOSITORY: Repository<T>, T: Any>(
     companion object {
         class HasEntryUseCase<in REPOSITORY: Repository<T>, T: Any>(
             private val repository: REPOSITORY
-        ) : RepositoryUseCases.HasEntry<REPOSITORY, T> {
+        ) : GameUseCases.HasEntry<REPOSITORY, T> {
             override fun invoke() = repository.hasEntry
         }
 
         class GetStatusUseCase<in REPOSITORY: Repository<T>, T: Any>(
             private val repository: REPOSITORY
-        ) : RepositoryUseCases.GetStatus<REPOSITORY, T> {
+        ) : GameUseCases.GetStatus<REPOSITORY, T> {
             override fun invoke() = repository.status
         }
 
         class GetLatestStatusUseCase<in REPOSITORY: Repository<T>, T: Any>(
             private val repository: REPOSITORY,
-        ) : RepositoryUseCases.GetLatestStatus<REPOSITORY, T>  {
+        ) : GameUseCases.GetLatestStatus<REPOSITORY, T>  {
             override fun invoke() = repository.lastestItem
         }
 
         class UpsertLatestItemIfDifferentUseCase<in REPOSITORY: Repository<T>, T: Any>(
             private val repository: REPOSITORY
-        ) : RepositoryUseCases.UpsertLatestItemIfDifferent<REPOSITORY, T> {
+        ) : GameUseCases.UpsertLatestItemIfDifferent<REPOSITORY, T> {
             override suspend fun invoke(item: T) = repository.upsertLatestItemIfDifferent(item)
         }
 
         class ClearEntriesUseCase<in REPOSITORY: Repository<T>, T: Any>(
             private val repository: REPOSITORY
-        ) : RepositoryUseCases.ClearEntries<REPOSITORY, T> {
+        ) : GameUseCases.ClearEntries<REPOSITORY, T> {
             override suspend fun invoke() = repository.clearEntries()
         }
     }

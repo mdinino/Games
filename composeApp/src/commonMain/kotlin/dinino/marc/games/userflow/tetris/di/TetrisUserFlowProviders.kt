@@ -5,8 +5,7 @@ import dinino.marc.games.Database
 import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
-import dinino.marc.games.userflow.common.domain.RepositoryUseCases
-import dinino.marc.games.userflow.common.domain.RepositoryUseCasesImpl
+import dinino.marc.games.userflow.common.domain.GameUseCases
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
 import dinino.marc.games.userflow.tetris.data.TetrisGameDataRepository
@@ -34,7 +33,7 @@ class TetrisUserFlowProviders(
         }
 
         private val _useCasesProvider = object : GameUserFlowProviders.UseCasesProvider<TetrisGameData> {
-            override fun provide(): RepositoryUseCases<Repository<TetrisGameData>, TetrisGameData> {
+            override fun provide(): GameUseCases<Repository<TetrisGameData>, TetrisGameData> {
                 return _useCases
             }
         }

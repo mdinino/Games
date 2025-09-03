@@ -2,7 +2,7 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.domain.RepositoryUseCases
+import dinino.marc.games.userflow.common.domain.GameUseCases
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
@@ -13,7 +13,7 @@ import org.koin.mp.KoinPlatform
 
 class TicTacToeGameViewModel(
     newGame: Boolean = false,
-    useCases: RepositoryUseCases<Repository<TicTacToeGameData>, TicTacToeGameData> =
+    useCases: GameUseCases<Repository<TicTacToeGameData>, TicTacToeGameData> =
         defaultUseCases,
     defaultGameData: ()->TicTacToeGameData =
         { TicTacToeGameData() },

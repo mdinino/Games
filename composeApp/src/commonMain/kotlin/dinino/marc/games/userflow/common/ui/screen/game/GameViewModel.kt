@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dinino.marc.games.stateflow.mapStateFlow
 import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.domain.RepositoryUseCases
+import dinino.marc.games.userflow.common.domain.GameUseCases
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ abstract class GameViewModel<
         out BOARD_STATE: Any>(
     newGame: Boolean = false,
     private val _oneTimeEvents: Channel<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = Channel(),
-    private val useCases: RepositoryUseCases<Repository<GAME_DATA>, GAME_DATA>,
+    private val useCases: GameUseCases<Repository<GAME_DATA>, GAME_DATA>,
     private val defaultGameData: ()->GAME_DATA,
     private val convertDataToState: (gameData: GAME_DATA)->GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
 ): ViewModel() {
