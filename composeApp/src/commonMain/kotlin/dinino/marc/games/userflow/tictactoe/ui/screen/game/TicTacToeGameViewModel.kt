@@ -2,6 +2,7 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
+import dinino.marc.games.userflow.common.domain.GameUseCases
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
@@ -12,15 +13,15 @@ import org.koin.mp.KoinPlatform
 
 class TicTacToeGameViewModel(
     newGame: Boolean = false,
-    repository: Repository<TicTacToeGameData> =
-        defaultRepository,
+    useCases: GameUseCases<Repository<TicTacToeGameData>, TicTacToeGameData> =
+        defaultUseCases,
     defaultGameData: ()->TicTacToeGameData =
         { TicTacToeGameData() },
     convertDataToState: (gameData: TicTacToeGameData)->TicTacToeGameState =
         { it.toGameState() }
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
         TicTacToeGameOverState, TicTacToeBoardState>(
-    newGame = newGame, repository = repository,
+    newGame = newGame, useCases = useCases,
     defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
     override fun pause() =
@@ -111,8 +112,8 @@ class TicTacToeGameViewModel(
         copy(playData = GamePlayData.GameOver(details))
 }
 
-private val defaultRepository
+private val defaultUseCases
     get() = KoinPlatform.getKoin()
         .get<TicTacToeUserFlowProviders>()
-        .repositoryProvider
+        .useCasesProvider
         .provide()

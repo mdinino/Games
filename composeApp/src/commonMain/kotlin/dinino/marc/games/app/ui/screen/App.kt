@@ -31,7 +31,7 @@ fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
             landingUserFlow.Navigation(
                 modifier = Modifier.padding(
                     /*
-                     * This is the best padding I have seen for all platforms (including safeContentPadding)
+                     * This is the best padding for all platforms (including safeContentPadding)
                      */
                     all = MaterialTheme.sizes.paddings.medium
                 ),

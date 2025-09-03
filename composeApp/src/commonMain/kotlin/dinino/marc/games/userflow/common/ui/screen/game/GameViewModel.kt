@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dinino.marc.games.stateflow.mapStateFlow
 import dinino.marc.games.userflow.common.data.GameData
 import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.data.Repository.Companion.lastestItem
+import dinino.marc.games.userflow.common.domain.GameUseCases
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,20 +19,16 @@ abstract class GameViewModel<
         out BOARD_STATE: Any>(
     newGame: Boolean = false,
     private val _oneTimeEvents: Channel<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>> = Channel(),
-    private val repository: Repository<GAME_DATA>,
+    private val useCases: GameUseCases<Repository<GAME_DATA>, GAME_DATA>,
     private val defaultGameData: ()->GAME_DATA,
     private val convertDataToState: (gameData: GAME_DATA)->GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>
 ): ViewModel() {
 
-    init {
-        if (newGame) {
-            resetToNewGame()
-        }
-    }
-
-    val gameState: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>> =
-        repository.lastestItem
+    val gameState: StateFlow<GameState<GAME_OVER_STATE_DETAILS, BOARD_STATE>> by lazy {
+        if (newGame) resetToNewGame()
+        useCases.getLatestStatus()
             .mapStateFlow { convertDataToState(it ?: defaultGameData()) }
+    }
 
     val oneTimeEvent: Flow<GameOneTimeEvent<GAME_OVER_STATE_DETAILS>>
         get() = _oneTimeEvents.receiveAsFlow()
@@ -42,7 +38,7 @@ abstract class GameViewModel<
         clearGame : Boolean = true
     ) {
         viewModelScope.launch {
-            if (clearGame) repository.clearEntries()
+            if (clearGame) useCases.clearEntries()
             _oneTimeEvents.send(element =
                 GameOneTimeEvent.NavigateToGameOverScreen(
                     gameOverDetails = gameOverDetails
@@ -52,15 +48,15 @@ abstract class GameViewModel<
     }
 
     protected fun mutateGameData(mutator: GAME_DATA.()->GAME_DATA) {
-        val mutated = (repository.lastestItem.value ?: defaultGameData()).mutator()
+        val mutated = (useCases.getLatestStatus().value ?: defaultGameData()).mutator()
         viewModelScope.launch {
-            repository.upsertLatestItemIfDifferent(mutated)
+            useCases.upsertLatestItemIfDifferent(mutated)
         }
     }
 
     fun resetToNewGame() {
         viewModelScope.launch {
-            repository.clearEntries()
+            useCases.clearEntries()
         }
     }
 
