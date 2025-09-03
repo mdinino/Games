@@ -14,6 +14,8 @@ val LocalSizes = compositionLocalOf { Sizes() }
 
 data class Sizes(
     val buttons: ButtonSizes = ButtonSizes(),
+    val icons: IconSizes = IconSizes(),
     val paddings: Paddings = Paddings(),
-    val spacings: Spacings = Spacings()
+    val spacings: Spacings = Spacings(),
+    val ticTacToeCellBorder: TicTacToeCellBorder = TicTacToeCellBorder()
 )

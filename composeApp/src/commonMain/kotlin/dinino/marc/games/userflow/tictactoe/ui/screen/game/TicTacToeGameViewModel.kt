@@ -2,9 +2,11 @@ package dinino.marc.games.userflow.tictactoe.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
-import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeCell.Companion.to
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Companion.calculateGameOverDetails
+import dinino.marc.games.userflow.tictactoe.data.TicTacToeGameData.BoardData.Entry
 import dinino.marc.games.userflow.tictactoe.di.TicTacToeUserFlowProviders
 import org.koin.mp.KoinPlatform
 
@@ -15,9 +17,9 @@ class TicTacToeGameViewModel(
     defaultGameData: ()->TicTacToeGameData =
         { TicTacToeGameData() },
     convertDataToState: (gameData: TicTacToeGameData)->TicTacToeGameState =
-        ::convertDataToState
+        { it.toGameState() }
 ): GameViewModel<TicTacToeGameData.GameOverDetails, TicTacToeGameData,
-        TicTacToeGameData.GameOverDetails, TicTacToeBoardState>(
+        TicTacToeGameOverState, TicTacToeBoardState>(
     newGame = newGame, repository = repository,
     defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
@@ -39,18 +41,58 @@ class TicTacToeGameViewModel(
     override fun userInitiatedGameOver() =
         mutateGameData { mutateGameOver() }
 
-    companion object {
-        private fun convertDataToState(gameData: TicTacToeGameData): TicTacToeGameState =
-            when(gameData.playData) {
+    fun play(row: Int, column: Int) =
+        mutateGameData {
+            when(playData) {
+                is GamePlayData.GameOver ->
+                    this
+                is GamePlayData.Paused ->
+                    this
                 is GamePlayData.Normal ->
-                    GameState.Normal(defaultTicTacToeBoardState)
-                is GamePlayData.Paused -> GameState.Paused(hiddenTicTacToeBoardState)
-                is GamePlayData.GameOver<TicTacToeGameData.GameOverDetails> -> GameState.GameOver(
-                    details = gameData.playData.details,
-                    board = defaultTicTacToeBoardState
-                )
+                    setMove(row, column, boardData.turn)
+                        .run {
+                            val gameOverDetails = calculateGameOverDetails(boardData.turn)
+                            when(gameOverDetails) {
+                                null -> setTurn(
+                                    player = when(boardData.turn) {
+                                        Entry.PlayerX -> Entry.PlayerO
+                                        Entry.PlayerO -> Entry.PlayerX
+                                    }
+                                )
+                                else -> setGameOver(gameOverDetails)
+                            }
+                        }
             }
-    }
+
+        }
+
+    private fun TicTacToeGameData.setMove(row: Int, column: Int, player: Entry) =
+        when {
+            playData !is GamePlayData.Normal ->
+                this
+            boardData.grid.entries[row to column] != null ->
+                this
+            else ->
+                copy(boardData =
+                    boardData.copy {
+                        this[row to column] = player
+                    }
+                )
+        }
+
+    private fun TicTacToeGameData.setTurn(player: Entry) =
+        copy(boardData = boardData.copy(turn = player))
+
+    private fun TicTacToeGameData.setGameOver(details: TicTacToeGameData.GameOverDetails) =
+        when(playData) {
+            is GamePlayData.GameOver -> this
+            is GamePlayData.Paused -> this
+            is GamePlayData.Normal -> copy(playData = GamePlayData.GameOver(details))
+        }
+
+    private fun TicTacToeGameData.calculateGameOverDetails(player: Entry) =
+        this.boardData.calculateGameOverDetails(player)
+
 
     private val TicTacToeGameData.paused: Boolean?
         get() = when(playData) {
