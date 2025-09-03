@@ -2,6 +2,7 @@ package dinino.marc.games.userflow.tetris.ui.screen.game
 
 import dinino.marc.games.userflow.common.data.GamePlayData
 import dinino.marc.games.userflow.common.data.Repository
+import dinino.marc.games.userflow.common.domain.RepositoryUseCases
 import dinino.marc.games.userflow.common.ui.screen.game.GameState
 import dinino.marc.games.userflow.common.ui.screen.game.GameViewModel
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
@@ -10,14 +11,14 @@ import org.koin.mp.KoinPlatform
 
 class TetrisGameViewModel(
     newGame: Boolean = false,
-    repository: Repository<TetrisGameData> =
-        defaultRepository,
+    useCases: RepositoryUseCases<Repository<TetrisGameData>, TetrisGameData> =
+        defaultUseCases,
     defaultGameData: ()->TetrisGameData =
         { TetrisGameData() },
     convertDataToState: (gameData: TetrisGameData)-> TetrisGameState =
         ::convertDataToState
 ): GameViewModel<Unit, TetrisGameData, Unit, TetrisBoardState>(
-    newGame = newGame, repository = repository,
+    newGame = newGame, useCases = useCases,
     defaultGameData = defaultGameData, convertDataToState = convertDataToState
 ) {
 
@@ -69,8 +70,8 @@ class TetrisGameViewModel(
         copy(playData = GamePlayData.GameOver(details))
 }
 
-private val defaultRepository
+private val defaultUseCases
     get() = KoinPlatform.getKoin()
         .get<TetrisUserFlowProviders>()
-        .repositoryProvider
+        .useCasesProvider
         .provide()

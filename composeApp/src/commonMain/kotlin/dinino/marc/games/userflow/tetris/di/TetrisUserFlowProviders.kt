@@ -2,11 +2,15 @@ package dinino.marc.games.userflow.tetris.di
 
 import androidx.compose.runtime.Composable
 import dinino.marc.games.Database
+import dinino.marc.games.userflow.common.data.Repository
 import dinino.marc.games.userflow.common.di.GameUserFlowProviders
 import dinino.marc.games.userflow.common.di.UserFlowProviders
+import dinino.marc.games.userflow.common.domain.RepositoryUseCases
+import dinino.marc.games.userflow.common.domain.RepositoryUseCasesImpl
 import dinino.marc.games.userflow.common.ui.SnackbarController
 import dinino.marc.games.userflow.tetris.data.TetrisGameData
 import dinino.marc.games.userflow.tetris.data.TetrisGameDataRepository
+import dinino.marc.games.userflow.tetris.domain.TetrisUseCases
 import games.composeapp.generated.resources.Res
 import games.composeapp.generated.resources.userflow_tetris
 import org.jetbrains.compose.resources.stringResource
@@ -17,8 +21,8 @@ class TetrisUserFlowProviders(
         _localizedNameProvider,
     override val snackbarControllerProvider: UserFlowProviders.SnackbarControllerProvider =
         _snackbarControllerProvider,
-    override val repositoryProvider: GameUserFlowProviders.RepositoryProvider<TetrisGameData> =
-        _repositoryProvider
+    override val useCasesProvider: GameUserFlowProviders.UseCasesProvider<TetrisGameData> =
+        _useCasesProvider,
 ): GameUserFlowProviders<TetrisGameData> {
     companion object {
         private val _localizedNameProvider = object : UserFlowProviders.LocalizedNameProvider {
@@ -29,13 +33,15 @@ class TetrisUserFlowProviders(
             @Composable override fun provide() = _snackbarController
         }
 
-        private val _repositoryProvider = object :
-            GameUserFlowProviders.RepositoryProvider<TetrisGameData> {
-            override fun provide() = _repostory
+        private val _useCasesProvider = object : GameUserFlowProviders.UseCasesProvider<TetrisGameData> {
+            override fun provide(): RepositoryUseCases<Repository<TetrisGameData>, TetrisGameData> {
+                return _useCases
+            }
         }
 
         private val _snackbarController = SnackbarController()
 
-        private val _repostory = TetrisGameDataRepository(getKoin().get<Database>().tetrisGameEntityQueries)
+        private val _repository = TetrisGameDataRepository(getKoin().get<Database>().tetrisGameEntityQueries)
+        private val _useCases = TetrisUseCases(_repository)
     }
 }

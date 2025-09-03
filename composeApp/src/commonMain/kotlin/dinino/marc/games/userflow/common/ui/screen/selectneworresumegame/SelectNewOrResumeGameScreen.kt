@@ -9,9 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.ObserveOneTimeEventEffect
@@ -24,25 +25,23 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun <GAME: Any,
-     STATE: SelectNewOrResumeGameState,
-     VM: SelectNewOrResumeGameViewModel<GAME, STATE>
-> SelectNewOrResumeGameScreen(
+fun <STATE: SelectNewOrResumeGameState, VM: SelectNewOrResumeGameViewModel<STATE>>
+        SelectNewOrResumeGameScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     vm: VM,
     oneTimeEventHandler: (navHostController: NavHostController, event: SelectNewOrResumeGameOneTimeEvent)->Unit
 ) {
-    val state = vm.selectNewOrResumeGameState.collectAsState()
+    val state by vm.selectNewOrResumeGameState.collectAsStateWithLifecycle()
 
     val onSelectNewGame: (()->Unit)? =
-        when(state.value.isSelectNewGameAvailable) {
+        when(state.isSelectNewGameAvailable) {
             true -> { { vm.selectNewGame() } }
             else -> null
         }
 
     val onSelectResumeGame: (()->Unit)? =
-        when(state.value.isSelectResumeGameAvailable) {
+        when(state.isSelectResumeGameAvailable) {
             true -> { { vm.selectResumeGame() } }
             else -> null
         }
