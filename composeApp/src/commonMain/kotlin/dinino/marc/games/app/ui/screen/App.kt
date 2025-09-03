@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dinino.marc.games.app.ui.theme.GamesTheme
 import dinino.marc.games.app.ui.theme.sizes.sizes
