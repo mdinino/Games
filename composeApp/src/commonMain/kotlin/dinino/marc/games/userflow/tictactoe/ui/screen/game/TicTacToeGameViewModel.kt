@@ -53,7 +53,12 @@ class TicTacToeGameViewModel(
                         .run {
                             val gameOverDetails = calculateGameOverDetails(boardData.turn)
                             when(gameOverDetails) {
-                                null -> setTurn(boardData.turn.toggle())
+                                null -> setTurn(
+                                    player = when(boardData.turn) {
+                                        Entry.PlayerX -> Entry.PlayerO
+                                        Entry.PlayerO -> Entry.PlayerX
+                                    }
+                                )
                                 else -> setGameOver(gameOverDetails)
                             }
                         }
@@ -88,11 +93,6 @@ class TicTacToeGameViewModel(
     private fun TicTacToeGameData.calculateGameOverDetails(player: Entry) =
         this.boardData.calculateGameOverDetails(player)
 
-    private fun Entry.toggle() =
-        when(this) {
-            Entry.PlayerX -> Entry.PlayerO
-            Entry.PlayerO -> Entry.PlayerX
-        }
 
     private val TicTacToeGameData.paused: Boolean?
         get() = when(playData) {

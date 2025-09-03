@@ -8,8 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dinino.marc.games.app.ui.theme.GamesTheme
+import dinino.marc.games.app.ui.theme.sizes.sizes
 import dinino.marc.games.userflow.common.ui.route.SerializableUserFlowRoute.UserFlowNavGraphRoute
 import dinino.marc.games.userflow.selectgame.ui.SelectGameNavGraphRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -28,7 +30,12 @@ fun App(landingUserFlow: UserFlowNavGraphRoute = SelectGameNavGraphRoute) {
 
         ){ innerPadding ->
             landingUserFlow.Navigation(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(
+                    /*
+                    This is the best padding I have seen for all platforms (including safeContentPadding)
+                     */
+                    all = MaterialTheme.sizes.paddings.medium
+                ),
                 navHostController = navHostController
             )
         }
