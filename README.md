@@ -1,13 +1,15 @@
 A sample app demonstrating Kotlin Multiplatform functionality.  
 Targeting Android, iOS, Web, Desktop.
 Uses Koin as a DI framework.
-Supports light and dar mode.
+Supports light and dark mode.
 
 NOTE: WasmJs will crash for now util SQLDelight supports a driver for that build.
 
 Unit test to come after games are implemented.
 
-Make sure to install the [Kotlin Multiplatform Plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform) in Android Studio.
+[Demonstration video](https://youtu.be/ZFK5KAVAI8Y)
+
+![Screenshot of video](video_screenshot.png)
 
 Known issue: when screens are being transitioned in when animation, button clicks are not available
 until transition is complete. So if you click a button too fast after navigation, a button press wont do anything.
